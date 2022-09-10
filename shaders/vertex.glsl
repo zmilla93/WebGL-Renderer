@@ -11,6 +11,6 @@ varying lowp vec4 vColor;
 void main() {
     gl_Position = aVertexPosition;
     // vColor = vec4(0.0, 0.0, 1.0, 1.0);
-    // vColor = aVertexColor;
-    vColor = dominatingColor;
+    vColor = aVertexColor;
+    // vColor = dominatingColor;
 }
