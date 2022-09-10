@@ -8,13 +8,15 @@ attribute vec4 aVertexColor;
 
 uniform mat4 uModelViewMatrix;
 uniform mat4 uProjectionMatrix;
+uniform vec4 dominatingColor;
 
 varying lowp vec4 vColor;
 
 void main() {
     gl_Position = aVertexPosition;
     // vColor = vec4(0.0, 0.0, 1.0, 1.0);
-    vColor = aVertexColor;
+    // vColor = aVertexColor;
+    vColor = dominatingColor;
 }`
 
 const fragmentShaderSource = `

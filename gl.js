@@ -5,64 +5,93 @@ function main() {
     const gl = canvas.getContext("webgl", { antialias: false, depth: true });
 
     // Initalize all shaders
-    initShaders(gl);
+    var shaderProgram = initShaders(gl);
 
     // Draw the scene
-    drawScene(gl);
-
-    console.log(gl.FLOAT);
+    drawScene(gl, shaderProgram);
 }
 
-class Vertex{
-    constructor(position, color){
+
+
+class Vertex {
+    constructor(position, color) {
         this.position = position;
         this.color = color;
     }
 }
 
-class Vector{
-    constructor(x,y,z){
+class Vector {
+    constructor(x, y, z) {
         this.x = x;
         this.y = y;
         this.z = z;
     }
 }
 
-function drawScene(gl, programInfo, buffers) {
+// class Shape{
+//     constructor() {
+
+//     }
+// }
+
+class Shape {
+    vectors;
+    // constructor() {
+
+    // }
+}
+
+const FLOAT32_SIZE = 4;
+
+function drawScene(gl, shaderProgram) {
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.enable(gl.DEPTH_TEST);
     gl.clearDepth(1.0);
     // gl.depthFunc(gl.LEQUAL);
 
-    const v1 = new Vertex(new Vector(0,0,0), new Vector(0,1,0));
-    console.log(v1);
+    const v1 = new Vertex(new Vector(0, 0, 0), new Vector(0, 1, 0));
+    const s1 = new Shape();
+
+    const vertexData = [
+        new Vertex(new Vector(-1.0, -1.0, +0.0), new Vector(+1.0, +0.0, +0.0)),
+        new Vertex(new Vector(+0.0, +1.0, +0.0), new Vector(+1.0, +1.0, +0.0)),
+        new Vertex(new Vector(+1.0, -1.0, +0.0), new Vector(+1.0, +0.0, +1.0)),
+    ]
 
     const positions = [
-        +0.0, +1.0,
+        // new Vertex(new Vector(-1.0, -1.0, +0.0), new Vector(+1.0, +0.0, +0.0)),
+        // new Vertex(new Vector(+0.0, +1.0, +0.0), new Vector(+1.0, +0.0, +0.0)),
+        // new Vertex(new Vector(+1.0, +1.0, +0.0), new Vector(+1.0, +0.0, +0.0)),
+
+        +0.0, +1.0, +1.0,
         +1.0, +0.0, +0.0,
-        +1.0, -1.0,
+        +1.0, -1.0, +1.0,
         +0.0, +1.0, +0.0,
-        -1.0, -1.0,
+        -1.0, -1.0, +1.0,
         +0.0, +0.0, +1.0,
 
-        +0.0, +1.0,
-        +1.0, +0.0, +0.0,
-        +1.0, -1.0,
-        +0.0, +1.0, +0.0,
-        -1.0, -1.0,
-        +0.0, +0.0, +1.0,
+        // +0.0, +1.0, +1.0,
+        // +1.0, +0.0, +0.0,
+        // +1.0, -1.0, +1.0,
+        // +0.0, +1.0, +0.0,
+        // -1.0, -1.0, +1.0,
+        // +0.0, +0.0, +1.0,
     ];
+    var data = shapeToFloatArray(vertexData);
+
+    var uniformLocation = gl.getUniformLocation(shaderProgram, "dominatingColor");
+    gl.uniform4f(uniformLocation, 0.0, 1.0, 1.0, 1.0);
 
     const buffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
     gl.enableVertexAttribArray(0);
 
     // fixme : sizeof float32
-    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 5 * 4, 0);
+    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
     gl.enableVertexAttribArray(1);
-    gl.vertexAttribPointer(1, 3, gl.FLOAT, false, 5 * 4, 2 * 4);
+    gl.vertexAttribPointer(1, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 
     const indices = [0, 1, 2];
     const indexBuffer = gl.createBuffer();
@@ -73,13 +102,29 @@ function drawScene(gl, programInfo, buffers) {
 
 }
 
+function shapeToFloatArray(vertexData) {
+    const entriesPerVertex = 6;
+    const entryCount = vertexData.length * entriesPerVertex;
+    const array = new Float32Array(entryCount);
+    for(var i = 0;i<vertexData.length;i++){
+        const index = i * entriesPerVertex;
+        array[index] = vertexData[i].position.x;
+        array[index+1] = vertexData[i].position.y;
+        array[index+2] = vertexData[i].position.z;
+        array[index+3] = vertexData[i].color.x;
+        array[index+4] = vertexData[i].color.y;
+        array[index+5] = vertexData[i].color.z;
+    }
+    return array;
+}
+
 // Compile all shaders
 function initShaders(gl) {
     // Compile Shaders
 
     // var vertexShaderSource = document.getElementById("fragmentShaderSource").innerHTML;
     // var vertexShaderSource = document.getElementById("vertexShaderSource").contentWindow.document.body.childNodes[0].innerHTML;
-    alert(vertexShaderSource);
+    // alert(vertexShaderSource);
     const vertexShader = compileShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
     const fragmentShader = compileShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
 
