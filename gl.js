@@ -20,8 +20,8 @@ var shaderProgram;
 var cam;
 var cameraDeltaX = 0;
 var running = true;
+var testChunk;
 
-const keys = { w: false, a: false, s: false, d: false, q: false, e: false, r: false }
 const keyMap = new Set();
 
 function main() {
@@ -55,6 +55,8 @@ function main() {
     if (shaderProgram == null) return;
 
     // Draw the scene
+    // testChunk = new Chunk();
+    // console.log(testChunk);
     drawScene(gl, shaderProgram);
 
     // window.requestAnimationFrame(draw);
@@ -80,10 +82,13 @@ function updateKey(key, state) {
 
 function update() {
     if (keyMap.has('w')) {
+        console.log("w");
         vec3.add(cam.position, cam.position, cam.viewDirection);
         drawScene();
     }
     if (keyMap.has('s')) {
+        var localBack = vec3.create();
+        // vec3.rotateY()
         vec3.add(cam.position, cam.position, BACK_VECTOR);
         drawScene();
     }
@@ -269,8 +274,9 @@ function drawScene() {
     go1.position[2] = -20;
     renderGameObject(go1, cube2)
 
+    // var shape = new Shape("a");
     var gameObjects = [];
-    const count = 20;
+    const count = 100;
     const halfCount = count / 2;
     for (var x = -halfCount; x < halfCount; x++) {
         for (var z = -halfCount; z < halfCount; z++) {

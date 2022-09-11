@@ -7,21 +7,21 @@ const vec3 = glMatrix.vec3;
 // Multiplying a degree by this constant will give the radian equivalent.
 const DEG2RAD = Math.PI / 180;
 
-const UP_VECTOR = vec3.create();
-const DOWN_VECTOR = vec3.create();
-const FORWARD_VECTOR = vec3.create();
-const BACK_VECTOR = vec3.create();
-const LEFT_VECTOR = vec3.create();
-const RIGHT_VECTOR = vec3.create();
-const ZERO_VECTOR = vec3.create();
-{
-    UP_VECTOR[1] = 1;
-    DOWN_VECTOR[1] = -1;
-    FORWARD_VECTOR[2] = -1;
-    BACK_VECTOR[2] = 1;
-    LEFT_VECTOR[0] = -1;
-    RIGHT_VECTOR[0] = 1;
-}
+const UP_VECTOR = vec3.fromValues(0, 1, 0);
+const DOWN_VECTOR = vec3.fromValues(0, 1, 0);
+const FORWARD_VECTOR = vec3.fromValues(0, 0, -1);
+const BACK_VECTOR = vec3.fromValues(0, 0, 1);
+const LEFT_VECTOR = vec3.fromValues(-1, 0, 0);
+const RIGHT_VECTOR = vec3.fromValues(1, 0, 0);
+const ZERO_VECTOR = vec3.fromValues(0, 0, 0);
+// {
+//     // UP_VECTOR[1] = 1;
+//     DOWN_VECTOR[1] = -1;
+//     FORWARD_VECTOR[2] = -1;
+//     BACK_VECTOR[2] = 1;
+//     LEFT_VECTOR[0] = -1;
+//     RIGHT_VECTOR[0] = 1;
+// }
 
 class Vertex {
     constructor(position, color) {
@@ -59,8 +59,6 @@ class Camera {
     }
     getWorldtoViewMatrix() {
         const matrix = mat4.create();
-        // const upVector = vec3.create();
-        // upVector.y = 1;
         const lookVector = vec3.create();
         vec3.add(lookVector, this.position, this.viewDirection);
         mat4.lookAt(matrix, this.position, lookVector, UP_VECTOR);
@@ -79,29 +77,32 @@ class GameObject {
         this.rotation = vec3.create();
         this.scale = new vec3.create();
     }
-    destroy(gl) {
-
-    }
     get matrix() {
+        // FIXME : Make static
         const fieldOfView = 60 * DEG2RAD;
         const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
         const zNear = 1;
-        const zFar = 100.0;
+        const zFar = 1000.0;
+
+        // Create Translation Matrix
         const translationMatrix = mat4.create();
-        const projectionMatrix = mat4.create();
-        const transformMatrix = mat4.create();
-        const rotationMatrix = mat4.create();
-        // const rotationAxis = mat4.create();
         mat4.translate(translationMatrix, translationMatrix, [this.position[0], this.position[1], this.position[2]]);
-        // rotationAxis.y = 1;
+
+        // Create Rotation Matrix
+        // FIXME : Rotation can be optimized
+        const rotationMatrix = mat4.create();
         mat4.rotateX(rotationMatrix, rotationMatrix, this.rotation[0] * DEG2RAD);
         mat4.rotateY(rotationMatrix, rotationMatrix, this.rotation[1] * DEG2RAD);
+        mat4.rotateZ(rotationMatrix, rotationMatrix, this.rotation[2] * DEG2RAD);
+
+        // Create Projection Matrix
+        const projectionMatrix = mat4.create();
         mat4.perspective(projectionMatrix, fieldOfView, aspect, zNear, zFar);
 
-        // console.log(cam);
+        // Create a transform matrix that holds all matrices combined.
+        const transformMatrix = mat4.create();
         mat4.mul(transformMatrix, projectionMatrix, cam.getWorldtoViewMatrix());
         mat4.mul(transformMatrix, transformMatrix, translationMatrix);
-        // mat4.mul(transformMatrix, transformMatrix, cam.getWorldtoViewMatrix());
         mat4.mul(transformMatrix, transformMatrix, rotationMatrix);
         return transformMatrix;
     }
