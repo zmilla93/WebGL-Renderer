@@ -82,11 +82,21 @@ function createBuffer(shape) {
     const vertexBuffer = gl.createBuffer();
     const indexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+
+    const positionLocation = gl.getAttribLocation(shaderProgram, "aVertexPosition");
+    const colorLocation = gl.getAttribLocation(shaderProgram, "aVertexColor");
+    gl.enableVertexAttribArray(positionLocation);
+    gl.enableVertexAttribArray(colorLocation);
+    gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
+    gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+
     gl.bufferData(gl.ARRAY_BUFFER, shape.vertices, gl.STATIC_DRAW);
+    
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
     // fixme : should shape indices be already converted???
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(shape.indices), gl.STATIC_DRAW);
     const buffer = {
+        shape:shape,
         indexBuffer: indexBuffer,
         verexBuffer: vertexBuffer,
     }
@@ -103,13 +113,10 @@ function initGLSettings(){
 }
 
 function drawScene(gl, shaderProgram) {
-    // gl.clearColor(50 / 255, 115 / 255, 168 / 255, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     var uniformLocation = gl.getUniformLocation(shaderProgram, "dominatingColor");
     gl.uniform4f(uniformLocation, 0.0, 1.0, 1.0, 1.0);
-
-    // drawShape(gl, shaderProgram, tri);
 
     const fieldOfView = 60 * DEG2RAD;
     const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
@@ -120,7 +127,6 @@ function drawScene(gl, shaderProgram) {
     mat4.translate(translationMatrix, translationMatrix, [-0.0, 0.0, -6.0]);
     const rotationMatrix = mat4.create();
     const rotationAxis = mat4.create();
-
 
     rotationAxis.y = 1;
     mat4.rotateX(rotationMatrix, rotationMatrix, rotationX * DEG2RAD);
@@ -138,26 +144,35 @@ function drawScene(gl, shaderProgram) {
     gl.uniformMatrix4fv(transformMatrixLocation, false, transformMatrix);
 
     // drawShape(gl, shaderProgram, megaTri);
-    drawShape(gl, shaderProgram, Shapes.cube);
+
+    const cube = createBuffer(Shapes.cube);
+
+    drawShape(gl, cube);
 }
 
-function drawShape(gl, shaderProgram, shape) {
-    const vertexBuffer = gl.createBuffer();
-    const indexBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+// function drawShape(gl, shaderProgram, shape) {
+//     const vertexBuffer = gl.createBuffer();
+//     const indexBuffer = gl.createBuffer();
+//     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
 
-    const positionLocation = gl.getAttribLocation(shaderProgram, "aVertexPosition");
-    const colorLocation = gl.getAttribLocation(shaderProgram, "aVertexColor");
-    gl.enableVertexAttribArray(positionLocation);
-    gl.enableVertexAttribArray(colorLocation);
-    gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
-    gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+//     // const positionLocation = gl.getAttribLocation(shaderProgram, "aVertexPosition");
+//     // const colorLocation = gl.getAttribLocation(shaderProgram, "aVertexColor");
+//     // gl.enableVertexAttribArray(positionLocation);
+//     // gl.enableVertexAttribArray(colorLocation);
+//     // gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
+//     // gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 
-    gl.bufferData(gl.ARRAY_BUFFER, shape.vertices, gl.STATIC_DRAW);
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(shape.indices), gl.STATIC_DRAW);
+//     gl.bufferData(gl.ARRAY_BUFFER, shape.vertices, gl.STATIC_DRAW);
+//     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+//     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(shape.indices), gl.STATIC_DRAW);
 
-    gl.drawElements(gl.TRIANGLES, shape.vertexCount, gl.UNSIGNED_SHORT, 0);
+//     gl.drawElements(gl.TRIANGLES, shape.vertexCount, gl.UNSIGNED_SHORT, 0);
+// }
+
+function drawShape(gl, buffer){
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer.vertexBuffer);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffer.indexBuffer);
+    gl.drawElements(gl.TRIANGLES, buffer.shape.vertexCount, gl.UNSIGNED_SHORT, 0);
 }
 
 
