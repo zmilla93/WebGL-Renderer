@@ -18,17 +18,28 @@ var camRotationY = 0;
 var gl;
 var shaderProgram;
 var cam;
+var cameraDeltaX = 0;
+
+const keys = { w: false, a: false, s: false, d: false, q: false, e:false, r: false }
+
+var pressedKeys;
+
 
 function main() {
     // Get the WebGL Context from the canvas
     // This contains all of the fun WebGL functions and constants
     // https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext
     const canvas = document.getElementById("glCanvas");
-    // const gl = canvas.getContext("webgl", { antialias: true, depth: true });
-    gl = canvas.getContext("webgl", { antialias: true, depth: true });
 
+    document.addEventListener("keydown", function (e) {
+        updateKey(e.key, true);
+    })
+    document.addEventListener("keyup", function (e) {
+        updateKey(e.key, false);
+    })
+
+    gl = canvas.getContext("webgl", { antialias: true, depth: true });
     cam = new Camera();
-    console.log(cam);
 
     initGLSettings();
 
@@ -41,6 +52,67 @@ function main() {
     drawScene(gl, shaderProgram);
 
     setupControls();
+
+    // while (true){
+    //     console.log("!!");
+    // }
+
+    setInterval(update, 1000 / 60);
+}
+
+function updateKey(key, state) {
+    switch (key) {
+        case 'w':
+            keys.w = state;
+            break;
+        case 'a':
+            keys.a = state;
+            break;
+        case 's':
+            keys.s = state;
+            break;
+        case 'd':
+            keys.d = state;
+            break;
+        case 'q':
+            keys.q = state;
+            break;
+        case 'e':
+            keys.e = state;
+            break;
+        case 'r':
+            keys.r = state;
+            break;
+    }
+}
+
+function update() {
+    // console.log("tick");
+    // console.log(keys.w);
+    if (keys.w) {
+        vec3.add(cam.position, cam.position, FORWARD_VECTOR);
+        drawScene();
+    }
+    if (keys.s) {
+        vec3.add(cam.position, cam.position, BACK_VECTOR);
+        drawScene();
+    }
+    if (keys.a) {
+        vec3.add(cam.position, cam.position, LEFT_VECTOR);
+        drawScene();
+    }
+    if (keys.d) {
+        vec3.add(cam.position, cam.position, RIGHT_VECTOR);
+        drawScene();
+    }
+    if (keys.q) {
+        vec3.rotateY(cam.viewDirection, cam.viewDirection, ZERO_VECTOR, 4 * DEG2RAD);
+        drawScene();
+    }
+    if (keys.e) {
+        vec3.rotateY(cam.viewDirection, cam.viewDirection, ZERO_VECTOR, -4 * DEG2RAD);
+        drawScene();
+    }
 }
 
 function setupControls() {
@@ -122,7 +194,7 @@ function initGLSettings() {
     // gl.clearDepth(1.0);
 }
 
-function drawScene(gl, shaderProgram) {
+function drawScene() {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     var uniformLocation = gl.getUniformLocation(shaderProgram, "dominatingColor");
@@ -131,7 +203,7 @@ function drawScene(gl, shaderProgram) {
     const fieldOfView = 60 * DEG2RAD;
     const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
     const zNear = 1;
-    const zFar = 100.0;
+    const zFar = 1000.0;
 
     var translationMatrix = mat4.create();
     var projectionMatrix = mat4.create();
@@ -145,7 +217,6 @@ function drawScene(gl, shaderProgram) {
     mat4.rotateX(rotationMatrix, rotationMatrix, rotationX * DEG2RAD);
     mat4.rotateY(rotationMatrix, rotationMatrix, rotationY * DEG2RAD);
 
-
     mat4.perspective(projectionMatrix, fieldOfView, aspect, zNear, zFar);
 
 
@@ -158,12 +229,14 @@ function drawScene(gl, shaderProgram) {
     // drawShape(gl, shaderProgram, megaTri);
 
     const cube = createBuffer(Shapes.cube);
-    drawShape(gl, cube);
+    // drawShape(gl, cube);
 
     // var camRotation = vec3.create();
-
-    vec3.rotateY(cam.viewDirection, FORWARD_VECTOR, cam.position, camRotationY * DEG2RAD)
-    console.log(cam.viewDirection);
+    var point = vec3.create();
+    vec3.add(point, cam.position, cam.viewDirection)
+    // vec3.rotateY(cam.viewDirection, cam.viewDirection, cam.position, cameraDeltaX * DEG2RAD)
+    // vec3.rotateY(cam.viewDirection, point, cam.position, cameraDeltaX * DEG2RAD)
+    // console.log(cam.viewDirection);
 
     // CUBE 2
     translationMatrix = mat4.create();
@@ -188,12 +261,40 @@ function drawScene(gl, shaderProgram) {
 
     gl.uniformMatrix4fv(transformMatrixLocation, false, transformMatrix);
 
+
+
     const cube2 = createBuffer(Shapes.cube);
+    const cube3 = createBuffer(Shapes.cube);
+
 
     // const cam = new Camera();
     // console.log(cam);
 
     drawShape(gl, cube2);
+
+    var go1 = new GameObject();
+    go1.init(gl, cube2);
+    go1.position[0] = 2;
+    go1.position[1] = -4;
+    go1.position[2] = -20;
+    renderGameObject(go1, cube2)
+
+    var gameObjects = [];
+    const count = 20;
+    const halfCount = count / 2;
+    for (var x = -halfCount; x < halfCount; x++) {
+        for (var z = -halfCount; z < halfCount; z++) {
+            var gameObject = new GameObject();
+            gameObject.init(gl, cube2);
+            gameObject.position[0] = x * 2;
+            gameObject.position[1] = -5;
+            gameObject.position[2] = -10 - z * 2;
+            // gameObject.rotation[1] = 25;
+            renderGameObject(gameObject, cube2);
+        }
+    }
+
+
 }
 
 // function drawShape(gl, shaderProgram, shape) {
@@ -220,6 +321,15 @@ function drawShape(gl, buffer) {
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffer.indexBuffer);
     gl.drawElements(gl.TRIANGLES, buffer.shape.vertexCount, gl.UNSIGNED_SHORT, 0);
     // gl.drawElements(gl.LINE_STRIP, buffer.shape.vertexCount, gl.UNSIGNED_SHORT, 0);
+}
+
+function renderGameObject(gameObject, buffer) {
+    // FIXME : cache this
+    const transformMatrixLocation = gl.getUniformLocation(shaderProgram, "transformMatrix");
+    gl.uniformMatrix4fv(transformMatrixLocation, false, gameObject.matrix);
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer.vertexBuffer);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffer.indexBuffer);
+    gl.drawElements(gl.TRIANGLES, buffer.shape.vertexCount, gl.UNSIGNED_SHORT, 0);
 }
 
 

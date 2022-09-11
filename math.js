@@ -8,9 +8,18 @@ const vec3 = glMatrix.vec3;
 const DEG2RAD = Math.PI / 180;
 
 const UP_VECTOR = vec3.create();
+const DOWN_VECTOR = vec3.create();
 const FORWARD_VECTOR = vec3.create();
+const BACK_VECTOR = vec3.create();
+const LEFT_VECTOR = vec3.create();
+const RIGHT_VECTOR = vec3.create();
+const ZERO_VECTOR = vec3.create();
 UP_VECTOR[1] = 1;
+DOWN_VECTOR[1] = -1;
 FORWARD_VECTOR[2] = -1;
+BACK_VECTOR[2] = 1;
+LEFT_VECTOR[0] = -1;
+RIGHT_VECTOR[0] = 1;
 
 class Vertex {
     constructor(position, color) {
@@ -54,6 +63,45 @@ class Camera {
         vec3.add(lookVector, this.position, this.viewDirection);
         mat4.lookAt(matrix, this.position, lookVector, UP_VECTOR);
         return matrix;
+    }
+}
+
+class GameObject {
+    position;
+    rotation;
+    scale;
+    shape;
+    init(gl, shape) {
+        this.shape = shape;
+        this.position = vec3.create();
+        this.rotation = vec3.create();
+        this.scale = new vec3.create();
+    }
+    destroy(gl) {
+
+    }
+    get matrix() {
+        const fieldOfView = 60 * DEG2RAD;
+        const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
+        const zNear = 1;
+        const zFar = 100.0;
+        const translationMatrix = mat4.create();
+        const projectionMatrix = mat4.create();
+        const transformMatrix = mat4.create();
+        const rotationMatrix = mat4.create();
+        // const rotationAxis = mat4.create();
+        mat4.translate(translationMatrix, translationMatrix, [this.position[0], this.position[1], this.position[2]]);
+        // rotationAxis.y = 1;
+        mat4.rotateX(rotationMatrix, rotationMatrix, this.rotation[0] * DEG2RAD);
+        mat4.rotateY(rotationMatrix, rotationMatrix, this.rotation[1] * DEG2RAD);
+        mat4.perspective(projectionMatrix, fieldOfView, aspect, zNear, zFar);
+
+        // console.log(cam);
+        mat4.mul(transformMatrix, projectionMatrix, cam.getWorldtoViewMatrix());
+        mat4.mul(transformMatrix, transformMatrix, translationMatrix);
+        // mat4.mul(transformMatrix, transformMatrix, cam.getWorldtoViewMatrix());
+        mat4.mul(transformMatrix, transformMatrix, rotationMatrix);
+        return transformMatrix;
     }
 }
 
