@@ -23,7 +23,9 @@ class Mesh {
     triangles;
     uvs;
     normals;
-    constructor()
+    constructor(){
+
+    }
 }
 
 function generateChunk(chunk) {
@@ -49,3 +51,9 @@ function generateMesh(chunk) {
         }
     }
 }
+
+function go(){
+    alert("!");
+}
+
+window.onload = go;

@@ -55,8 +55,8 @@ function main() {
     if (shaderProgram == null) return;
 
     // Draw the scene
-    // testChunk = new Chunk();
-    // console.log(testChunk);
+    testChunk = new Chunk();
+    console.log(testChunk);
     drawScene(gl, shaderProgram);
 
     // window.requestAnimationFrame(draw);
