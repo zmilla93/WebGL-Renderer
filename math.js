@@ -8,7 +8,9 @@ const vec3 = glMatrix.vec3;
 const DEG2RAD = Math.PI / 180;
 
 const UP_VECTOR = vec3.create();
-UP_VECTOR.y = 1;
+const FORWARD_VECTOR = vec3.create();
+UP_VECTOR[1] = 1;
+FORWARD_VECTOR[2] = -1;
 
 class Vertex {
     constructor(position, color) {
@@ -42,7 +44,7 @@ class Camera {
     constructor() {
         this.position = vec3.create();
         this.viewDirection = vec3.create();
-        this.viewDirection.z = -1;
+        this.viewDirection[2] = -1;
     }
     getWorldtoViewMatrix() {
         const matrix = mat4.create();

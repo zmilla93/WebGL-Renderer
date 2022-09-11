@@ -9,6 +9,7 @@
 
 var rotationX = 0;
 var rotationY = 0;
+var camRotationY = 0;
 
 // const gl;
 // const canvas = document.getElementById("glCanvas");
@@ -45,12 +46,17 @@ function main() {
 function setupControls() {
     var rotationXSlider = document.getElementById("rotationXSlider");
     var rotationYSlider = document.getElementById("rotationYSlider");
+    var camRotationYSlider = document.getElementById("camRotationYSlider");
     rotationXSlider.oninput = function () {
         rotationX = this.value;
         drawScene(gl, shaderProgram);
     }
     rotationYSlider.oninput = function () {
         rotationY = this.value;
+        drawScene(gl, shaderProgram);
+    }
+    camRotationYSlider.oninput = function () {
+        camRotationY = this.value;
         drawScene(gl, shaderProgram);
     }
 }
@@ -135,7 +141,7 @@ function drawScene(gl, shaderProgram) {
     var rotationMatrix = mat4.create();
     var rotationAxis = mat4.create();
 
-    rotationAxis.y = 1;
+    rotationAxis[1] = 1;
     mat4.rotateX(rotationMatrix, rotationMatrix, rotationX * DEG2RAD);
     mat4.rotateY(rotationMatrix, rotationMatrix, rotationY * DEG2RAD);
 
@@ -154,9 +160,10 @@ function drawScene(gl, shaderProgram) {
     const cube = createBuffer(Shapes.cube);
     drawShape(gl, cube);
 
-    var camRotation = vec3.create();
+    // var camRotation = vec3.create();
 
-    // vec3.rotateX(cam.viewDirection, 4 * DEG2RAD, UP_VECTOR)
+    vec3.rotateY(cam.viewDirection, FORWARD_VECTOR, cam.position, camRotationY * DEG2RAD)
+    console.log(cam.viewDirection);
 
     // CUBE 2
     translationMatrix = mat4.create();
@@ -173,9 +180,10 @@ function drawScene(gl, shaderProgram) {
     mat4.perspective(projectionMatrix, fieldOfView, aspect, zNear, zFar);
 
 
-    console.log(cam);
-    mat4.mul(transformMatrix, projectionMatrix, translationMatrix);
-    mat4.mul(transformMatrix, transformMatrix, cam.getWorldtoViewMatrix());
+    // console.log(cam);
+    mat4.mul(transformMatrix, projectionMatrix, cam.getWorldtoViewMatrix());
+    mat4.mul(transformMatrix, transformMatrix, translationMatrix);
+    // mat4.mul(transformMatrix, transformMatrix, cam.getWorldtoViewMatrix());
     mat4.mul(transformMatrix, transformMatrix, rotationMatrix);
 
     gl.uniformMatrix4fv(transformMatrixLocation, false, transformMatrix);
@@ -183,7 +191,7 @@ function drawScene(gl, shaderProgram) {
     const cube2 = createBuffer(Shapes.cube);
 
     // const cam = new Camera();
-    console.log(cam);
+    // console.log(cam);
 
     drawShape(gl, cube2);
 }
