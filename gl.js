@@ -19,97 +19,87 @@ var gl;
 var shaderProgram;
 var cam;
 var cameraDeltaX = 0;
+var running = true;
 
-const keys = { w: false, a: false, s: false, d: false, q: false, e:false, r: false }
-
-var pressedKeys;
-
+const keys = { w: false, a: false, s: false, d: false, q: false, e: false, r: false }
+const keyMap = new Set();
 
 function main() {
     // Get the WebGL Context from the canvas
     // This contains all of the fun WebGL functions and constants
     // https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext
     const canvas = document.getElementById("glCanvas");
+    gl = canvas.getContext("webgl", { antialias: true, depth: true });
 
+    // Keyboard calbacks
     document.addEventListener("keydown", function (e) {
         updateKey(e.key, true);
     })
     document.addEventListener("keyup", function (e) {
         updateKey(e.key, false);
     })
+    document.addEventListener("mousemove", function (e) {
+        // if (canvas == document.activeElement)
+        // console.log("mouse");
+    })
+    canvas.onfocus = function () {
+        console.log("focus");
+    }
+    setupControls();
 
-    gl = canvas.getContext("webgl", { antialias: true, depth: true });
     cam = new Camera();
-
-    initGLSettings();
-
     // Initalize shaders
     // var shaderProgram = initShaders(gl);
+    initGLSettings();
     shaderProgram = initShaders(gl);
     if (shaderProgram == null) return;
 
     // Draw the scene
     drawScene(gl, shaderProgram);
 
-    setupControls();
-
-    // while (true){
-    //     console.log("!!");
-    // }
-
+    // window.requestAnimationFrame(draw);
     setInterval(update, 1000 / 60);
 }
 
+function draw() {
+    console.log("draw");
+    if (running) {
+        window.requestAnimationFrame(draw);
+    }
+}
+
 function updateKey(key, state) {
-    switch (key) {
-        case 'w':
-            keys.w = state;
-            break;
-        case 'a':
-            keys.a = state;
-            break;
-        case 's':
-            keys.s = state;
-            break;
-        case 'd':
-            keys.d = state;
-            break;
-        case 'q':
-            keys.q = state;
-            break;
-        case 'e':
-            keys.e = state;
-            break;
-        case 'r':
-            keys.r = state;
-            break;
+    if (state) {
+        keyMap.add(key);
+    } else {
+        if (keyMap.has(key)) {
+            keyMap.delete(key);
+        }
     }
 }
 
 function update() {
-    // console.log("tick");
-    // console.log(keys.w);
-    if (keys.w) {
-        vec3.add(cam.position, cam.position, FORWARD_VECTOR);
+    if (keyMap.has('w')) {
+        vec3.add(cam.position, cam.position, cam.viewDirection);
         drawScene();
     }
-    if (keys.s) {
+    if (keyMap.has('s')) {
         vec3.add(cam.position, cam.position, BACK_VECTOR);
         drawScene();
     }
-    if (keys.a) {
+    if (keyMap.has('a')) {
         vec3.add(cam.position, cam.position, LEFT_VECTOR);
         drawScene();
     }
-    if (keys.d) {
+    if (keyMap.has('d')) {
         vec3.add(cam.position, cam.position, RIGHT_VECTOR);
         drawScene();
     }
-    if (keys.q) {
+    if (keyMap.has('q')) {
         vec3.rotateY(cam.viewDirection, cam.viewDirection, ZERO_VECTOR, 4 * DEG2RAD);
         drawScene();
     }
-    if (keys.e) {
+    if (keyMap.has('e')) {
         vec3.rotateY(cam.viewDirection, cam.viewDirection, ZERO_VECTOR, -4 * DEG2RAD);
         drawScene();
     }

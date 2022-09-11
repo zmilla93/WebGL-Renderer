@@ -14,12 +14,14 @@ const BACK_VECTOR = vec3.create();
 const LEFT_VECTOR = vec3.create();
 const RIGHT_VECTOR = vec3.create();
 const ZERO_VECTOR = vec3.create();
-UP_VECTOR[1] = 1;
-DOWN_VECTOR[1] = -1;
-FORWARD_VECTOR[2] = -1;
-BACK_VECTOR[2] = 1;
-LEFT_VECTOR[0] = -1;
-RIGHT_VECTOR[0] = 1;
+{
+    UP_VECTOR[1] = 1;
+    DOWN_VECTOR[1] = -1;
+    FORWARD_VECTOR[2] = -1;
+    BACK_VECTOR[2] = 1;
+    LEFT_VECTOR[0] = -1;
+    RIGHT_VECTOR[0] = 1;
+}
 
 class Vertex {
     constructor(position, color) {
