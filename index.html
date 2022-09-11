@@ -4,9 +4,11 @@
     <title>WebGL</title>
 
     <link rel="stylesheet" href="styles.css">
-    
+
     <script src="gl-matrix-min.js"></script>
     <script src="shaders/shaders.js"></script>
+    <script src="math.js"></script>
+    <script src="cube.js"></script>
     <script src="gl.js"></script>
     <!-- <script src="glv1.js"></script> -->
     <!-- <script src="test.js"></script> -->
@@ -15,4 +17,8 @@
 
 <body>
     <canvas id="glCanvas" width="640" height="480"></canvas><br>
+    <div>
+        <label>Rotation X</label><input id = "rotationXSlider" type ="range" min="0" max = 360>
+        <label>Rotation Y</label><input id = "rotationYSlider" type ="range" min="0" max = 360>
+    </div>
 </body>
