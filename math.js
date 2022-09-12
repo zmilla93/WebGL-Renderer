@@ -60,15 +60,20 @@ class Camera {
 }
 
 class GameObject {
-    position;
-    rotation;
-    scale;
+    position = vec3.create();
+    rotation = vec3.create();
+    scale = vec3.create();
     shape;
-    init(gl, shape) {
-        this.shape = shape;
-        this.position = vec3.create();
-        this.rotation = vec3.create();
-        this.scale = new vec3.create();
+
+
+    // init(gl, shape) {
+    //     this.shape = shape;
+    //     this.position = vec3.create();
+    //     this.rotation = vec3.create();
+    //     this.scale = new vec3.create();
+    // }
+    init(){
+        // FIXME : REMOVE?
     }
     get matrix() {
         // FIXME : Make static

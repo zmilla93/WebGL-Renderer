@@ -22,6 +22,8 @@ var cameraDeltaX = 0;
 var running = true;
 var testChunk;
 
+
+
 const keyMap = new Set();
 
 const programData = {
@@ -42,6 +44,8 @@ const programData = {
 // }
 
 var meshRenderer;
+var myMeshRenderer;
+var simpleMesh;
 
 function main() {
     // Get the WebGL Context from the canvas
@@ -66,7 +70,7 @@ function main() {
     }
     setupControls();
     // programData.test = "WEW";
-    console.log(programData);
+    // console.log(programData);
 
     cam = new Camera();
     // Initalize shaders
@@ -76,12 +80,13 @@ function main() {
     if (shaderProgram == null) return;
 
     // Draw the scene
-    testChunk = new Chunk();
-    generateChunk(testChunk);
+    // testChunk = new Chunk();
+    // generateChunk(testChunk);
 
-    var gameObject = new GameObject();
-    gameObject.init(gl, null);
-    var mesh = generateMesh(testChunk);
+    // var gameObject = new GameObject();
+    // gameObject.init(gl, null);
+    // var mesh = generateMesh(testChunk);
+    // mesh.createDataOld();
     const valuesPerVertex = 6;
     const positionLocation = gl.getAttribLocation(shaderProgram, "aVertexPosition");
     const colorLocation = gl.getAttribLocation(shaderProgram, "aVertexColor");
@@ -99,15 +104,32 @@ function main() {
         stride: Float32Array.BYTES_PER_ELEMENT * valuesPerVertex,
         offset: Float32Array.BYTES_PER_ELEMENT * 3,
     };
-    mesh.createBuffer(gl, [positionAttribute, colorAttribute])
-    mesh.buffer(gl);
-    meshRenderer = new MeshRenderer(gameObject, mesh);
-    console.log(mesh);
+
+    simpleMesh = objToMesh(cubeModel);
+    simpleMesh.createData();
+    // doMesh(simpleMesh);
+    // mesh.createBuffer(gl, [positionAttribute, colorAttribute])
+    // mesh.buffer(gl);
+    // meshRenderer = new MeshRenderer(gameObject, mesh);
+
+    // NEW MESH
+    const niceMesh = objToMesh(cubeModel);
+    niceMesh.createData();
+    niceMesh.createBuffer(gl, [positionAttribute, colorAttribute]);
+    niceMesh.buffer(gl);
+    var myGameObject = new GameObject();
+    myGameObject.position[2] = -4;
+    myMeshRenderer = new MeshRenderer(myGameObject, niceMesh);
+    console.log(myMeshRenderer);
+
+    window.addEventListener('keydown', function(e) {
+        console.log(e);
+        if(e.code == 'Space' && e.target == document.body) {
+          e.preventDefault();
+        }
+      });
     drawScene(gl, shaderProgram);
-    meshRenderer.render(gl);
-
-
-
+    // myMeshRenderer.render(gl);
 
     // window.requestAnimationFrame(draw);
     setInterval(update, 1000 / 60);
@@ -132,8 +154,6 @@ function updateKey(key, state) {
 
 function update() {
     if (keyMap.has('w')) {
-        console.log("w");
-        console.log(cam.viewDirection);
         vec3.add(cam.position, cam.position, cam.viewDirection);
         drawScene();
     }
@@ -262,7 +282,6 @@ function drawScene() {
     vec3.add(point, cam.position, cam.viewDirection)
     // vec3.rotateY(cam.viewDirection, cam.viewDirection, cam.position, cameraDeltaX * DEG2RAD)
     // vec3.rotateY(cam.viewDirection, point, cam.position, cameraDeltaX * DEG2RAD)
-    // console.log(cam.viewDirection);
 
     // CUBE 2
     translationMatrix = mat4.create();
@@ -286,8 +305,6 @@ function drawScene() {
     mat4.mul(transformMatrix, transformMatrix, rotationMatrix);
 
     gl.uniformMatrix4fv(transformMatrixLocation, false, transformMatrix);
-
-
 
     const cube2 = createBuffer(Shapes.oldCube);
     const cube3 = createBuffer(Shapes.oldCube);
@@ -321,9 +338,104 @@ function drawScene() {
         }
     }
 
-    meshRenderer.render(gl);
+    // meshRenderer.render(gl);
+    // myMeshRenderer.render(gl);
+    // doMesh(simpleMesh);
+    doMesh(simpleMesh);
 
 
+}
+
+function doMesh(mesh) {
+    const vertexBuffer = gl.createBuffer();
+    const indexBuffer = gl.createBuffer();
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+
+
+    const positionLocation = gl.getAttribLocation(shaderProgram, "aVertexPosition");
+    const colorLocation = gl.getAttribLocation(shaderProgram, "aVertexColor");
+    gl.enableVertexAttribArray(positionLocation);
+    gl.enableVertexAttribArray(colorLocation);
+
+    gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
+    gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+
+    gl.bufferData(gl.ARRAY_BUFFER, mesh.data, gl.STATIC_DRAW);
+    // console.log("WEW");
+    // console.log(mesh.vertices);
+    // console.log(mesh.triangles);
+
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(mesh.triangles), gl.STATIC_DRAW);
+    // gl.drawElements()
+
+    var gameObject = new GameObject();
+    gameObject.position[2] = -10;
+    const transformMatrixLocation = gl.getUniformLocation(shaderProgram, "transformMatrix");
+    gl.uniformMatrix4fv(transformMatrixLocation, false, gameObject.matrix);
+
+    console.log(mesh.triangles.length);
+
+    gl.drawElements(gl.TRIANGLES, mesh.triangles.length, gl.UNSIGNED_SHORT, 0);
+
+}
+
+function objToMesh(obj) {
+    var lines = obj.trim().split('\n');
+    var verticesRaw = [];
+    var uvsRaw = [];
+    var normalsRaw = [];
+    var vertices = [];
+    var uvs = [];
+    var normals = [];
+    var vertexCount = 0;
+    var triangles = [];
+    for (var line of lines) {
+        var cleanLine = line.trim().replace(/\s+/, " ");
+        var tokens = cleanLine.split(" ");
+        switch (tokens[0]) {
+            case 'o':
+                // Mesh Name
+                break;
+            case 'v':
+                // Vertex
+                verticesRaw.push(vec3.fromValues(tokens[1], tokens[2], tokens[3]));
+                break;
+            case 'vt':
+                // UVs
+                uvsRaw.push(vec3.fromValues(tokens[1], tokens[2], tokens[3]));
+                break;
+            case 'vn':
+                // Normals
+                normalsRaw.push(vec3.fromValues(tokens[1], tokens[2], tokens[3]));
+                break;
+            case 'f':
+                // Face
+                for (let i = 1; i < tokens.length; i++) {
+                    var values = tokens[i].split("/");
+                    vertices.push(verticesRaw[values[0] - 1]);
+                    uvs.push(uvsRaw[values[1] - 1]);
+                    normals.push(normalsRaw[values[2] - 1]);
+                    triangles.push(vertexCount);
+                    triangles.push(vertexCount + 1);
+                    triangles.push(vertexCount + 2);
+                    triangles.push(vertexCount + 2);
+                    triangles.push(vertexCount + 3);
+                    triangles.push(vertexCount);
+                }
+                vertexCount += 4;
+                break;
+            default:
+                break;
+        }
+    }
+    const mesh = new Mesh();
+    mesh.vertices = vertices;
+    mesh.uvs = uvs;
+    mesh.normals = normals;
+    mesh.triangles = triangles;
+    return mesh;
 }
 
 // function drawShape(gl, shaderProgram, shape) {

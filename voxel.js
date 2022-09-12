@@ -18,45 +18,55 @@ class Chunk {
     }
 }
 
-class Mesh {
-    vertices;
-    triangles;
-    uvs;
-    normals;
+class SimpleMesh {
+    vertices = [];
+    triangles = [];
+    normals = [];
     colors = [];
-    useNormals = false;
-    useUVs = false;
-    useColor = false;
+    uvs = [];
+    data = null;
+    createData(){
+        const arrStride = 6;
+        const stride = 3;
+        this.data = [];
+        this.data = new Float32Array(this.vertices.length * 3 * 1);
+        for (let i = 0; i < this.vertices.length; i++) {
+            this.data[i * stride] = this.vertices[i][0];
+            this.data[i * stride + 1] = this.vertices[i][1];
+            this.data[i * stride + 2] = this.vertices[i][2];
+            // this.data[i * stride + 3] = this.normals[i][0];
+            // this.data[i * stride + 4] = this.normals[i][1];
+            // this.data[i * stride + 5] = this.normals[i][2];
+            this.vertexCount += 4;
+        }
+    }
+}
+
+class Mesh {
+    vertices = [];
+    triangles = [];
+    uvs = [];
+    normals = [];
+    colors = [];
+    // useNormals = false;
+    // useUVs = false;
+    // useColor = false;
     // vertexAttributes;
     indexBuffer = null;
     vertexBuffer = null;
     vertexCount = 0;
     hasBuffer = false;
     data = null;
-    constructor() {
-        this.vertices = [];
-        this.triangles = [];
-    }
-    //
     buffer(gl) {
         // FIXME : Remove this check for performance?
         if (!this.hasBuffer) {
             console.error("Attempted to buffer data to a mesh renderer with no buffer!");
             return;
         }
-
-        this.data = new Float32Array(this.vertices.length * 3 + this.colors.length * 3);
-        // console.log(this.vertices);
-        for (let i = 0; i < this.vertices.length; i++) {
-            // this.data[i * 3] = this.vertices[i];
-            // this.data[i * 2 + 1] = this.colors[i];
-        }
-        // console.log(this.vertices);
-        // console.log(this.data);
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, this.data, gl.STATIC_DRAW);
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.indices), gl.STATIC_DRAW);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.triangles), gl.STATIC_DRAW);
     }
     // createBuffer will request two new buffers from webGL.
     // Some initial settings will be set on the buffers.
@@ -70,11 +80,21 @@ class Mesh {
         this.indexBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
-        for (const attribute of vertexAttributes) {
-            console.log("Enabling attrib:" + attribute.location + " with offset " + attribute.offset);
-            gl.enableVertexAttribArray(attribute.location);
-            gl.vertexAttribPointer(attribute.location, attribute.count, attribute.type, false, attribute.stride, attribute.offset);
-        }
+
+        const positionLocation = gl.getAttribLocation(shaderProgram, "aVertexPosition");
+        const colorLocation = gl.getAttribLocation(shaderProgram, "aVertexColor");
+        gl.enableVertexAttribArray(positionLocation);
+        gl.enableVertexAttribArray(colorLocation);
+        gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 3 * Float32Array.BYTES_PER_ELEMENT, 0);
+        // gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 0, 0);
+        gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+
+
+        // for (const attribute of vertexAttributes) {
+        //     console.log("Enabling attrib:" + attribute.location + " with offset " + attribute.offset);
+        //     gl.enableVertexAttribArray(attribute.location);
+        //     gl.vertexAttribPointer(attribute.location, attribute.count, attribute.type, false, attribute.stride, attribute.offset);
+        // }
         this.hasBuffer = true;
     }
     deleteBuffer(gl) {
@@ -87,7 +107,50 @@ class Mesh {
         gl.deleteBuffer(this.indexBuffer);
         this.hasBuffer = false;
     }
+    createDataOld() {
+        this.data = new Float32Array(this.vertices.length * 3 + this.colors.length * 3);
+        for (let i = 0; i < this.vertices.length; i++) {
+            this.data[i * 3] = this.vertices[i];
+            this.data[i * 2 + 1] = this.colors[i];
+        }
+    }
+
+    createData() {
+        const arrStride = 6;
+        const stride = 6;
+        this.data = [];
+        this.data = new Float32Array(this.vertices.length * 3 * 2);
+        for (let i = 0; i < this.vertices.length; i++) {
+            this.data[i * stride] = this.vertices[i][0];
+            this.data[i * stride + 1] = this.vertices[i][1];
+            this.data[i * stride + 2] = this.vertices[i][2];
+            this.data[i * stride + 3] = this.normals[i][0];
+            this.data[i * stride + 4] = this.normals[i][1];
+            this.data[i * stride + 5] = this.normals[i][2];
+            this.vertexCount += 4;
+        }
+    }
 }
+
+// function meshToData(mesh) {
+//     const arrStride = 6;
+//     const stride = 3;
+//     const data = new Float32Array(this.vertices.length * 3 * 2);
+//     console.log("VERTS");
+//     console.log(this.vertices);
+//     console.log(this.vertices.length);
+//     for (let i = 0; i < this.vertices.length; i++) {
+//         data[i * stride] = this.vertices[i][0];
+//         data[i * stride + 1] = this.vertices[i][1];
+//         data[i * stride + 2] = this.vertices[i][2];
+//         // this.data[i * stride + 3] = this.normals[i][0];
+//         // this.data[i * stride + 4] = this.normals[i][1];
+//         // this.data[i * stride + 5] = this.normals[i][2];
+//         vertexCount += 4;
+//     }
+//     console.log("END:" + this.data.length);
+// }
+
 
 
 class MeshRenderer {
@@ -106,7 +169,7 @@ class MeshRenderer {
         gl.uniformMatrix4fv(transformMatrixLocation, false, this.gameObject.matrix);
         gl.bindBuffer(gl.ARRAY_BUFFER, this.mesh.vertexBuffer);
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.mesh.indexBuffer);
-        gl.drawElements(gl.TRIANGLES, this.mesh.data, gl.UNSIGNED_SHORT, 0);
+        gl.drawElements(gl.TRIANGLES, this.mesh.triangles.length, gl.UNSIGNED_SHORT, 0);
     }
 
 
@@ -129,7 +192,7 @@ function meshFromQuadArray() {
 function generateMesh(chunk) {
     const mesh = new Mesh();
     var vertexCount = 0;
-    console.log(Shapes.Voxel);
+    // console.log(Shapes.Voxel);
     for (var y = 0; y < Chunk.sizeY; y++) {
         for (var z = 0; z < Chunk.sizeZ; z++) {
             for (var x = 0; x < Chunk.sizeX; x++) {
