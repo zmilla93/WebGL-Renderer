@@ -7,6 +7,7 @@ const vec3 = glMatrix.vec3;
 // Multiplying a degree by this constant will give the radian equivalent.
 const DEG2RAD = Math.PI / 180;
 
+// Basic Vectors
 const UP_VECTOR = vec3.fromValues(0, 1, 0);
 const DOWN_VECTOR = vec3.fromValues(0, 1, 0);
 const FORWARD_VECTOR = vec3.fromValues(0, 0, -1);
@@ -14,14 +15,6 @@ const BACK_VECTOR = vec3.fromValues(0, 0, 1);
 const LEFT_VECTOR = vec3.fromValues(-1, 0, 0);
 const RIGHT_VECTOR = vec3.fromValues(1, 0, 0);
 const ZERO_VECTOR = vec3.fromValues(0, 0, 0);
-// {
-//     // UP_VECTOR[1] = 1;
-//     DOWN_VECTOR[1] = -1;
-//     FORWARD_VECTOR[2] = -1;
-//     BACK_VECTOR[2] = 1;
-//     LEFT_VECTOR[0] = -1;
-//     RIGHT_VECTOR[0] = 1;
-// }
 
 class Vertex {
     constructor(position, color) {

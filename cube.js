@@ -46,16 +46,16 @@ const Shapes = {};
         16, 17, 18, 18, 19, 16, // West
         20, 21, 22, 22, 23, 20, // Bottom
     ]
-    Shapes.cube = new Shape(cubeVertices, cubeIndices);
+    Shapes.oldCube = new Shape(cubeVertices, cubeIndices);
 
-    const cubeData = [
-        top = [
+    Shapes.cube = {
+        top: [
             { position: vec3.fromValues(-1, 1, -1), normal: UP_VECTOR },
             { position: vec3.fromValues(-1, 1, 1), normal: UP_VECTOR },
             { position: vec3.fromValues(1, 1, 1), normal: UP_VECTOR },
             { position: vec3.fromValues(1, 1, -1), normal: UP_VECTOR },
         ],
-        bottom = [
+        bottom: [
             { position: vec3.fromValues(-1, -1, 1), normal: DOWN_VECTOR },
             { position: vec3.fromValues(-1, -1, -1), normal: DOWN_VECTOR },
             { position: vec3.fromValues(1, -1, -1), normal: DOWN_VECTOR },
@@ -65,7 +65,7 @@ const Shapes = {};
             // new Vertex(new Vector3(1, -1, -1), new Vector3(1, 0, 0)),
             // new Vertex(new Vector3(1, -1, 1), new Vector3(1, 0, 0)),
         ],
-        north = [
+        north: [
             { position: vec3.fromValues(1, 1, -1), normal: FORWARD_VECTOR },
             { position: vec3.fromValues(1, -1, -1), normal: FORWARD_VECTOR },
             { position: vec3.fromValues(-1, -1, -1), normal: FORWARD_VECTOR },
@@ -75,7 +75,7 @@ const Shapes = {};
             // new Vertex(new Vector3(-1, -1, -1), new Vector3(1, 1, 1)),
             // new Vertex(new Vector3(-1, 1, -1), new Vector3(1, 1, 1)),
         ],
-        east = [
+        east: [
             { position: vec3.fromValues(1, 1, 1), normal: RIGHT_VECTOR },
             { position: vec3.fromValues(1, -1, 1), normal: RIGHT_VECTOR },
             { position: vec3.fromValues(1, -1, -1), normal: RIGHT_VECTOR },
@@ -85,7 +85,7 @@ const Shapes = {};
             // new Vertex(new Vector3(1, -1, -1), new Vector3(0, 1, 1)),
             // new Vertex(new Vector3(1, 1, -1), new Vector3(0, 1, 1)),
         ],
-        south = [
+        south: [
             { position: vec3.fromValues(-1, 1, 1), normal: BACK_VECTOR },
             { position: vec3.fromValues(-1, -1, 1), normal: BACK_VECTOR },
             { position: vec3.fromValues(1, -1, 1), normal: BACK_VECTOR },
@@ -95,7 +95,7 @@ const Shapes = {};
             // new Vertex(new Vector3(1, -1, 1), new Vector3(0, 1, 0)),
             // new Vertex(new Vector3(1, 1, 1), new Vector3(0, 1, 0)),
         ],
-        west = [
+        west: [
             { position: vec3.fromValues(-1, 1, -1), normal: LEFT_VECTOR },
             { position: vec3.fromValues(-1, -1, -1), normal: LEFT_VECTOR },
             { position: vec3.fromValues(-1, -1, 1), normal: LEFT_VECTOR },
@@ -124,7 +124,9 @@ const Shapes = {};
 
         //     // Bottom
 
-    ]
+    }
+
+    // Shapes.Voxel = cubeData;
 
     // const cubeIndices = [
     //     0, 1, 2, 2, 3, 0,       // Top
@@ -137,15 +139,25 @@ const Shapes = {};
     // Shapes.cube = new Shape(cubeVertices, cubeIndices);
 
 
-    const quadVertices = [
-        // Top
-        new Vertex(new Vector3(-1, 1, -1), new Vector3(1, 0, 0)),
-        new Vertex(new Vector3(-1, 1, 1), new Vector3(0, 1, 0)),
-        new Vertex(new Vector3(1, 1, 1), new Vector3(0, 0, 1)),
-        new Vertex(new Vector3(1, 1, -1), new Vector3(1, 1, 1)),
-    ]
-    const quadIndices = [
-        0, 1, 2, 2, 3, 0,       // Top
-    ]
-    Shapes.quad = new Shape(quadVertices, quadIndices);
+    // const quadVertices = [
+    //     // Top
+    //     new Vertex(new Vector3(-1, 1, -1), new Vector3(1, 0, 0)),
+    //     new Vertex(new Vector3(-1, 1, 1), new Vector3(0, 1, 0)),
+    //     new Vertex(new Vector3(1, 1, 1), new Vector3(0, 0, 1)),
+    //     new Vertex(new Vector3(1, 1, -1), new Vector3(1, 1, 1)),
+    // ]
+    // const quadIndices = [
+    //     0, 1, 2, 2, 3, 0,       // Top
+    // ]
+    // Shapes.quad = new Shape(quadVertices, quadIndices);
+
+    Shapes.quad = {
+        top: [
+            { position: vec3.fromValues(-1, 1, -1), normal: UP_VECTOR },
+            { position: vec3.fromValues(-1, 1, 1), normal: UP_VECTOR },
+            { position: vec3.fromValues(1, 1, 1), normal: UP_VECTOR },
+            { position: vec3.fromValues(1, 1, -1), normal: UP_VECTOR },
+        ]
+    }
+
 }

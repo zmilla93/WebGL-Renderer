@@ -24,6 +24,25 @@ var testChunk;
 
 const keyMap = new Set();
 
+const programData = {
+    gl,
+
+};
+
+// class Engine{
+//     canvas;
+//     gl;
+//     shaderProgram;
+//     constructor(canvas){
+//         this.canvas = canvas;
+//     }
+//     init(){
+//         this.gl = canvas.getContext("webgl", { antialias: true, depth: true });
+//     }
+// }
+
+var meshRenderer;
+
 function main() {
     // Get the WebGL Context from the canvas
     // This contains all of the fun WebGL functions and constants
@@ -46,6 +65,8 @@ function main() {
         console.log("focus");
     }
     setupControls();
+    // programData.test = "WEW";
+    console.log(programData);
 
     cam = new Camera();
     // Initalize shaders
@@ -56,8 +77,37 @@ function main() {
 
     // Draw the scene
     testChunk = new Chunk();
-    console.log(testChunk);
+    generateChunk(testChunk);
+
+    var gameObject = new GameObject();
+    gameObject.init(gl, null);
+    var mesh = generateMesh(testChunk);
+    const valuesPerVertex = 6;
+    const positionLocation = gl.getAttribLocation(shaderProgram, "aVertexPosition");
+    const colorLocation = gl.getAttribLocation(shaderProgram, "aVertexColor");
+    const positionAttribute = {
+        location: positionLocation,
+        count: 3,
+        type: gl.FLOAT,
+        stride: Float32Array.BYTES_PER_ELEMENT * valuesPerVertex,
+        offset: 0,
+    };
+    const colorAttribute = {
+        location: colorLocation,
+        count: 3,
+        type: gl.FLOAT,
+        stride: Float32Array.BYTES_PER_ELEMENT * valuesPerVertex,
+        offset: Float32Array.BYTES_PER_ELEMENT * 3,
+    };
+    mesh.createBuffer(gl, [positionAttribute, colorAttribute])
+    mesh.buffer(gl);
+    meshRenderer = new MeshRenderer(gameObject, mesh);
+    console.log(mesh);
     drawScene(gl, shaderProgram);
+    meshRenderer.render(gl);
+
+
+
 
     // window.requestAnimationFrame(draw);
     setInterval(update, 1000 / 60);
@@ -83,21 +133,26 @@ function updateKey(key, state) {
 function update() {
     if (keyMap.has('w')) {
         console.log("w");
+        console.log(cam.viewDirection);
         vec3.add(cam.position, cam.position, cam.viewDirection);
         drawScene();
     }
     if (keyMap.has('s')) {
         var localBack = vec3.create();
-        // vec3.rotateY()
-        vec3.add(cam.position, cam.position, BACK_VECTOR);
+        vec3.rotateY(localBack, cam.viewDirection, ZERO_VECTOR, 180 * DEG2RAD)
+        vec3.add(cam.position, cam.position, localBack);
         drawScene();
     }
     if (keyMap.has('a')) {
-        vec3.add(cam.position, cam.position, LEFT_VECTOR);
+        var localLeft = vec3.create();
+        vec3.rotateY(localLeft, cam.viewDirection, ZERO_VECTOR, 90 * DEG2RAD)
+        vec3.add(cam.position, cam.position, localLeft);
         drawScene();
     }
     if (keyMap.has('d')) {
-        vec3.add(cam.position, cam.position, RIGHT_VECTOR);
+        var localRight = vec3.create();
+        vec3.rotateY(localRight, cam.viewDirection, ZERO_VECTOR, -90 * DEG2RAD)
+        vec3.add(cam.position, cam.position, localRight);
         drawScene();
     }
     if (keyMap.has('q')) {
@@ -127,31 +182,6 @@ function setupControls() {
         drawScene(gl, shaderProgram);
     }
 }
-// class Vertex {
-//     constructor(position, color) {
-//         this.position = position;
-//         this.color = color;
-//     }
-// }
-
-// class Vector3 {
-//     constructor(x, y, z) {
-//         this.x = x;
-//         this.y = y;
-//         this.z = z;
-//     }
-// }
-
-// class Shape {
-//     vertices;
-//     indices;
-//     vertexCount;
-//     constructor(vertexData, indices) {
-//         this.vertices = shapeToFloatArray(vertexData);
-//         this.vertexCount = indices.length;
-//         this.indices = indices;
-//     }
-// }
 
 const FLOAT32_SIZE = 4;
 
@@ -164,6 +194,7 @@ function createBuffer(shape) {
     const colorLocation = gl.getAttribLocation(shaderProgram, "aVertexColor");
     gl.enableVertexAttribArray(positionLocation);
     gl.enableVertexAttribArray(colorLocation);
+
     gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
     gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 
@@ -223,7 +254,7 @@ function drawScene() {
 
     // drawShape(gl, shaderProgram, megaTri);
 
-    const cube = createBuffer(Shapes.cube);
+    const cube = createBuffer(Shapes.oldCube);
     // drawShape(gl, cube);
 
     // var camRotation = vec3.create();
@@ -258,8 +289,8 @@ function drawScene() {
 
 
 
-    const cube2 = createBuffer(Shapes.cube);
-    const cube3 = createBuffer(Shapes.cube);
+    const cube2 = createBuffer(Shapes.oldCube);
+    const cube3 = createBuffer(Shapes.oldCube);
 
 
     // const cam = new Camera();
@@ -276,7 +307,7 @@ function drawScene() {
 
     // var shape = new Shape("a");
     var gameObjects = [];
-    const count = 100;
+    const count = 20;
     const halfCount = count / 2;
     for (var x = -halfCount; x < halfCount; x++) {
         for (var z = -halfCount; z < halfCount; z++) {
@@ -289,6 +320,8 @@ function drawScene() {
             renderGameObject(gameObject, cube2);
         }
     }
+
+    meshRenderer.render(gl);
 
 
 }
@@ -347,14 +380,14 @@ function initShaders(gl) {
         return null;
     }
 
-    // Delete the shaders, then use the program
+    // Delete the shaders, then use the program.
     gl.deleteShader(vertexShader);
     gl.deleteShader(fragmentShader);
     gl.useProgram(shaderProgram);
     return shaderProgram;
 }
 
-// Compiles a single shader, returning the shader ID.
+// Compile a single shader, returning the shader ID.
 // gl - WebGL Context
 // type - Shader Type (gl.VERTEX_SHADER, gl.FRAGMENT_SHADER)
 // shaderSource - Shader source code (string)
