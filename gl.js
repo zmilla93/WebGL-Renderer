@@ -43,6 +43,9 @@ const programData = {
 var meshRenderer;
 var simpleMesh;
 var cubeMesh;
+var sphereRenderer;
+
+
 
 function main() {
     // Get the WebGL Context from the canvas
@@ -87,7 +90,7 @@ function main() {
 
 
     const valuesPerVertex = 6;
-    const positionLocation = gl.getAttribLocation(shaderProgram, "aVertexPosition");
+    const positionLocation = gl.getAttribLocation(shaderProgram, "vertexPosition");
     const colorLocation = gl.getAttribLocation(shaderProgram, "aVertexColor");
     const positionAttribute = {
         location: positionLocation,
@@ -122,14 +125,23 @@ function main() {
     meshRenderer = new MeshRenderer(gameObject, mesh);
     // console.log(myMeshRenderer);
 
-    window.addEventListener('keydown', function(e) {
-        console.log(e);
-        if(e.code == 'Space' && e.target == document.body) {
-          e.preventDefault();
+    window.addEventListener('keydown', function (e) {
+        if (e.code == 'Space' && e.target == document.body) {
+            e.preventDefault();
         }
-      });
-    drawScene(gl, shaderProgram);
+    });
+
     // myMeshRenderer.render(gl);
+
+    var sphereMesh = objToMesh(monkeyModel);
+    sphereMesh.createData();
+    sphereMesh.createBuffer(gl, [positionAttribute, colorAttribute]);
+    sphereMesh.buffer(gl);
+    var sphere = new GameObject();
+    sphere.position[2] = -3;
+    sphereRenderer = new MeshRenderer(sphere, sphereMesh);
+
+    drawScene(gl, shaderProgram);
 
     // window.requestAnimationFrame(draw);
     setInterval(update, 1000 / 60);
@@ -201,7 +213,7 @@ function createBuffer(shape) {
     const indexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
 
-    const positionLocation = gl.getAttribLocation(shaderProgram, "aVertexPosition");
+    const positionLocation = gl.getAttribLocation(shaderProgram, "vertexPosition");
     const colorLocation = gl.getAttribLocation(shaderProgram, "aVertexColor");
     gl.enableVertexAttribArray(positionLocation);
     gl.enableVertexAttribArray(colorLocation);
@@ -301,11 +313,6 @@ function drawScene() {
     const cube3 = createBuffer(Shapes.oldCube);
 
 
-    // const cam = new Camera();
-    // console.log(cam);
-
-    // drawShape(gl, cube2);
-
     var go1 = new GameObject();
     go1.init(gl, cube2);
     go1.position[0] = 2;
@@ -328,12 +335,9 @@ function drawScene() {
             renderGameObject(gameObject, cube2);
         }
     }
-
     meshRenderer.render(gl);
-    // myMeshRenderer.render(gl);
-    // doMesh(simpleMesh);
     doMesh(simpleMesh);
-
+    sphereRenderer.render(gl);
 
 }
 
@@ -344,7 +348,7 @@ function doMesh(mesh) {
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
 
 
-    const positionLocation = gl.getAttribLocation(shaderProgram, "aVertexPosition");
+    const positionLocation = gl.getAttribLocation(shaderProgram, "vertexPosition");
     const colorLocation = gl.getAttribLocation(shaderProgram, "aVertexColor");
     gl.enableVertexAttribArray(positionLocation);
     gl.enableVertexAttribArray(colorLocation);
@@ -363,9 +367,7 @@ function doMesh(mesh) {
     gameObject.position[2] = -10;
     const transformMatrixLocation = gl.getUniformLocation(shaderProgram, "transformMatrix");
     gl.uniformMatrix4fv(transformMatrixLocation, false, gameObject.matrix);
-
     gl.drawElements(gl.TRIANGLES, mesh.triangles.length, gl.UNSIGNED_SHORT, 0);
-
 }
 
 function objToMesh(obj) {
@@ -404,14 +406,27 @@ function objToMesh(obj) {
                     vertices.push(verticesRaw[values[0] - 1]);
                     uvs.push(uvsRaw[values[1] - 1]);
                     normals.push(normalsRaw[values[2] - 1]);
-                    triangles.push(vertexCount);
-                    triangles.push(vertexCount + 1);
-                    triangles.push(vertexCount + 2);
-                    triangles.push(vertexCount + 2);
-                    triangles.push(vertexCount + 3);
-                    triangles.push(vertexCount);
                 }
-                vertexCount += 4;
+                switch (tokens.length - 1) {
+                    case 3:
+                        triangles.push(vertexCount);
+                        triangles.push(vertexCount + 1);
+                        triangles.push(vertexCount + 2);
+                        vertexCount += 3;
+                        break;
+                    case 4:
+                        triangles.push(vertexCount);
+                        triangles.push(vertexCount + 1);
+                        triangles.push(vertexCount + 2);
+                        triangles.push(vertexCount + 2);
+                        triangles.push(vertexCount + 3);
+                        triangles.push(vertexCount);
+                        vertexCount += 4;
+                        break;
+                    default:
+                        console.error("Unhandled Face Vertex Count: " + (tokens.length - 1));
+                        break;
+                }
                 break;
             default:
                 break;
@@ -424,25 +439,6 @@ function objToMesh(obj) {
     mesh.triangles = triangles;
     return mesh;
 }
-
-// function drawShape(gl, shaderProgram, shape) {
-//     const vertexBuffer = gl.createBuffer();
-//     const indexBuffer = gl.createBuffer();
-//     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-
-//     // const positionLocation = gl.getAttribLocation(shaderProgram, "aVertexPosition");
-//     // const colorLocation = gl.getAttribLocation(shaderProgram, "aVertexColor");
-//     // gl.enableVertexAttribArray(positionLocation);
-//     // gl.enableVertexAttribArray(colorLocation);
-//     // gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
-//     // gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
-
-//     gl.bufferData(gl.ARRAY_BUFFER, shape.vertices, gl.STATIC_DRAW);
-//     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-//     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(shape.indices), gl.STATIC_DRAW);
-
-//     gl.drawElements(gl.TRIANGLES, shape.vertexCount, gl.UNSIGNED_SHORT, 0);
-// }
 
 function drawShape(gl, buffer) {
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer.vertexBuffer);

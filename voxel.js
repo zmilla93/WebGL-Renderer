@@ -86,7 +86,7 @@ class Mesh {
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
 
-        const positionLocation = gl.getAttribLocation(shaderProgram, "aVertexPosition");
+        const positionLocation = gl.getAttribLocation(shaderProgram, "vertexPosition");
         const colorLocation = gl.getAttribLocation(shaderProgram, "aVertexColor");
         gl.enableVertexAttribArray(positionLocation);
         gl.enableVertexAttribArray(colorLocation);
@@ -175,7 +175,7 @@ class MeshRenderer {
         gl.bindBuffer(gl.ARRAY_BUFFER, this.mesh.vertexBuffer);
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.mesh.indexBuffer);
 
-        const positionLocation = gl.getAttribLocation(shaderProgram, "aVertexPosition");
+        const positionLocation = gl.getAttribLocation(shaderProgram, "vertexPosition");
         const colorLocation = gl.getAttribLocation(shaderProgram, "aVertexColor");
         // gl.enableVertexAttribArray(positionLocation);
         // gl.enableVertexAttribArray(colorLocation);
