@@ -64,7 +64,7 @@ class GameObject {
     rotation = vec3.create();
     scale = vec3.create();
     shape;
-
+    components = [];
 
     // init(gl, shape) {
     //     this.shape = shape;
@@ -74,6 +74,11 @@ class GameObject {
     // }
     init() {
         // FIXME : REMOVE?
+    }
+
+    add(component) {
+        component.setParent(this);
+        this.components.push(component);
     }
     get matrix() {
         // FIXME : Make static

@@ -18,6 +18,19 @@ class Chunk {
     }
 }
 
+class Component {
+    gameObject = null;
+    constructor(gameObject){
+        this.gameObject = gameObject;
+    }
+    setParent(parent) {
+        this.gameObject = parent;
+    }
+    get parent() {
+        return this.gameObject;
+    }
+}
+
 // class SimpleMesh {
 //     vertices = [];
 //     triangles = [];
@@ -141,12 +154,15 @@ class Mesh {
 /**
  * Renders a mesh for a given game object.
  */
-class MeshRenderer {
-    gameObject;
+class MeshRenderer extends Component{
+    // gameObject;
     mesh;
+    static renderList = []
     constructor(gameObject, mesh) {
-        this.gameObject = gameObject;
+        super(gameObject);
+        // this.gameObject = gameObject;
         this.mesh = mesh;
+        MeshRenderer.renderList.push(this);
     }
     render(gl) {
         // console.log(this.mesh.vertexCount);

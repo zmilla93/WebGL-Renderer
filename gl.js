@@ -19,7 +19,7 @@ var running = true;
 var testChunk;
 
 var meshRenderer;
-var simpleMesh;
+// var simpleMesh;
 var cubeMesh;
 var sphereRenderer;
 
@@ -46,6 +46,11 @@ class Shader{
     fragmentShader;
 }
 
+class Material{
+    shader;
+
+}
+
 function main() {
     // Get the WebGL Context from the canvas
     // This contains all of the fun WebGL functions and constants
@@ -53,13 +58,9 @@ function main() {
     const canvas = document.getElementById("glCanvas");
     gl = canvas.getContext("webgl2", { antialias: true, depth: true });
 
-    setupControls();
-    // programData.test = "WEW";
-    // console.log(programData);
-
     cam = new Camera();
     initGLSettings();
-    shaderProgram = initShaders(gl);
+    shaderProgram = createShaderProgram(gl, vertexShaderSource, fragmentShaderSource);
     if (shaderProgram == null) return;
 
     const valuesPerVertex = 6;
@@ -80,10 +81,11 @@ function main() {
         offset: Float32Array.BYTES_PER_ELEMENT * 3,
     };
 
-    simpleMesh = objToMesh(cubeModel);
-    simpleMesh.createData();
-    simpleMesh.createBuffer(gl, [positionAttribute, colorAttribute]);
-    simpleMesh.buffer(gl);
+    var attributes = [positionAttribute, colorAttribute];
+
+
+
+
 
     // NEW MESH
     var mesh = objToMesh(planeModel);
@@ -113,10 +115,28 @@ function main() {
     sphere.position[2] = -3;
     sphereRenderer = new MeshRenderer(sphere, sphereMesh);
 
+    // Block Floor
+    // var gameObjects = [];
+    const count = 20;
+    const halfCount = count / 2;
+    for (var x = -halfCount; x < halfCount; x++) {
+        for (var z = -halfCount; z < halfCount; z++) {
+            var gameObject = new GameObject();
+            // gameObject.init(gl, cube2);
+            gameObject.position[0] = x * 2;
+            gameObject.position[1] = -4;
+            gameObject.position[2] = -10 - z * 2;
+            var renderer = new MeshRenderer(gameObject, sphereMesh)
+            gameObject.add(renderer);
+        }
+    }
+
     drawScene(gl, shaderProgram);
 
     // window.requestAnimationFrame(draw);
     setInterval(update, 1000 / 60);
+
+
 }
 
 function draw() {
@@ -158,24 +178,6 @@ function update() {
         drawScene();
     }
     pressedThisFrame.clear();
-}
-
-function setupControls() {
-    var rotationXSlider = document.getElementById("rotationXSlider");
-    var rotationYSlider = document.getElementById("rotationYSlider");
-    var camRotationYSlider = document.getElementById("camRotationYSlider");
-    rotationXSlider.oninput = function () {
-        rotationX = this.value;
-        drawScene(gl, shaderProgram);
-    }
-    rotationYSlider.oninput = function () {
-        rotationY = this.value;
-        drawScene(gl, shaderProgram);
-    }
-    camRotationYSlider.oninput = function () {
-        camRotationY = this.value;
-        drawScene(gl, shaderProgram);
-    }
 }
 
 const FLOAT32_SIZE = 4;
@@ -308,38 +310,12 @@ function drawScene() {
         }
     }
     meshRenderer.render(gl);
-    doMesh(simpleMesh);
-    sphereRenderer.render(gl);
 
-}
+    for(renderer of MeshRenderer.renderList){
+        renderer.render(gl);
+    }
+    // sphereRenderer.render(gl);
 
-function doMesh(mesh) {
-    const vertexBuffer = gl.createBuffer();
-    const indexBuffer = gl.createBuffer();
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-
-
-    const positionLocation = gl.getAttribLocation(shaderProgram, "vertexPosition");
-    const colorLocation = gl.getAttribLocation(shaderProgram, "aVertexColor");
-    gl.enableVertexAttribArray(positionLocation);
-    gl.enableVertexAttribArray(colorLocation);
-
-    gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
-    gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
-
-    gl.bufferData(gl.ARRAY_BUFFER, mesh.data, gl.STATIC_DRAW);
-
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(mesh.triangles), gl.STATIC_DRAW);
-    // gl.drawElements()
-
-    var gameObject = new GameObject();
-    gameObject.position[1] = -2;
-    gameObject.position[2] = -10;
-    const transformMatrixLocation = gl.getUniformLocation(shaderProgram, "transformMatrix");
-    gl.uniformMatrix4fv(transformMatrixLocation, false, gameObject.matrix);
-    gl.drawElements(gl.TRIANGLES, mesh.triangles.length, gl.UNSIGNED_SHORT, 0);
 }
 
 function objToMesh(obj) {
@@ -430,6 +406,31 @@ function renderGameObject(gameObject, buffer) {
 
 
 function initShaders(gl) {
+    // Compile Shaders
+    const vertexShader = compileShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
+    const fragmentShader = compileShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
+    if (vertexShader == null || fragmentShader == null) return;
+
+    // Create a shader program,
+    // attach the shaders to the program,
+    // then link the program.
+    const shaderProgram = gl.createProgram();
+    gl.attachShader(shaderProgram, vertexShader);
+    gl.attachShader(shaderProgram, fragmentShader);
+    gl.linkProgram(shaderProgram);
+    if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+        alert(`Failed to initialize shaders: ${gl.getProgramInfoLog(shaderProgram)}`);
+        return null;
+    }
+
+    // Delete the shaders, then use the program.
+    gl.deleteShader(vertexShader);
+    gl.deleteShader(fragmentShader);
+    gl.useProgram(shaderProgram);
+    return shaderProgram;
+}
+
+function createShaderProgram(gl, vertexShaderSource, fragmentShaderSource){
     // Compile Shaders
     const vertexShader = compileShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
     const fragmentShader = compileShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
