@@ -72,7 +72,7 @@ class GameObject {
     //     this.rotation = vec3.create();
     //     this.scale = new vec3.create();
     // }
-    init(){
+    init() {
         // FIXME : REMOVE?
     }
     get matrix() {

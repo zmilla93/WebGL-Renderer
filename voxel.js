@@ -54,6 +54,9 @@ class Mesh {
     // vertexAttributes;
     indexBuffer = null;
     vertexBuffer = null;
+
+    vao;
+
     vertexCount = 0;
     hasBuffer = false;
     data = null;
@@ -64,8 +67,8 @@ class Mesh {
             return;
         }
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, this.data, gl.STATIC_DRAW);
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, this.data, gl.STATIC_DRAW);
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.triangles), gl.STATIC_DRAW);
     }
     // createBuffer will request two new buffers from webGL.
@@ -76,6 +79,8 @@ class Mesh {
             console.error("Mesh renderer requested a buffer when one already exists!");
             return;
         }
+        // this.vao = gl.createVertexArray();
+        // gl.bindVertexArray(this.vao);
         this.vertexBuffer = gl.createBuffer();
         this.indexBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
@@ -85,7 +90,7 @@ class Mesh {
         const colorLocation = gl.getAttribLocation(shaderProgram, "aVertexColor");
         gl.enableVertexAttribArray(positionLocation);
         gl.enableVertexAttribArray(colorLocation);
-        gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 3 * Float32Array.BYTES_PER_ELEMENT, 0);
+        gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
         // gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 0, 0);
         gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 
@@ -114,7 +119,6 @@ class Mesh {
             this.data[i * 2 + 1] = this.colors[i];
         }
     }
-
     createData() {
         const arrStride = 6;
         const stride = 6;
@@ -165,10 +169,20 @@ class MeshRenderer {
         // console.log(this.mesh.vertexBuffer);
         // console.log(this.mesh.data);
         //FIXME : Cache this value!
+
         const transformMatrixLocation = gl.getUniformLocation(shaderProgram, "transformMatrix");
         gl.uniformMatrix4fv(transformMatrixLocation, false, this.gameObject.matrix);
         gl.bindBuffer(gl.ARRAY_BUFFER, this.mesh.vertexBuffer);
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.mesh.indexBuffer);
+
+        const positionLocation = gl.getAttribLocation(shaderProgram, "aVertexPosition");
+        const colorLocation = gl.getAttribLocation(shaderProgram, "aVertexColor");
+        // gl.enableVertexAttribArray(positionLocation);
+        // gl.enableVertexAttribArray(colorLocation);
+        gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
+        // gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 0, 0);
+        gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+
         gl.drawElements(gl.TRIANGLES, this.mesh.triangles.length, gl.UNSIGNED_SHORT, 0);
     }
 

@@ -23,9 +23,6 @@ var running = true;
 var testChunk;
 
 
-
-const keyMap = new Set();
-
 const programData = {
     gl,
 
@@ -44,15 +41,15 @@ const programData = {
 // }
 
 var meshRenderer;
-var myMeshRenderer;
 var simpleMesh;
+var cubeMesh;
 
 function main() {
     // Get the WebGL Context from the canvas
     // This contains all of the fun WebGL functions and constants
     // https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext
     const canvas = document.getElementById("glCanvas");
-    gl = canvas.getContext("webgl", { antialias: true, depth: true });
+    gl = canvas.getContext("webgl2", { antialias: true, depth: true });
 
     // Keyboard calbacks
     document.addEventListener("keydown", function (e) {
@@ -87,6 +84,8 @@ function main() {
     // gameObject.init(gl, null);
     // var mesh = generateMesh(testChunk);
     // mesh.createDataOld();
+
+
     const valuesPerVertex = 6;
     const positionLocation = gl.getAttribLocation(shaderProgram, "aVertexPosition");
     const colorLocation = gl.getAttribLocation(shaderProgram, "aVertexColor");
@@ -107,20 +106,21 @@ function main() {
 
     simpleMesh = objToMesh(cubeModel);
     simpleMesh.createData();
-    // doMesh(simpleMesh);
-    // mesh.createBuffer(gl, [positionAttribute, colorAttribute])
-    // mesh.buffer(gl);
-    // meshRenderer = new MeshRenderer(gameObject, mesh);
+    simpleMesh.createBuffer(gl, [positionAttribute, colorAttribute]);
+    simpleMesh.buffer(gl);
 
     // NEW MESH
-    const niceMesh = objToMesh(cubeModel);
-    niceMesh.createData();
-    niceMesh.createBuffer(gl, [positionAttribute, colorAttribute]);
-    niceMesh.buffer(gl);
-    var myGameObject = new GameObject();
-    myGameObject.position[2] = -4;
-    myMeshRenderer = new MeshRenderer(myGameObject, niceMesh);
-    console.log(myMeshRenderer);
+    var mesh = objToMesh(planeModel);
+    mesh.createData();
+    mesh.createBuffer(gl, [positionAttribute, colorAttribute]);
+    mesh.buffer(gl);
+    var gameObject = new GameObject();
+    gameObject.position[0] = -2;
+    gameObject.position[1] = -2;
+    gameObject.position[2] = -6;
+    gameObject.rotation[0] = 30;
+    meshRenderer = new MeshRenderer(gameObject, mesh);
+    // console.log(myMeshRenderer);
 
     window.addEventListener('keydown', function(e) {
         console.log(e);
@@ -142,47 +142,38 @@ function draw() {
     }
 }
 
-function updateKey(key, state) {
-    if (state) {
-        keyMap.add(key);
-    } else {
-        if (keyMap.has(key)) {
-            keyMap.delete(key);
-        }
-    }
-}
-
 function update() {
-    if (keyMap.has('w')) {
+    if (pressedKeys.has('w')) {
         vec3.add(cam.position, cam.position, cam.viewDirection);
         drawScene();
     }
-    if (keyMap.has('s')) {
+    if (pressedKeys.has('s')) {
         var localBack = vec3.create();
         vec3.rotateY(localBack, cam.viewDirection, ZERO_VECTOR, 180 * DEG2RAD)
         vec3.add(cam.position, cam.position, localBack);
         drawScene();
     }
-    if (keyMap.has('a')) {
+    if (pressedKeys.has('a')) {
         var localLeft = vec3.create();
         vec3.rotateY(localLeft, cam.viewDirection, ZERO_VECTOR, 90 * DEG2RAD)
         vec3.add(cam.position, cam.position, localLeft);
         drawScene();
     }
-    if (keyMap.has('d')) {
+    if (pressedKeys.has('d')) {
         var localRight = vec3.create();
         vec3.rotateY(localRight, cam.viewDirection, ZERO_VECTOR, -90 * DEG2RAD)
         vec3.add(cam.position, cam.position, localRight);
         drawScene();
     }
-    if (keyMap.has('q')) {
+    if (pressedKeys.has('q')) {
         vec3.rotateY(cam.viewDirection, cam.viewDirection, ZERO_VECTOR, 4 * DEG2RAD);
         drawScene();
     }
-    if (keyMap.has('e')) {
+    if (pressedKeys.has('e')) {
         vec3.rotateY(cam.viewDirection, cam.viewDirection, ZERO_VECTOR, -4 * DEG2RAD);
         drawScene();
     }
+    pressedThisFrame.clear();
 }
 
 function setupControls() {
@@ -313,14 +304,14 @@ function drawScene() {
     // const cam = new Camera();
     // console.log(cam);
 
-    drawShape(gl, cube2);
+    // drawShape(gl, cube2);
 
     var go1 = new GameObject();
     go1.init(gl, cube2);
     go1.position[0] = 2;
     go1.position[1] = -4;
     go1.position[2] = -20;
-    renderGameObject(go1, cube2)
+    // renderGameObject(go1, cube2)
 
     // var shape = new Shape("a");
     var gameObjects = [];
@@ -338,7 +329,7 @@ function drawScene() {
         }
     }
 
-    // meshRenderer.render(gl);
+    meshRenderer.render(gl);
     // myMeshRenderer.render(gl);
     // doMesh(simpleMesh);
     doMesh(simpleMesh);
@@ -362,20 +353,16 @@ function doMesh(mesh) {
     gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 
     gl.bufferData(gl.ARRAY_BUFFER, mesh.data, gl.STATIC_DRAW);
-    // console.log("WEW");
-    // console.log(mesh.vertices);
-    // console.log(mesh.triangles);
 
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(mesh.triangles), gl.STATIC_DRAW);
     // gl.drawElements()
 
     var gameObject = new GameObject();
+    gameObject.position[1] = -2;
     gameObject.position[2] = -10;
     const transformMatrixLocation = gl.getUniformLocation(shaderProgram, "transformMatrix");
     gl.uniformMatrix4fv(transformMatrixLocation, false, gameObject.matrix);
-
-    console.log(mesh.triangles.length);
 
     gl.drawElements(gl.TRIANGLES, mesh.triangles.length, gl.UNSIGNED_SHORT, 0);
 
