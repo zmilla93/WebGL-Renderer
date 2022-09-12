@@ -18,40 +18,42 @@ class Chunk {
     }
 }
 
-class SimpleMesh {
-    vertices = [];
-    triangles = [];
-    normals = [];
-    colors = [];
-    uvs = [];
-    data = null;
-    createData(){
-        const arrStride = 6;
-        const stride = 3;
-        this.data = [];
-        this.data = new Float32Array(this.vertices.length * 3 * 1);
-        for (let i = 0; i < this.vertices.length; i++) {
-            this.data[i * stride] = this.vertices[i][0];
-            this.data[i * stride + 1] = this.vertices[i][1];
-            this.data[i * stride + 2] = this.vertices[i][2];
-            // this.data[i * stride + 3] = this.normals[i][0];
-            // this.data[i * stride + 4] = this.normals[i][1];
-            // this.data[i * stride + 5] = this.normals[i][2];
-            this.vertexCount += 4;
-        }
-    }
-}
+// class SimpleMesh {
+//     vertices = [];
+//     triangles = [];
+//     normals = [];
+//     colors = [];
+//     uvs = [];
+//     data = null;
+//     createData(){
+//         const arrStride = 6;
+//         const stride = 3;
+//         this.data = [];
+//         this.data = new Float32Array(this.vertices.length * 3 * 1);
+//         for (let i = 0; i < this.vertices.length; i++) {
+//             this.data[i * stride] = this.vertices[i][0];
+//             this.data[i * stride + 1] = this.vertices[i][1];
+//             this.data[i * stride + 2] = this.vertices[i][2];
+//             // this.data[i * stride + 3] = this.normals[i][0];
+//             // this.data[i * stride + 4] = this.normals[i][1];
+//             // this.data[i * stride + 5] = this.normals[i][2];
+//             this.vertexCount += 4;
+//         }
+//     }
+// }
 
+/**
+ * A mesh holds all the data for a 3D model.
+ * Only one mesh should exist per model (ie one Cube mesh can be used to render many cubes).
+ * If a mesh is updated, call buffer() to send data to webgl.
+ * Use MeshRenderer to actually render the model.
+ */
 class Mesh {
     vertices = [];
     triangles = [];
     uvs = [];
     normals = [];
     colors = [];
-    // useNormals = false;
-    // useUVs = false;
-    // useColor = false;
-    // vertexAttributes;
     indexBuffer = null;
     vertexBuffer = null;
 
@@ -136,27 +138,9 @@ class Mesh {
     }
 }
 
-// function meshToData(mesh) {
-//     const arrStride = 6;
-//     const stride = 3;
-//     const data = new Float32Array(this.vertices.length * 3 * 2);
-//     console.log("VERTS");
-//     console.log(this.vertices);
-//     console.log(this.vertices.length);
-//     for (let i = 0; i < this.vertices.length; i++) {
-//         data[i * stride] = this.vertices[i][0];
-//         data[i * stride + 1] = this.vertices[i][1];
-//         data[i * stride + 2] = this.vertices[i][2];
-//         // this.data[i * stride + 3] = this.normals[i][0];
-//         // this.data[i * stride + 4] = this.normals[i][1];
-//         // this.data[i * stride + 5] = this.normals[i][2];
-//         vertexCount += 4;
-//     }
-//     console.log("END:" + this.data.length);
-// }
-
-
-
+/**
+ * Renders a mesh for a given game object.
+ */
 class MeshRenderer {
     gameObject;
     mesh;

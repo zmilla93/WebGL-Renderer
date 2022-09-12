@@ -4,7 +4,7 @@
 const pressedThisFrame = new Set();
 const pressedKeys = new Set();
 
-function main(){
+function addKeyboardListeners() {
     document.addEventListener("keydown", function (e) {
         updateKey(e.key, true);
     })
@@ -15,6 +15,9 @@ function main(){
         // if (canvas == document.activeElement)
         // console.log("mouse");
     })
+    // canvas.onfocus = function () {
+    //     console.log("focus");
+    // }
 }
 
 function updateKey(key, state) {
@@ -28,4 +31,6 @@ function updateKey(key, state) {
     }
 }
 
-window.onload = main;
+window.addEventListener('load', addKeyboardListeners)
+
+// window.onload = hmmm;

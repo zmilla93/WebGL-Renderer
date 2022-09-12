@@ -11,10 +11,6 @@ var rotationX = 0;
 var rotationY = 0;
 var camRotationY = 0;
 
-// const gl;
-// const canvas = document.getElementById("glCanvas");
-// var gl = canvas.getContext("webgl", { antialias: true, depth: true });
-
 var gl;
 var shaderProgram;
 var cam;
@@ -22,30 +18,33 @@ var cameraDeltaX = 0;
 var running = true;
 var testChunk;
 
-
-const programData = {
-    gl,
-
-};
-
-// class Engine{
-//     canvas;
-//     gl;
-//     shaderProgram;
-//     constructor(canvas){
-//         this.canvas = canvas;
-//     }
-//     init(){
-//         this.gl = canvas.getContext("webgl", { antialias: true, depth: true });
-//     }
-// }
-
 var meshRenderer;
 var simpleMesh;
 var cubeMesh;
 var sphereRenderer;
 
+class ShaderAttribute{
+    // name;
+    // location;
+    // count;
+    // type;
+    // stride;
+    // offset;
+    constructor(name, location, count, type, stride, offset){
+        this.name = name;
+        this.location = location;
+        this.count = count;
+        this.type = type;
+        this.stride = stride;
+        this.offset = offset;
+    }
+}
 
+class Shader{
+    program;
+    vertexShader;
+    fragmentShader;
+}
 
 function main() {
     // Get the WebGL Context from the canvas
@@ -54,40 +53,14 @@ function main() {
     const canvas = document.getElementById("glCanvas");
     gl = canvas.getContext("webgl2", { antialias: true, depth: true });
 
-    // Keyboard calbacks
-    document.addEventListener("keydown", function (e) {
-        updateKey(e.key, true);
-    })
-    document.addEventListener("keyup", function (e) {
-        updateKey(e.key, false);
-    })
-    document.addEventListener("mousemove", function (e) {
-        // if (canvas == document.activeElement)
-        // console.log("mouse");
-    })
-    canvas.onfocus = function () {
-        console.log("focus");
-    }
     setupControls();
     // programData.test = "WEW";
     // console.log(programData);
 
     cam = new Camera();
-    // Initalize shaders
-    // var shaderProgram = initShaders(gl);
     initGLSettings();
     shaderProgram = initShaders(gl);
     if (shaderProgram == null) return;
-
-    // Draw the scene
-    // testChunk = new Chunk();
-    // generateChunk(testChunk);
-
-    // var gameObject = new GameObject();
-    // gameObject.init(gl, null);
-    // var mesh = generateMesh(testChunk);
-    // mesh.createDataOld();
-
 
     const valuesPerVertex = 6;
     const positionLocation = gl.getAttribLocation(shaderProgram, "vertexPosition");
@@ -123,7 +96,6 @@ function main() {
     gameObject.position[2] = -6;
     gameObject.rotation[0] = 30;
     meshRenderer = new MeshRenderer(gameObject, mesh);
-    // console.log(myMeshRenderer);
 
     window.addEventListener('keydown', function (e) {
         if (e.code == 'Space' && e.target == document.body) {
