@@ -31,30 +31,6 @@ class Component {
     }
 }
 
-// class SimpleMesh {
-//     vertices = [];
-//     triangles = [];
-//     normals = [];
-//     colors = [];
-//     uvs = [];
-//     data = null;
-//     createData(){
-//         const arrStride = 6;
-//         const stride = 3;
-//         this.data = [];
-//         this.data = new Float32Array(this.vertices.length * 3 * 1);
-//         for (let i = 0; i < this.vertices.length; i++) {
-//             this.data[i * stride] = this.vertices[i][0];
-//             this.data[i * stride + 1] = this.vertices[i][1];
-//             this.data[i * stride + 2] = this.vertices[i][2];
-//             // this.data[i * stride + 3] = this.normals[i][0];
-//             // this.data[i * stride + 4] = this.normals[i][1];
-//             // this.data[i * stride + 5] = this.normals[i][2];
-//             this.vertexCount += 4;
-//         }
-//     }
-// }
-
 /**
  * A mesh holds all the data for a 3D model.
  * Only one mesh should exist per model (ie one Cube mesh can be used to render many cubes).
@@ -94,27 +70,27 @@ class Mesh {
             console.error("Mesh renderer requested a buffer when one already exists!");
             return;
         }
-        // this.vao = gl.createVertexArray();
-        // gl.bindVertexArray(this.vao);
+        this.vao = gl.createVertexArray();
+        gl.bindVertexArray(this.vao);
         this.vertexBuffer = gl.createBuffer();
         this.indexBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
 
-        const positionLocation = gl.getAttribLocation(shaderProgram, "vertexPosition");
-        const colorLocation = gl.getAttribLocation(shaderProgram, "aVertexColor");
-        gl.enableVertexAttribArray(positionLocation);
-        gl.enableVertexAttribArray(colorLocation);
-        gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
-        // gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 0, 0);
-        gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+        // const positionLocation = gl.getAttribLocation(shaderProgram, "vertexPosition");
+        // const colorLocation = gl.getAttribLocation(shaderProgram, "aVertexColor");
+        // gl.enableVertexAttribArray(positionLocation);
+        // gl.enableVertexAttribArray(colorLocation);
+        // gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
+        // // gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 0, 0);
+        // gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 
 
-        // for (const attribute of vertexAttributes) {
-        //     console.log("Enabling attrib:" + attribute.location + " with offset " + attribute.offset);
-        //     gl.enableVertexAttribArray(attribute.location);
-        //     gl.vertexAttribPointer(attribute.location, attribute.count, attribute.type, false, attribute.stride, attribute.offset);
-        // }
+        for (const attribute of vertexAttributes) {
+            console.log("Enabling attrib:" + attribute.location + " with offset " + attribute.offset);
+            gl.enableVertexAttribArray(attribute.location);
+            gl.vertexAttribPointer(attribute.location, attribute.count, attribute.type, false, attribute.stride, attribute.offset);
+        }
         this.hasBuffer = true;
     }
     deleteBuffer(gl) {
@@ -160,7 +136,7 @@ class MeshRenderer extends Component{
     static renderList = []
     constructor(gameObject, mesh) {
         super(gameObject);
-        // this.gameObject = gameObject;
+        // this.gameObject = gameObject; 
         this.mesh = mesh;
         MeshRenderer.renderList.push(this);
     }
@@ -172,16 +148,19 @@ class MeshRenderer extends Component{
 
         const transformMatrixLocation = gl.getUniformLocation(shaderProgram, "transformMatrix");
         gl.uniformMatrix4fv(transformMatrixLocation, false, this.gameObject.matrix);
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.mesh.vertexBuffer);
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.mesh.indexBuffer);
 
-        const positionLocation = gl.getAttribLocation(shaderProgram, "vertexPosition");
-        const colorLocation = gl.getAttribLocation(shaderProgram, "aVertexColor");
-        // gl.enableVertexAttribArray(positionLocation);
-        // gl.enableVertexAttribArray(colorLocation);
-        gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
-        // gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 0, 0);
-        gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+        gl.bindVertexArray(this.mesh.vao);
+
+        // gl.bindBuffer(gl.ARRAY_BUFFER, this.mesh.vertexBuffer);
+        // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.mesh.indexBuffer);
+
+        // const positionLocation = gl.getAttribLocation(shaderProgram, "vertexPosition");
+        // const colorLocation = gl.getAttribLocation(shaderProgram, "aVertexColor");
+        // // gl.enableVertexAttribArray(positionLocation);
+        // // gl.enableVertexAttribArray(colorLocation);
+        // gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
+        // // gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 0, 0);
+        // gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 
         gl.drawElements(gl.TRIANGLES, this.mesh.triangles.length, gl.UNSIGNED_SHORT, 0);
     }

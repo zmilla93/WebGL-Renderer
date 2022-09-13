@@ -18,9 +18,17 @@ function addKeyboardListeners() {
     // canvas.onfocus = function () {
     //     console.log("focus");
     // }
+    
+    // Ignore default spacebar scroll
+    // window.addEventListener('keydown', function (e) {
+    //     if (e.code == 'Space' && e.target == document.body) {
+    //         e.preventDefault();
+    //     }
+    // });
 }
 
 function updateKey(key, state) {
+    // console.log("key")
     if (state) {
         pressedKeys.add(key);
         pressedThisFrame.add(key);
