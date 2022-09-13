@@ -20,7 +20,7 @@ class Chunk {
 
 class Component {
     gameObject = null;
-    constructor(gameObject){
+    constructor(gameObject) {
         this.gameObject = gameObject;
     }
     setParent(parent) {
@@ -111,10 +111,10 @@ class Mesh {
         }
     }
     createData() {
-        const arrStride = 6;
+        const values = 3;
         const stride = 6;
         this.data = [];
-        this.data = new Float32Array(this.vertices.length * 3 * 2);
+        this.data = new Float32Array(Float32Array.BYTES_PER_ELEMENT * this.vertices.length * values);
         for (let i = 0; i < this.vertices.length; i++) {
             this.data[i * stride] = this.vertices[i][0];
             this.data[i * stride + 1] = this.vertices[i][1];
@@ -122,15 +122,22 @@ class Mesh {
             this.data[i * stride + 3] = this.normals[i][0];
             this.data[i * stride + 4] = this.normals[i][1];
             this.data[i * stride + 5] = this.normals[i][2];
+            // this.data[i * stride + 6] = this.colors[i][0];
+            // this.data[i * stride + 7] = this.colors[i][1];
+            // this.data[i * stride + 8] = this.colors[i][2];
             this.vertexCount += 4;
         }
     }
 }
 
+function meshToData(mesh) {
+    const data = data = new Float32Array(mesh.vertices.length * 3 * 2);
+}
+
 /**
  * Renders a mesh for a given game object.
  */
-class MeshRenderer extends Component{
+class MeshRenderer extends Component {
     // gameObject;
     mesh;
     static renderList = []
@@ -218,9 +225,3 @@ function generateMesh(chunk) {
     mesh.vertexCount = vertexCount;
     return mesh;
 }
-
-function go() {
-    alert("!");
-}
-
-window.onload = go;
