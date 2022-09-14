@@ -167,7 +167,7 @@ function main() {
     // meshRenderer = new MeshRenderer(gameObject, mesh);
 
     // MOKEY 
-    var sphereMesh = objToMesh(monkeyModel);
+    var sphereMesh = objToMesh(smoothMonkeyModel);
     sphereMesh.createData();
     sphereMesh.createBuffer(gl, attributes);
     sphereMesh.buffer(gl);
@@ -364,7 +364,7 @@ function compileShader(gl, type, shaderSource) {
     gl.shaderSource(shader, shaderSource);
     gl.compileShader(shader);
     if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-        alert(`Error compiling shader: ${gl.getShaderInfoLog(shader)}`);
+        alert(`Error compiling shader (` + shaderSource+ `): ${gl.getShaderInfoLog(shader)}`);
         gl.deleteShader(shader);
         return null;
     }
