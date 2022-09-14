@@ -23,14 +23,14 @@ var meshRenderer;
 var cubeMesh;
 var sphereRenderer;
 
-class ShaderAttribute{
+class ShaderAttribute {
     // name;
     // location;
     // count;
     // type;
     // stride;
     // offset;
-    constructor(name, location, count, type, stride, offset){
+    constructor(name, location, count, type, stride, offset) {
         this.name = name;
         this.location = location;
         this.count = count;
@@ -40,17 +40,23 @@ class ShaderAttribute{
     }
 }
 
-class Shader{
-    program;
-    attributes;
+class Shader {
+    // program;
+    // attributes;
+    // uniforms;
+    constructor(program, attributes, uniforms) {
+        this.program = program;
+        this.attributes = attributes;
+        this.uniforms = uniforms;
+    }
 }
 
-class Material{
+class Material {
     shader;
     settings;
 }
 
-class Engine{
+class Engine {
     static test;
 }
 
@@ -63,7 +69,7 @@ function main() {
 
     cam = new Camera();
 
-    Engine.test = function(){
+    Engine.test = function () {
         // alert("!");
     }
 
@@ -73,11 +79,11 @@ function main() {
     shaderProgram = createShaderProgram(gl, vertexShaderSource, fragmentShaderSource);
     if (shaderProgram == null) return;
 
-    const valuesPerVertex = 6;
+    const valuesPerVertex = 9;
     const positionLocation = gl.getAttribLocation(shaderProgram, "vertexPosition");
-    const colorLocation = gl.getAttribLocation(shaderProgram, "aVertexColor");
+    const colorLocation = gl.getAttribLocation(shaderProgram, "vertexColor");
     const positionAttribute = {
-        name:"vertexPosition",
+        name: "vertexPosition",
         location: positionLocation,
         count: 3,
         type: gl.FLOAT,
@@ -92,28 +98,44 @@ function main() {
     //     stride: Float32Array.BYTES_PER_ELEMENT * valuesPerVertex,
     //     offset: Float32Array.BYTES_PER_ELEMENT * 3,
     // };
-    const colorAttribute = {
-        name:"aVertexColor",
+    const normalAttribute = {
+        name: "vertexNormal",
         location: colorLocation,
         count: 3,
         type: gl.FLOAT,
         stride: Float32Array.BYTES_PER_ELEMENT * valuesPerVertex,
         offset: Float32Array.BYTES_PER_ELEMENT * 3,
     };
-
-    var attributes = [positionAttribute, colorAttribute];
+    // };
+    const colorAttribute = {
+        name: "vertexColor",
+        location: colorLocation,
+        count: 3,
+        type: gl.FLOAT,
+        stride: Float32Array.BYTES_PER_ELEMENT * valuesPerVertex,
+        offset: Float32Array.BYTES_PER_ELEMENT * 6,
+    };
+    const transformMatrixLocation = gl.getUniformLocation(shaderProgram, "transformMatrix");
+    const ambientLightLocation = gl.getUniformLocation(shaderProgram, "ambientLight");
+    // gl.uniformMatrix4fv(transformMatrixLocation, false, this.gameObject.matrix);
+    const uniforms = {
+        transformMatrix: transformMatrixLocation,
+    }
+    // gl.uniformMatrix4fv(transformMatrixLocation, false, this.gameObject.matrix);
+    gl.uniform4f(ambientLightLocation, 1, 1, 1, 1);
+    var attributes = [positionAttribute, normalAttribute, colorAttribute];
     var defaultShader = new Shader(shaderProgram, attributes);
 
     // BLOCK MESH
     var blockMesh = objToMesh(cubeModel);
     blockMesh.createData();
-    blockMesh.createBuffer(gl, [positionAttribute, colorAttribute]);
-    blockMesh.buffer(gl);    
+    blockMesh.createBuffer(gl, attributes);
+    blockMesh.buffer(gl);
 
     // PLANE MESH
     var mesh = objToMesh(planeModel);
     mesh.createData();
-    mesh.createBuffer(gl, [positionAttribute, colorAttribute]);
+    mesh.createBuffer(gl, attributes);
     mesh.buffer(gl);
 
     // PLANE OBJECT
@@ -143,7 +165,7 @@ function main() {
             gameObject.position[0] = x * 2;
             gameObject.position[1] = -4;
             gameObject.position[2] = -10 - z * 2;
-            var renderer = new MeshRenderer(gameObject, blockMesh)
+            var renderer = new MeshRenderer(gameObject, sphereMesh)
             gameObject.add(renderer);
         }
     }
@@ -211,7 +233,7 @@ function drawScene() {
     var uniformLocation = gl.getUniformLocation(shaderProgram, "dominatingColor");
     gl.uniform4f(uniformLocation, 0.0, 1.0, 1.0, 1.0);
 
-    for(renderer of MeshRenderer.renderList){
+    for (renderer of MeshRenderer.renderList) {
         renderer.render(gl);
     }
     // sphereRenderer.render(gl);
@@ -288,7 +310,7 @@ function objToMesh(obj) {
     return mesh;
 }
 
-function createShaderProgram(gl, vertexShaderSource, fragmentShaderSource){
+function createShaderProgram(gl, vertexShaderSource, fragmentShaderSource) {
     // Compile Shaders
     const vertexShader = compileShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
     const fragmentShader = compileShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);

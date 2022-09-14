@@ -112,7 +112,7 @@ class Mesh {
     }
     createData() {
         const values = 3;
-        const stride = 6;
+        const stride = 9;
         this.data = [];
         this.data = new Float32Array(Float32Array.BYTES_PER_ELEMENT * this.vertices.length * values);
         for (let i = 0; i < this.vertices.length; i++) {
@@ -122,10 +122,12 @@ class Mesh {
             this.data[i * stride + 3] = this.normals[i][0];
             this.data[i * stride + 4] = this.normals[i][1];
             this.data[i * stride + 5] = this.normals[i][2];
-            // this.data[i * stride + 6] = this.colors[i][0];
-            // this.data[i * stride + 7] = this.colors[i][1];
-            // this.data[i * stride + 8] = this.colors[i][2];
-            this.vertexCount += 4;
+            this.data[i * stride + 6] = this.normals[i][0];
+            this.data[i * stride + 7] = this.normals[i][1];
+            this.data[i * stride + 8] = this.normals[i][2];
+            // this.data[i * stride + 6] = Math.random();
+            // this.data[i * stride + 7] = Math.random();
+            // this.data[i * stride + 8] = Math.random();
         }
     }
 }
@@ -140,7 +142,8 @@ function meshToData(mesh) {
 class MeshRenderer extends Component {
     // gameObject;
     mesh;
-    static renderList = []
+    shader;
+    static renderList = [];
     constructor(gameObject, mesh) {
         super(gameObject);
         // this.gameObject = gameObject; 
@@ -171,8 +174,6 @@ class MeshRenderer extends Component {
 
         gl.drawElements(gl.TRIANGLES, this.mesh.triangles.length, gl.UNSIGNED_SHORT, 0);
     }
-
-
 }
 
 function generateChunk(chunk) {
