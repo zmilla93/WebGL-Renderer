@@ -82,6 +82,7 @@ function main() {
     const valuesPerVertex = 9;
     const positionLocation = gl.getAttribLocation(shaderProgram, "vertexPosition");
     const colorLocation = gl.getAttribLocation(shaderProgram, "vertexColor");
+    const normalLocation = gl.getAttribLocation(shaderProgram, "vertexNormal");
     const positionAttribute = {
         name: "vertexPosition",
         location: positionLocation,
@@ -100,7 +101,7 @@ function main() {
     // };
     const normalAttribute = {
         name: "vertexNormal",
-        location: colorLocation,
+        location: normalLocation,
         count: 3,
         type: gl.FLOAT,
         stride: Float32Array.BYTES_PER_ELEMENT * valuesPerVertex,
@@ -117,12 +118,31 @@ function main() {
     };
     const transformMatrixLocation = gl.getUniformLocation(shaderProgram, "transformMatrix");
     const ambientLightLocation = gl.getUniformLocation(shaderProgram, "ambientLight");
+    const sunlightAngleLocation = gl.getUniformLocation(shaderProgram, "sunlightAngle");
+    const sunlightIntensityLocation = gl.getUniformLocation(shaderProgram, "sunlightIntensity");
+
+    var sunAngle = vec3.fromValues(0, 1, 0);
+    // vec3.rotateX(sunAngle, sunAngle, ZERO_VECTOR, 45 * DEG2RAD);
+    vec3.rotateZ(sunAngle, sunAngle, ZERO_VECTOR, -45 * DEG2RAD);
+    // vec3.rotateY(sunAngle, sunAngle, ZERO_VECTOR, 45 * DEG2RAD);
+
+    console.log(sunAngle);
+
+    // gl.uniform3f(sunlightAngleLocation, false, 0, 1, 0);
+    // gl.uniform3f(sunlightAngleLocation, false, 0,0,0);
+    // gl.uniform3f(sunlightAngleLocation, false, sunAngle.x, sunAngle.y, sunAngle.z);
+    gl.uniform3f(sunlightAngleLocation, sunAngle[0], sunAngle[1], sunAngle[2]);
+    // gl.uniform3f(sunlightAngleLocation, false, 1, 1, 1);
+    gl.uniform3f(ambientLightLocation, 0.2, 0.2, 0.2);
+    gl.uniform1f(sunlightIntensityLocation, 6);
+
+
     // gl.uniformMatrix4fv(transformMatrixLocation, false, this.gameObject.matrix);
     const uniforms = {
         transformMatrix: transformMatrixLocation,
     }
     // gl.uniformMatrix4fv(transformMatrixLocation, false, this.gameObject.matrix);
-    gl.uniform4f(ambientLightLocation, 1, 1, 1, 1);
+
     var attributes = [positionAttribute, normalAttribute, colorAttribute];
     var defaultShader = new Shader(shaderProgram, attributes);
 
