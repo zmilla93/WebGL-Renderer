@@ -59,6 +59,48 @@ class Camera {
     }
 }
 
+class Line {
+    static lineList = [];
+    constructor(v1, v2, color) {
+        this.v1 = v1;
+        this.v2 = v2;
+        this.color = color;
+        Line.lineList.push(this);
+    }
+    destroy() {
+        console.log(Line.lineList.indexOf(this));
+        var pre = Line.lineList.slice(0, Line.lineList.indexOf(this));
+        var post = Line.lineList.slice(Line.lineList.indexOf(this) + 1, Line.lineList.length);
+
+        // Line.lineList.remove(this);
+        console.log("HERE:");
+        console.log(pre);
+        console.log(post);
+        Line.lineList = pre.concat(post);
+        console.log(Line.lineList);
+    }
+    static get data() {
+        const stride = 12;
+        const data = new Float32Array(stride * Line.lineList.length);
+        for (let i = 0; i < Line.lineList.length; i++) {
+            var line = Line.lineList[i]
+            data[i * stride] = line.v1[0];
+            data[i * stride + 1] = line.v1[1];
+            data[i * stride + 2] = line.v1[2];
+            data[i * stride + 3] = line.color[0];
+            data[i * stride + 4] = line.color[1];
+            data[i * stride + 5] = line.color[2];
+            data[i * stride + 6] = line.v2[0];
+            data[i * stride + 7] = line.v2[1];
+            data[i * stride + 8] = line.v2[2];
+            data[i * stride + 9] = line.color[0];
+            data[i * stride + 10] = line.color[1];
+            data[i * stride + 11] = line.color[2];
+        }
+        return data;
+    }
+}
+
 class GameObject {
     position = vec3.create();
     rotation = vec3.create();

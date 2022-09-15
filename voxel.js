@@ -87,7 +87,10 @@ class Mesh {
 
 
         for (const attribute of vertexAttributes) {
-            console.log("Enabling attrib:" + attribute.location + " with offset " + attribute.offset);
+            if (attribute.location < 0) {
+                console.warn("Unused shader attribute: " + attribute.name);
+                continue;
+            }
             gl.enableVertexAttribArray(attribute.location);
             gl.vertexAttribPointer(attribute.location, attribute.count, attribute.type, false, attribute.stride, attribute.offset);
         }
@@ -115,6 +118,7 @@ class Mesh {
         const stride = 9;
         this.data = [];
         this.data = new Float32Array(Float32Array.BYTES_PER_ELEMENT * this.vertices.length * values);
+
         for (let i = 0; i < this.vertices.length; i++) {
             this.data[i * stride] = this.vertices[i][0];
             this.data[i * stride + 1] = this.vertices[i][1];
@@ -122,12 +126,12 @@ class Mesh {
             this.data[i * stride + 3] = this.normals[i][0];
             this.data[i * stride + 4] = this.normals[i][1];
             this.data[i * stride + 5] = this.normals[i][2];
-            this.data[i * stride + 6] = this.normals[i][0];
-            this.data[i * stride + 7] = this.normals[i][1];
-            this.data[i * stride + 8] = this.normals[i][2];
-            // this.data[i * stride + 6] = Math.random();
-            // this.data[i * stride + 7] = Math.random();
-            // this.data[i * stride + 8] = Math.random();
+            // this.data[i * stride + 6] = this.normals[i][0];
+            // this.data[i * stride + 7] = this.normals[i][1];
+            // this.data[i * stride + 8] = this.normals[i][2];
+            this.data[i * stride + 6] = 1;
+            this.data[i * stride + 7] = 1;
+            this.data[i * stride + 8] = 1;
         }
     }
 }
@@ -186,10 +190,6 @@ function generateChunk(chunk) {
     }
 }
 
-function meshFromQuadArray() {
-
-}
-
 function generateMesh(chunk) {
     const mesh = new Mesh();
     var vertexCount = 0;
@@ -210,6 +210,7 @@ function generateMesh(chunk) {
                         // mesh.vertices.push(Shapes.cube.top[i].position[2] + z);
                         mesh.vertices.push(offsetPos);
                         mesh.colors.push(vec3.fromValues(0, 1, 0));
+                        mesh.normals.push(vec3.fromValues(0, 1, 0));
                     }
                     mesh.triangles.push(vertexCount);
                     mesh.triangles.push(vertexCount + 1);

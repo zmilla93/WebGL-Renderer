@@ -3,18 +3,21 @@ class ShaderFile:
         self.fileName = fileName
         self.variableName = variableName
 
-vertexShader = ShaderFile("shaders/vertex.glsl", "vertexShaderSource")
-fragmentShader = ShaderFile("shaders/fragment.glsl", "fragmentShaderSource")
-shaders = [vertexShader, fragmentShader]
+directory = "D:/Projects/WebCraft/Shaders/"
+litVertex = ShaderFile("vertex.glsl", "litVertex")
+litFragment = ShaderFile("fragment.glsl", "litFragment")
+lineVertex = ShaderFile("line.vs", "lineVertex")
+lineFragment = ShaderFile("line.fs", "lineFragment")
+shaders = [litVertex, litFragment, lineVertex, lineFragment]
 
-output = open("shaders/shaders.js", "w")
+output = open(directory + "shaders.js", "w")
 output.write("// This file was auto-generated with shader-converter.py.\n")
 output.write("// It contains a javascript version of all shader code.\n\n")
 
 for shader in shaders:
-    source = open(shader.fileName, "r")
+    source = open(directory + shader.fileName, "r")
     print("Converting " + shader.fileName + "...")
-    output.write("const " + shader.variableName + " = `\n")
+    output.write("const " + shader.variableName + "Source = `\n")
     output.write(source.read())
     output.write("`\n\n")
     

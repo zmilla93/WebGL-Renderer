@@ -13,12 +13,14 @@ var camRotationY = 0;
 
 var gl;
 var shaderProgram;
+var lineShader;
 var cam;
 var cameraDeltaX = 0;
 var running = true;
 var testChunk;
 
 var meshRenderer;
+var lineVAO;
 // var simpleMesh;
 var cubeMesh;
 var sphereRenderer;
@@ -67,7 +69,16 @@ function main() {
     const canvas = document.getElementById("glCanvas");
     gl = canvas.getContext("webgl2", { antialias: true, depth: true });
 
+    var l1 = new Line(vec3.fromValues(0, 0, 0), vec3.fromValues(5, 5, 5), vec3.fromValues(1, 1, 0));
+    var l2 = new Line(vec3.fromValues(0, 0, 0), vec3.fromValues(-5, 5, -5), vec3.fromValues(0, 1, 0));
+    var l3 = new Line(vec3.fromValues(0, 0, 0), vec3.fromValues(5, 5, -5), vec3.fromValues(0, 1, 1));
+    var l4 = new Line(vec3.fromValues(0, 0, 0), vec3.fromValues(-5, 5, 5), vec3.fromValues(0, 0, 1));
+    // console.log(Line.lineList);
+    l3.destroy();
+    // console.log(Line.lineList);
+
     cam = new Camera();
+    cam.position[1] = 2;
 
     Engine.test = function () {
         // alert("!");
@@ -76,8 +87,12 @@ function main() {
     Engine.test();
 
     initGLSettings();
-    shaderProgram = createShaderProgram(gl, vertexShaderSource, fragmentShaderSource);
+    shaderProgram = createShaderProgram(gl, litVertexSource, litFragmentSource);
+    lineShader = createShaderProgram(gl, lineVertexSource, lineFragmentSource);
+    gl.useProgram(shaderProgram);
     if (shaderProgram == null) return;
+    if (lineShader == null) return;
+    gl.useProgram(shaderProgram);
 
     const valuesPerVertex = 9;
     const positionLocation = gl.getAttribLocation(shaderProgram, "vertexPosition");
@@ -91,14 +106,7 @@ function main() {
         stride: Float32Array.BYTES_PER_ELEMENT * valuesPerVertex,
         offset: 0,
     };
-    // const normalAttribute = {
-    //     name:"aVertexColor",
-    //     location: colorLocation,
-    //     count: 3,
-    //     type: gl.FLOAT,
-    //     stride: Float32Array.BYTES_PER_ELEMENT * valuesPerVertex,
-    //     offset: Float32Array.BYTES_PER_ELEMENT * 3,
-    // };
+
     const normalAttribute = {
         name: "vertexNormal",
         location: normalLocation,
@@ -122,11 +130,11 @@ function main() {
     const sunlightIntensityLocation = gl.getUniformLocation(shaderProgram, "sunlightIntensity");
 
     var sunAngle = vec3.fromValues(0, 1, 0);
+
     // vec3.rotateX(sunAngle, sunAngle, ZERO_VECTOR, 45 * DEG2RAD);
     vec3.rotateZ(sunAngle, sunAngle, ZERO_VECTOR, -45 * DEG2RAD);
+    vec3.normalize(sunAngle, sunAngle);
     // vec3.rotateY(sunAngle, sunAngle, ZERO_VECTOR, 45 * DEG2RAD);
-
-    console.log(sunAngle);
 
     // gl.uniform3f(sunlightAngleLocation, false, 0, 1, 0);
     // gl.uniform3f(sunlightAngleLocation, false, 0,0,0);
@@ -167,12 +175,15 @@ function main() {
     // meshRenderer = new MeshRenderer(gameObject, mesh);
 
     // MOKEY 
-    var sphereMesh = objToMesh(smoothMonkeyModel);
+    var sphereMesh = objToMesh(sphereModel);
     sphereMesh.createData();
     sphereMesh.createBuffer(gl, attributes);
     sphereMesh.buffer(gl);
     var sphere = new GameObject();
-    sphere.position[2] = -3;
+    sphere.position[0] = 10;
+    sphere.position[1] = 10;
+    sphere.position[2] = 10;
+    sphere.rotation[0] = 90;
     sphereRenderer = new MeshRenderer(sphere, sphereMesh);
 
     // Block Floor
@@ -190,12 +201,114 @@ function main() {
         }
     }
 
+    // LINE SETUP
+
+    const valuesPerLineVertex = 6;
+
+    const lineVertexPos = gl.getAttribLocation(lineShader, "vertexPosition");
+    const lineColorPos = gl.getAttribLocation(lineShader, "vertexColor");
+    lineVAO = gl.createVertexArray();
+    gl.bindVertexArray(lineVAO);
+    const lineBuffer = gl.createBuffer();
+    const lineData = [
+        0, 0, 0,
+        1, 0, 0,
+        10, 10, 10,
+        1, 0, 0,
+    ];
+    gl.bindBuffer(gl.ARRAY_BUFFER, lineBuffer);
+    gl.useProgram(lineShader);
+    // gl.bufferData(lineData);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(lineData), gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(lineVertexPos);
+    const linePositionAttrib = {
+        name: "vertexPosition",
+        location: lineVertexPos,
+        count: 3,
+        type: gl.FLOAT,
+        stride: Float32Array.BYTES_PER_ELEMENT * valuesPerLineVertex,
+        offset: 0,
+    };
+    const lineColorAttrib = {
+        name: "vertexPosition",
+        location: lineVertexPos,
+        count: 3,
+        type: gl.FLOAT,
+        stride: Float32Array.BYTES_PER_ELEMENT * valuesPerLineVertex,
+        offset: 0,
+    };
+    // console.log(lineVertexPos);
+    gl.enableVertexAttribArray(lineVertexPos);
+    gl.vertexAttribPointer(lineVertexPos, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
+    gl.enableVertexAttribArray(lineColorPos);
+    gl.vertexAttribPointer(lineColorPos, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+    gl.useProgram(shaderProgram);
+
     drawScene(gl, shaderProgram);
 
     // window.requestAnimationFrame(draw);
     setInterval(update, 1000 / 60);
 
+}
 
+function drawScene() {
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+    var uniformLocation = gl.getUniformLocation(shaderProgram, "dominatingColor");
+    gl.uniform4f(uniformLocation, 0.0, 1.0, 1.0, 1.0);
+
+    // DRAW LINES
+    gl.useProgram(lineShader);
+    const fieldOfView = 60 * DEG2RAD;
+    const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
+    const zNear = 1;
+    const zFar = 1000.0;
+    const projectionMatrix = mat4.create();
+    mat4.perspective(projectionMatrix, fieldOfView, aspect, zNear, zFar);
+    const fullTransform = mat4.create();
+    mat4.mul(fullTransform, projectionMatrix, cam.getWorldtoViewMatrix());
+    // mat4.mul(fullTransform, fullTransform, cam.getWorldtoViewMatrix());d
+
+    // const transformMatrix = mat4.create();
+    // mat4.mul(transformMatrix, )
+    const projectionMatrixLocation = gl.getUniformLocation(lineShader, "projectionMatrix");
+    gl.uniformMatrix4fv(projectionMatrixLocation, false, fullTransform);
+    // console.log(projectionMatrixLocation);
+    // console.log(projectionMatrix);
+
+    gl.bindVertexArray(lineVAO);
+    var lineData = Line.data;
+    gl.lineWidth(10);
+    gl.bufferData(gl.ARRAY_BUFFER, lineData, gl.STATIC_DRAW);
+    gl.drawArrays(gl.LINES, 0, Line.lineList.length * 2);
+
+    // console.log(Line.data);
+    for (line of Line.lineList) {
+
+    }
+
+    createGrid();
+
+    gl.useProgram(shaderProgram);
+
+    for (renderer of MeshRenderer.renderList) {
+        renderer.render(gl);
+    }
+
+    // sphereRenderer.render(gl);
+
+}
+
+function createGrid() {
+    const gridRadius = 20;
+    const gridStep = 1;
+    const color = vec3.fromValues(70 / 255, 70 / 255, 70 / 255);
+    for (let i = -gridRadius * gridStep; i <= gridRadius * gridStep; i += gridStep) {
+        var line = new Line(vec3.fromValues(-gridRadius, 0, i), vec3.fromValues(gridRadius, 0, i), color)
+    }
+    for (let i = -gridRadius * gridStep; i <= gridRadius * gridStep; i += gridStep) {
+        var line = new Line(vec3.fromValues(i, 0, -gridRadius), vec3.fromValues(i, 0, gridRadius), color)
+    }
 }
 
 function draw() {
@@ -243,22 +356,11 @@ function initGLSettings() {
     // gl.enable(gl.CULL_FACE)
     gl.cullFace(gl.BACK);
     gl.enable(gl.DEPTH_TEST);
-    gl.clearColor(50 / 255, 115 / 255, 168 / 255, 1);
+    gl.clearColor(144 / 255, 212 / 255, 133 / 255, 1);
     // gl.clearDepth(1.0);
 }
 
-function drawScene() {
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    var uniformLocation = gl.getUniformLocation(shaderProgram, "dominatingColor");
-    gl.uniform4f(uniformLocation, 0.0, 1.0, 1.0, 1.0);
-
-    for (renderer of MeshRenderer.renderList) {
-        renderer.render(gl);
-    }
-    // sphereRenderer.render(gl);
-
-}
 
 function objToMesh(obj) {
     var lines = obj.trim().split('\n');
@@ -330,6 +432,7 @@ function objToMesh(obj) {
     return mesh;
 }
 
+// Creates a shader program from a given vertex and fragment shader.
 function createShaderProgram(gl, vertexShaderSource, fragmentShaderSource) {
     // Compile Shaders
     const vertexShader = compileShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
@@ -348,10 +451,9 @@ function createShaderProgram(gl, vertexShaderSource, fragmentShaderSource) {
         return null;
     }
 
-    // Delete the shaders, then use the program.
+    // Delete the shaders (not needed after linking), then use the program.
     gl.deleteShader(vertexShader);
     gl.deleteShader(fragmentShader);
-    gl.useProgram(shaderProgram);
     return shaderProgram;
 }
 
@@ -364,11 +466,24 @@ function compileShader(gl, type, shaderSource) {
     gl.shaderSource(shader, shaderSource);
     gl.compileShader(shader);
     if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-        alert(`Error compiling shader (` + shaderSource+ `): ${gl.getShaderInfoLog(shader)}`);
+        alert(`Error compiling shader (` + glValue(type) + `): ${gl.getShaderInfoLog(shader)}`);
         gl.deleteShader(shader);
         return null;
     }
     return shader;
+}
+
+function glValue(value) {
+    switch (value) {
+        case 5126:
+            return "gl.FLOAT";
+        case 35632:
+            return "FRAGMENT_SHADER";
+        case 35633:
+            return "VERTEX_SHADER";
+        default:
+            return "Unknown GL Value: " + value;
+    }
 }
 
 window.onload = main;
