@@ -1,4 +1,5 @@
 attribute vec4 vertexPosition;
+attribute vec2 vertexUV1;
 attribute vec3 vertexNormal;
 attribute vec3 vertexColor;
 
@@ -12,6 +13,7 @@ uniform vec4 dominatingColor;
 
 varying mediump vec3 vColor;
 varying mediump vec3 vNormal;
+varying mediump vec2 vUV1;
 // varying lowp vec3 vColor;
 
 void main() {
@@ -20,6 +22,7 @@ void main() {
     // vec4 newPosition = modelViewMatrix * v;
     // vec4 projectedPosition = projectionMatrix * newPosition;
     vColor = vertexColor;
+    vUV1 = vertexUV1;
     vNormal = vertexNormal;
 
     gl_Position = transformMatrix * vertexPosition;

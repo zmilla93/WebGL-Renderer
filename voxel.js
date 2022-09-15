@@ -115,7 +115,7 @@ class Mesh {
     }
     createData() {
         const values = 3;
-        const stride = 9;
+        const stride = 11;
         this.data = [];
         this.data = new Float32Array(Float32Array.BYTES_PER_ELEMENT * this.vertices.length * values);
 
@@ -123,15 +123,17 @@ class Mesh {
             this.data[i * stride] = this.vertices[i][0];
             this.data[i * stride + 1] = this.vertices[i][1];
             this.data[i * stride + 2] = this.vertices[i][2];
-            this.data[i * stride + 3] = this.normals[i][0];
-            this.data[i * stride + 4] = this.normals[i][1];
-            this.data[i * stride + 5] = this.normals[i][2];
+            this.data[i * stride + 3] = this.uvs[i][0];
+            this.data[i * stride + 4] = this.uvs[i][1];
+            this.data[i * stride + 5] = this.normals[i][0];
+            this.data[i * stride + 6] = this.normals[i][1];
+            this.data[i * stride + 7] = this.normals[i][2];
             // this.data[i * stride + 6] = this.normals[i][0];
             // this.data[i * stride + 7] = this.normals[i][1];
             // this.data[i * stride + 8] = this.normals[i][2];
-            this.data[i * stride + 6] = 1;
-            this.data[i * stride + 7] = 1;
             this.data[i * stride + 8] = 1;
+            this.data[i * stride + 9] = 1;
+            this.data[i * stride + 10] = 1;
         }
     }
 }

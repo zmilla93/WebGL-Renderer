@@ -22,7 +22,7 @@ var testChunk;
 var meshRenderer;
 var lineVAO;
 // var simpleMesh;
-var cubeMesh;
+// var cubeMesh;
 var sphereRenderer;
 
 class ShaderAttribute {
@@ -95,10 +95,11 @@ function main() {
     if (lineShader == null) return;
     gl.useProgram(shaderProgram);
 
-    const valuesPerVertex = 9;
+    const valuesPerVertex = 11;
     const positionLocation = gl.getAttribLocation(shaderProgram, "vertexPosition");
     const colorLocation = gl.getAttribLocation(shaderProgram, "vertexColor");
     const normalLocation = gl.getAttribLocation(shaderProgram, "vertexNormal");
+    const uv1Location = gl.getAttribLocation(shaderProgram, "vertexUV1");
     const positionAttribute = {
         name: "vertexPosition",
         location: positionLocation,
@@ -107,6 +108,14 @@ function main() {
         stride: Float32Array.BYTES_PER_ELEMENT * valuesPerVertex,
         offset: 0,
     };
+    const uvAttribute = {
+        name: "vertexUV1",
+        location: uv1Location,
+        count: 2,
+        type: gl.FLOAT,
+        stride: Float32Array.BYTES_PER_ELEMENT * valuesPerVertex,
+        offset: Float32Array.BYTES_PER_ELEMENT * 3,
+    };
 
     const normalAttribute = {
         name: "vertexNormal",
@@ -114,7 +123,7 @@ function main() {
         count: 3,
         type: gl.FLOAT,
         stride: Float32Array.BYTES_PER_ELEMENT * valuesPerVertex,
-        offset: Float32Array.BYTES_PER_ELEMENT * 3,
+        offset: Float32Array.BYTES_PER_ELEMENT * 5,
     };
     // };
     const colorAttribute = {
@@ -123,17 +132,17 @@ function main() {
         count: 3,
         type: gl.FLOAT,
         stride: Float32Array.BYTES_PER_ELEMENT * valuesPerVertex,
-        offset: Float32Array.BYTES_PER_ELEMENT * 6,
+        offset: Float32Array.BYTES_PER_ELEMENT * 8,
     };
     const transformMatrixLocation = gl.getUniformLocation(shaderProgram, "transformMatrix");
     const ambientLightLocation = gl.getUniformLocation(shaderProgram, "ambientLight");
     const sunlightAngleLocation = gl.getUniformLocation(shaderProgram, "sunlightAngle");
     const sunlightIntensityLocation = gl.getUniformLocation(shaderProgram, "sunlightIntensity");
 
-    var sunAngle = vec3.fromValues(0, 1, 0);
+    var sunAngle = vec3.fromValues(1, 1, 0);
 
     // vec3.rotateX(sunAngle, sunAngle, ZERO_VECTOR, 45 * DEG2RAD);
-    vec3.rotateZ(sunAngle, sunAngle, ZERO_VECTOR, -45 * DEG2RAD);
+    // vec3.rotateZ(sunAngle, sunAngle, ZERO_VECTOR, -45 * DEG2RAD);
     vec3.normalize(sunAngle, sunAngle);
     // vec3.rotateY(sunAngle, sunAngle, ZERO_VECTOR, 45 * DEG2RAD);
     // gl.uniform3f(sunlightAngleLocation, false, 0, 1, 0);
@@ -151,14 +160,14 @@ function main() {
     }
     // gl.uniformMatrix4fv(transformMatrixLocation, false, this.gameObject.matrix);
 
-    var attributes = [positionAttribute, normalAttribute, colorAttribute];
+    var attributes = [positionAttribute, uvAttribute, normalAttribute, colorAttribute];
     var defaultShader = new Shader(shaderProgram, attributes);
 
     // BLOCK MESH
-    var blockMesh = objToMesh(cubeModel);
-    blockMesh.createData();
-    blockMesh.createBuffer(gl, attributes);
-    blockMesh.buffer(gl);
+    var cubeMesh = objToMesh(cubeModel);
+    cubeMesh.createData();
+    cubeMesh.createBuffer(gl, attributes);
+    cubeMesh.buffer(gl);
 
     // PLANE MESH
     var mesh = objToMesh(planeModel);
@@ -166,6 +175,43 @@ function main() {
     mesh.createBuffer(gl, attributes);
     mesh.buffer(gl);
 
+    // TEXTURE SETUP
+    const texture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    const level = 0;
+    const internalFormat = gl.RGBA;
+    const width = 1;
+    const height = 1;
+    const border = 0;
+    const srcFormat = gl.RGBA;
+    const srcType = gl.UNSIGNED_BYTE;
+    const pixel = new Uint8Array([0, 0, 255, 255]);
+    gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, width, height, border, srcFormat, srcType, pixel);
+    const image = new Image();
+    image.onload = function () {
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, srcFormat, srcType, image);
+        gl.generateMipmap(gl.TEXTURE_2D);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST_MIPMAP_LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+        drawScene();
+    }
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+
+    if (isPowerOf2(image.width) && isPowerOf2(image.height)) {
+        console.log("pow2");
+        gl.generateMipmap(gl.TEXTURE_2D);
+    } else {
+        // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    }
+    // image.crossOrigin = "anonymous";
+    // image.src = "textures/bedrock.png";
+    // image.src = "https://webglfundamentals.org/webgl/resources/f-texture.png";
+    image.src = "textures/bedrock.png";
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
     // PLANE OBJECT
     // var gameObject = new GameObject();
     // gameObject.position[0] = -2;
@@ -173,6 +219,18 @@ function main() {
     // gameObject.position[2] = -6;
     // gameObject.rotation[0] = 30;
     // meshRenderer = new MeshRenderer(gameObject, mesh);
+
+    // gl.activeTexture(gl.TEXTURE0);
+    // const samplerLocation = gl.getUniformLocation(shaderProgram, "uSampler");
+    // gl.activeTexture(gl.TEXTURE0);
+    // // gl.bindTexture(gl.TEXTURE)
+    // gl.uniform1i(samplerLocation, 0);
+
+    // // Bind the texture to texture unit 0
+    // gl.bindTexture(gl.TEXTURE_2D, texture);
+
+    // // Tell the shader we bound the texture to texture unit 0
+    // gl.uniform1i(programInfo.uniformLocations.uSampler, 0);
 
     // MOKEY 
     var sphereMesh = objToMesh(sphereModel);
@@ -189,17 +247,24 @@ function main() {
     // Block Floor
     const count = 20;
     const halfCount = count / 2;
+    const spacing = 1;
     for (var x = -halfCount; x < halfCount; x++) {
         for (var z = -halfCount; z < halfCount; z++) {
             var gameObject = new GameObject();
             // gameObject.init(gl, cube2);
-            gameObject.position[0] = x * 2;
-            gameObject.position[1] = -1;
-            gameObject.position[2] = z * 2;
-            var renderer = new MeshRenderer(gameObject, sphereMesh)
+            gameObject.position[0] = x * spacing;
+            gameObject.position[1] = 0;
+            gameObject.position[2] = z * spacing;
+            var renderer = new MeshRenderer(gameObject, cubeMesh)
             gameObject.add(renderer);
         }
     }
+
+    // TEST CUBE
+    var cubeGO = new GameObject();
+    var cubeRenderer = new MeshRenderer(cubeGO, cubeMesh);
+    // cubeGO.position[0] = 2;
+    // cubeGO.position[2] = 1;
 
     // LINE SETUP
 
@@ -297,10 +362,15 @@ function drawScene() {
 
 }
 
+function isPowerOf2(value) {
+    return value & (value - 1) === 0;
+}
+
 function createGrid() {
     const gridRadius = 20;
     const gridStep = 1;
     const color = vec3.fromValues(70 / 255, 70 / 255, 70 / 255);
+    // const color = vec3.fromValues(1, 0, 0);
     for (let i = -gridRadius * gridStep; i <= gridRadius * gridStep; i += gridStep) {
         var line = new Line(vec3.fromValues(-gridRadius, 0, i), vec3.fromValues(gridRadius, 0, i), color)
     }
@@ -318,6 +388,7 @@ function draw() {
 
 function update() {
     if (pressedKeys.has('w')) {
+        console.log("W")
         vec3.add(cam.position, cam.position, cam.viewDirection);
         drawScene();
     }

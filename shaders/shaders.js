@@ -3,6 +3,7 @@
 
 const litVertexSource = `
 attribute vec4 vertexPosition;
+attribute vec2 vertexUV1;
 attribute vec3 vertexNormal;
 attribute vec3 vertexColor;
 
@@ -16,6 +17,7 @@ uniform vec4 dominatingColor;
 
 varying mediump vec3 vColor;
 varying mediump vec3 vNormal;
+varying mediump vec2 vUV1;
 // varying lowp vec3 vColor;
 
 void main() {
@@ -24,6 +26,7 @@ void main() {
     // vec4 newPosition = modelViewMatrix * v;
     // vec4 projectedPosition = projectionMatrix * newPosition;
     vColor = vertexColor;
+    vUV1 = vertexUV1;
     vNormal = vertexNormal;
 
     gl_Position = transformMatrix * vertexPosition;
@@ -33,20 +36,30 @@ void main() {
 }`
 
 const litFragmentSource = `
-
 precision mediump float;
 
 varying mediump vec3 vColor;
+varying mediump vec2 vUV1;
 varying mediump vec3 vNormal;
+uniform sampler2D uSampler;
 
 uniform mediump vec3 ambientLight;
 uniform mediump vec3 sunlightAngle;
 uniform mediump float sunlightIntensity;
 
 void main(void) {
-    vec3 color = vColor * ambientLight * dot(sunlightAngle, vNormal) * sunlightIntensity;
+    float sunlight = dot(sunlightAngle, vNormal) * sunlightIntensity;
+    vec3 color = vColor * ambientLight * sunlight;
     // vec3 color = vec3(0.95, 1, 0.28);
-    gl_FragColor = vec4(color.x, color.y, color.z, 1);
+
+    vec4 lightingColor = vec4(1,1,1,1) * sunlight;
+    // 
+    vec4 textureSample = texture2D(uSampler, vUV1);
+    vec4 litTexture = vec4(color.x, color.y, color.z, 1) * textureSample;
+    // gl_FragColor = color * 0.2;
+    // gl_FragColor = vec4(color.x, color.y, color.z, 1);
+    gl_FragColor = litTexture;
+    // gl_FragColor = textureSample * lightingColor;
     // gl_FragColor = vec4(vColor.x, vColor.y, vColor.z, 1);
 }`
 
@@ -93,6 +106,6 @@ void main(void) {
     // vec3 color = vColor * ambientLight * dot(sunlightAngle, vNormal) * sunlightIntensity;
     // vec3 color = vec3(0.95, 1, 0.28);
     // gl_FragColor = vec4(color.x, color.y, color.z, 1);
-    gl_FragColor = vec4(vColor.x, vColor.y, vColor.z, 0.5);
+    gl_FragColor = vec4(vColor.x, vColor.y, vColor.z, 1);
 }`
 
