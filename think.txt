@@ -1,0 +1,21 @@
+
+
+GameObject
+    MeshRenderer
+        - Material
+            Shader
+
+Material.shaderMap;
+
+Default Shader
+    testMaterial
+    testMaterialBlue
+
+Normal Shader
+    NormalMat
+
+When a material is created (or an existing material has its shader changed),
+the Material will register itself under that shader name (and first unregister if its a shader change)
+
+When a renderer is created (or an existing renderer has its material changed),
+the renderer will register itself with that material (and first unregister if its a material change)

@@ -20,11 +20,14 @@ class Chunk {
 
 class Component {
     gameObject = null;
-    constructor(gameObject) {
-        this.gameObject = gameObject;
-    }
+    // constructor(gameObject) {
+    //     this.gameObject = gameObject;
+    // }
     setParent(parent) {
         this.gameObject = parent;
+    }
+    onAdd = function (gameObject) {
+        console.error("Component failed to implement onAdd function!");
     }
     get parent() {
         return this.gameObject;
@@ -146,38 +149,38 @@ function meshToData(mesh) {
  */
 class MeshRenderer extends Component {
     // gameObject;
-    mesh;
-    shader;
-    static renderList = [];
-    constructor(gameObject, mesh) {
-        super(gameObject);
+    // mesh;
+    material;
+    // shader;
+    // static renderList = [];
+    constructor(mesh, material) {
+        // super(gameObject);
         // this.gameObject = gameObject; 
+        super();
         this.mesh = mesh;
-        MeshRenderer.renderList.push(this);
+        this.setMaterial(material);
+        // MeshRenderer.renderList.push(this);
     }
     render(gl) {
-        // console.log(this.mesh.vertexCount);
-        // console.log(this.mesh.vertexBuffer);
-        // console.log(this.mesh.data);
-        //FIXME : Cache this value!
-
         const transformMatrixLocation = gl.getUniformLocation(shaderProgram, "transformMatrix");
         gl.uniformMatrix4fv(transformMatrixLocation, false, this.gameObject.matrix);
-
         gl.bindVertexArray(this.mesh.vao);
-
-        // gl.bindBuffer(gl.ARRAY_BUFFER, this.mesh.vertexBuffer);
-        // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.mesh.indexBuffer);
-
-        // const positionLocation = gl.getAttribLocation(shaderProgram, "vertexPosition");
-        // const colorLocation = gl.getAttribLocation(shaderProgram, "aVertexColor");
-        // // gl.enableVertexAttribArray(positionLocation);
-        // // gl.enableVertexAttribArray(colorLocation);
-        // gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
-        // // gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 0, 0);
-        // gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
-
         gl.drawElements(gl.TRIANGLES, this.mesh.triangles.length, gl.UNSIGNED_SHORT, 0);
+    }
+    onAdd = function (gameObject) {
+        // console.log("GELLO" + gameObject);
+    }
+    onRemove = function (gameObject) {
+
+    }
+    setMaterial(material) {
+        // console.log("SETTING MAT:" + material);
+        if (this.material != null) {
+            Material.unregisterRenderer(this.material, this);
+        }
+        this.material = material;
+        if (this.material == null) return;
+        Material.registerRenderer(this.material, this);
     }
 }
 

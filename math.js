@@ -69,16 +69,7 @@ class Line {
         Line.lineList.push(this);
     }
     destroy() {
-        console.log(Line.lineList.indexOf(this));
-        var pre = Line.lineList.slice(0, Line.lineList.indexOf(this));
-        var post = Line.lineList.slice(Line.lineList.indexOf(this) + 1, Line.lineList.length);
-
-        // Line.lineList.remove(this);
-        console.log("HERE:");
-        console.log(pre);
-        console.log(post);
-        Line.lineList = pre.concat(post);
-        console.log(Line.lineList);
+        Line.lineList.splice(Line.lineList.indexOf(this), 1);
     }
     static get data() {
         const stride = 12;
@@ -122,6 +113,11 @@ class GameObject {
     add(component) {
         component.setParent(this);
         this.components.push(component);
+        component.onAdd(this);
+    }
+    remove(component) {
+        var index = this.components.indexOf(component);
+        component.onRemove(this);
     }
     get matrix() {
         // FIXME : Make static

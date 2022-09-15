@@ -30,7 +30,7 @@ const FLOAT32_SIZE = Float32Array.BYTES_PER_ELEMENT;
 class ShaderAttribute {
     //  Holds data for weblGL vertexAttribPointer
     //  https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/vertexAttribPointer
-    //  Location is set when it is added ot a shader object.
+    //  Location is set when it is added to a shader object, since location is based on the shader program.
     location;
     constructor(name, valueCount, type, stride, offset) {
         this.name = name;
@@ -46,6 +46,7 @@ class Shader {
     program;
     attributes;
     uniformMap;
+    static materialMap = new Map();
     // gl - weblGL Context
     // program - gl Shader Program
     // Attributes - Array of ShaderAttributes
@@ -77,13 +78,54 @@ class Shader {
         if (this.uniformMap.has(uniform))
             return this.uniformMap.get(uniform);
         console.error("Uniform '" + uniform + "' not found in map for shader '" + this.name + "'. Make sure to register uniform names on shader creation.");
-
     }
 }
 
 class Material {
     shader;
     applyUniforms;
+    // renderers = [];
+    static materialMap = new Map();
+    // Shader - Shader Class
+    // applyUniforms - function, called once before rendering all objects that use this material
+    constructor(shader, applyUniforms) {
+        this.shader = shader;
+        this.applyUniforms = applyUniforms;
+        this.renderers = [];
+        this.registerMaterial(this);
+
+        // console.log("NEW MAT");
+        // console.log(Material.materialMap);
+    }
+    registerMaterial(material) {
+        var shaderEntry;
+        if (Material.materialMap.has(material.shader.name)) {
+            shaderEntry = Material.materialMap.get(material.shader.name);
+        } else {
+            shaderEntry = [];
+        }
+        shaderEntry.push(material);
+        Material.materialMap.set(material.shader.name, shaderEntry);
+        // console.log(Material.materialMap);
+    }
+    static getMaterial(material) {
+        const shaderGroup = Material.materialMap.get(material.shader.name);
+        const mat = shaderGroup[shaderGroup.indexOf(material)];
+        return mat;
+    }
+    static registerRenderer(material, renderer) {
+        // console.log("REG");
+        const mat = Material.getMaterial(material);
+
+        // console.log(mat);
+        // if (mat.renderers == null) mat.renderers = [];
+        // mat.renderers = [];
+        // console.log(mat.renderers);
+        mat.renderers.push(renderer);
+    }
+    static test() {
+        console.log("TEST");
+    }
 }
 
 class Engine {
@@ -101,6 +143,9 @@ function main() {
     var l2 = new Line(vec3.fromValues(0, 0, 0), vec3.fromValues(-5, 5, -5), vec3.fromValues(0, 1, 0));
     var l3 = new Line(vec3.fromValues(0, 0, 0), vec3.fromValues(5, 5, -5), vec3.fromValues(0, 1, 1));
     var l4 = new Line(vec3.fromValues(0, 0, 0), vec3.fromValues(-5, 5, 5), vec3.fromValues(0, 0, 1));
+
+    l3.destroy();
+    l1.destroy();
 
     cam = new Camera();
     cam.position[2] = 20;
@@ -125,22 +170,19 @@ function main() {
     const uniforms = ["transformationMatrix", "ambientLight", "sunlightAngle", "sunlightIntensity"];
 
     var defaultShader = new Shader(gl, "Default Shader", shaderProgram, attributes, uniforms);
+    var testShader = new Shader(gl, "Test Shader", shaderProgram, attributes, uniforms);
 
     var defaultMaterial = new Material(defaultShader, function () {
 
     });
-    // defaultMaterial.applyUniforms = function () {
-    //     var shader =
-    //         defaultMaterial.shader.uniform("")
-    // }
+    var testMaterial = new Material(defaultShader, function () {
 
+    });
     var sunAngle = vec3.fromValues(0.5, 1, 0.25);
     vec3.normalize(sunAngle, sunAngle);
-
     gl.uniform3f(defaultShader.uniform("sunlightAngle"), sunAngle[0], sunAngle[1], sunAngle[2]);
     gl.uniform3f(defaultShader.uniform("ambientLight"), 0.2, 0.2, 0.2);
     gl.uniform1f(defaultShader.uniform("sunlightIntensity"), 6);
-
 
     // BLOCK MESH
     var cubeMesh = objToMesh(cubeModel);
@@ -199,7 +241,8 @@ function main() {
     sphere.position[1] = 10;
     sphere.position[2] = 10;
     sphere.rotation[0] = 90;
-    sphereRenderer = new MeshRenderer(sphere, sphereMesh);
+    sphereRenderer = new MeshRenderer(sphereMesh, defaultMaterial);
+    sphere.add(sphereRenderer);
 
     // Block Floor
     const count = 20;
@@ -212,14 +255,15 @@ function main() {
             gameObject.position[0] = x * spacing;
             gameObject.position[1] = 0;
             gameObject.position[2] = z * spacing;
-            var renderer = new MeshRenderer(gameObject, cubeMesh)
+            var renderer = new MeshRenderer(cubeMesh, defaultMaterial)
             gameObject.add(renderer);
         }
     }
 
     // TEST CUBE
     var cubeGO = new GameObject();
-    var cubeRenderer = new MeshRenderer(cubeGO, cubeMesh);
+    var cubeRenderer = new MeshRenderer(cubeMesh, defaultMaterial);
+    cubeGO.add(cubeRenderer);
     // cubeGO.position[0] = 2;
     // cubeGO.position[2] = 1;
 
@@ -293,8 +337,7 @@ function drawScene() {
     mat4.perspective(projectionMatrix, fieldOfView, aspect, zNear, zFar);
     const fullTransform = mat4.create();
     mat4.mul(fullTransform, projectionMatrix, cam.getWorldtoViewMatrix());
-    // mat4.mul(fullTransform, fullTransform, cam.getWorldtoViewMatrix());d
-
+    // mat4.mul(fullTransform, fullTransform, cam.getWorldtoViewMatrix());
     // const transformMatrix = mat4.create();
     // mat4.mul(transformMatrix, )
     const projectionMatrixLocation = gl.getUniformLocation(lineShader, "projectionMatrix");
@@ -311,11 +354,56 @@ function drawScene() {
 
     }
 
+    // Loop through all material groups.
+    // This is a map where shaderName = [Array of materials using that shader]
+    Material.materialMap.forEach((materialGroup) => {
+        var shaderChanged = false;
+        materialGroup.forEach((material) => {
+            // Set the shader using the first element in the array,
+            // since by design all elements in the array must use the same shader.
+            if (!shaderChanged) {
+                console.log("CHANGE SHADER:");
+                console.log(material.shader);
+                gl.useProgram(material.shader.program);
+                material.shader;
+                shaderChanged = true;
+            }
+            // Loop through all renderers that use this material and render them.
+            material.renderers.forEach((renderer) => {
+                renderer.render(gl);
+            })
+        })
+    })
+
+    // for (shaderGroup of Material.materialMap) {
+    //     console.log(shaderGroup);
+    //     // for (materialList of shaderGroup) {
+    //     //     console.log(materialList);
+    //     //     // console.log(material.renderers);
+    //     //     for (material of materialList) {
+    //     //         // console.log(material);
+    //     //         // for (renderer of material.renderers) {
+    //     //         //     renderer.render(gl);
+    //     //         // }
+    //     //     }
+    //     //     // for(renderer of material.renderers){
+    //     //     //     renderer.render(gl);
+    //     //     // }
+
+    //     // }
+    //     // console.log(material.renderers);
+    //     // for(renderer of material.renderers){
+    //     //     renderer.render(gl);
+    //     // }
+    // }
+
+
+
     gl.useProgram(shaderProgram);
 
-    for (renderer of MeshRenderer.renderList) {
-        renderer.render(gl);
-    }
+    // for (renderer of MeshRenderer.renderList) {
+    //     renderer.render(gl);
+    // }
 
 }
 
