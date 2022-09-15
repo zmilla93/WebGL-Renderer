@@ -46,21 +46,42 @@ class ShaderAttribute {
 }
 
 class Shader {
-    // program;
-    // attributes;
-    // uniforms;
-    constructor(gl, program, attributes, uniforms) {
+    name;
+    program;
+    attributes;
+    uniformMap;
+    // gl - weblGL Context
+    // program - gl Shader Program
+    // Attributes - Array of ShaderAttributes
+    // Uniforms - Array of String uniform names
+    constructor(gl, name, program, attributes, uniforms) {
+        this.name = name;
         this.program = program;
         this.attributes = attributes;
-        this.uniforms = uniforms;
+        this.uniformMap = new Map();
         for (let attribute of attributes) {
             let location = gl.getAttribLocation(program, attribute.name);
             if (location < 0) {
-                console.error("Attribute not found: " + attribute.name);
+                console.error("Attribute location not found: " + attribute.name);
                 continue;
             }
             attribute.location = location;
         }
+        for (let uniform of uniforms) {
+            let location = gl.getUniformLocation(program, uniform);
+            if (location < 0) {
+                console.error("Uniform location not found: " + attribute.name);
+                continue;
+            }
+            this.uniformMap.set(uniform, location);
+        }
+    }
+    // Returns the webGL location of the (string) uniform.
+    uniform(uniform) {
+        if (this.uniformMap.has(uniform))
+            return this.uniformMap.get(uniform);
+        console.error("Uniform '" + uniform + "' not found in map for shader '" + this.name + "'. Make sure to register uniform names on shader creation.");
+
     }
 }
 
@@ -159,51 +180,26 @@ function main() {
     //     stride: Float32Array.BYTES_PER_ELEMENT * valuesPerVertex,
     //     offset: Float32Array.BYTES_PER_ELEMENT * 8,
     // };
-    var attributes = [positionAttribute, normalAttribute, colorAttribute];
-    console.log(positionAttribute);
+    var attributes = [positionAttribute, uvAttribute, normalAttribute, colorAttribute];
+    // console.log(positionAttribute);
 
-    var defaultShader = new Shader(gl, shaderProgram, attributes);
+    const uniforms = ["transformationMatrix", "ambientLight", "sunlightAngle", "sunlightIntensity"];
 
-    const transformMatrixLocation = gl.getUniformLocation(shaderProgram, "transformMatrix");
-    const ambientLightLocation = gl.getUniformLocation(shaderProgram, "ambientLight");
-    const sunlightAngleLocation = gl.getUniformLocation(shaderProgram, "sunlightAngle");
-    const sunlightIntensityLocation = gl.getUniformLocation(shaderProgram, "sunlightIntensity");
+    var defaultShader = new Shader(gl, "Default Shader", shaderProgram, attributes, uniforms);
 
-    var sunAngle = vec3.fromValues(1, 1, 0);
-
-    // vec3.rotateX(sunAngle, sunAngle, ZERO_VECTOR, 45 * DEG2RAD);
-    // vec3.rotateZ(sunAngle, sunAngle, ZERO_VECTOR, -45 * DEG2RAD);
+    var sunAngle = vec3.fromValues(0.5, 1, 0.25);
     vec3.normalize(sunAngle, sunAngle);
-    // vec3.rotateY(sunAngle, sunAngle, ZERO_VECTOR, 45 * DEG2RAD);
-    // gl.uniform3f(sunlightAngleLocation, false, 0, 1, 0);
-    // gl.uniform3f(sunlightAngleLocation, false, 0,0,0);
-    // gl.uniform3f(sunlightAngleLocation, false, sunAngle.x, sunAngle.y, sunAngle.z);
-    gl.uniform3f(sunlightAngleLocation, sunAngle[0], sunAngle[1], sunAngle[2]);
-    // gl.uniform3f(sunlightAngleLocation, false, 1, 1, 1);
-    gl.uniform3f(ambientLightLocation, 0.2, 0.2, 0.2);
-    gl.uniform1f(sunlightIntensityLocation, 6);
 
-
-    // gl.uniformMatrix4fv(transformMatrixLocation, false, this.gameObject.matrix);
-    const uniforms = {
-        transformMatrix: transformMatrixLocation,
-    }
-    // gl.uniformMatrix4fv(transformMatrixLocation, false, this.gameObject.matrix);
-
-    // var attributes = [positionAttribute, uvAttribute, normalAttribute, colorAttribute];
-
-
-
+    gl.uniform3f(defaultShader.uniform("sunlightAngle"), sunAngle[0], sunAngle[1], sunAngle[2]);
+    gl.uniform3f(defaultShader.uniform("ambientLight"), 0.2, 0.2, 0.2);
+    gl.uniform1f(defaultShader.uniform("sunlightIntensity"), 6);
 
 
     // BLOCK MESH
     var cubeMesh = objToMesh(cubeModel);
     cubeMesh.createData();
-    console.log("going once...");
     cubeMesh.createBuffer(gl, attributes);
-    console.log("going twice...");
     cubeMesh.buffer(gl);
-    console.log("going three...");
 
     // PLANE MESH
     var mesh = objToMesh(planeModel);

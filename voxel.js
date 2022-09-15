@@ -57,7 +57,6 @@ class Mesh {
             console.error("Attempted to buffer data to a mesh renderer with no buffer!");
             return;
         }
-        console.log("BUIFF");
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, this.data, gl.STATIC_DRAW);
@@ -71,7 +70,6 @@ class Mesh {
             console.error("Mesh renderer requested a buffer when one already exists!");
             return;
         }
-        console.log("creating buffer...");
         this.vao = gl.createVertexArray();
         gl.bindVertexArray(this.vao);
         this.vertexBuffer = gl.createBuffer();
@@ -87,10 +85,7 @@ class Mesh {
         // // gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 0, 0);
         // gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 
-        console.log("going...");
         for (const attribute of vertexAttributes) {
-            console.log(attribute);
-
             if (attribute.location < 0) {
                 console.warn("Unused shader attribute: " + attribute.name);
                 continue;
