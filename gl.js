@@ -106,82 +106,25 @@ function main() {
     var l3 = new Line(vec3.fromValues(0, 0, 0), vec3.fromValues(5, 5, -5), vec3.fromValues(0, 1, 1));
     var l4 = new Line(vec3.fromValues(0, 0, 0), vec3.fromValues(-5, 5, 5), vec3.fromValues(0, 0, 1));
 
-    // console.log(Line.lineList);
-    // l3.destroy();
-    // console.log(Line.lineList);
-
     cam = new Camera();
-    cam.position[1] = 2;
-
-    Engine.test = function () {
-    }
-    Engine.test();
+    cam.position[2] = 20;
+    cam.position[1] = 3;
 
     initGLSettings();
     shaderProgram = createShaderProgram(gl, litVertexSource, litFragmentSource);
     lineShader = createShaderProgram(gl, lineVertexSource, lineFragmentSource);
-    gl.useProgram(shaderProgram);
     if (shaderProgram == null) return;
     if (lineShader == null) return;
     gl.useProgram(shaderProgram);
 
-
-
-    // const positionLocation = gl.getAttribLocation(shaderProgram, "vertexPosition");
-    // const colorLocation = gl.getAttribLocation(shaderProgram, "vertexColor");
-    // const normalLocation = gl.getAttribLocation(shaderProgram, "vertexNormal");
-    // const uv1Location = gl.getAttribLocation(shaderProgram, "vertexUV1");
     const valuesPerVertex = 11;
     const stride = FLOAT32_SIZE * valuesPerVertex;
-    // const positionAttribute = {
-    //     name: "vertexPosition",
-    //     location: positionLocation,
-    //     valueCount: 3,
-    //     type: gl.FLOAT,
-    //     stride: Float32Array.BYTES_PER_ELEMENT * valuesPerVertex,
-    //     offset: 0,
-    // };
     const positionAttribute = new ShaderAttribute("vertexPosition", 3, gl.FLOAT, stride, 0);
-    // const uvAttribute = new ShaderAttribute("vertexUV1", 3, gl.FLOAT, FLOAT32_SIZE * valuesPerVertex, 0);
-    const uvAttribute = new ShaderAttribute("vertexUV1", 2, gl.FLOAT,
-        stride, FLOAT32_SIZE * 3);
+    const uvAttribute = new ShaderAttribute("vertexUV1", 2, gl.FLOAT, stride, FLOAT32_SIZE * 3);
+    const normalAttribute = new ShaderAttribute("vertexNormal", 3, gl.FLOAT, stride, FLOAT32_SIZE * 5);
+    const colorAttribute = new ShaderAttribute("vertexColor", 3, gl.FLOAT, stride, FLOAT32_SIZE * 8);
 
-    // TEMP
-    // positionAttribute.location = positionLocation;
-    // const uvAttribute = {
-    //     name: "vertexUV1",
-    //     location: uv1Location,
-    //     valueCount: 2,
-    //     type: gl.FLOAT,
-    //     stride: Float32Array.BYTES_PER_ELEMENT * valuesPerVertex,
-    //     offset: Float32Array.BYTES_PER_ELEMENT * 3,
-    // };
-
-    const normalAttribute = new ShaderAttribute("vertexNormal", 3, gl.FLOAT,
-        stride, FLOAT32_SIZE * 5);
-
-    // const normalAttribute = {
-    //     name: "vertexNormal",
-    //     location: normalLocation,
-    //     count: 3,
-    //     type: gl.FLOAT,
-    //     stride: Float32Array.BYTES_PER_ELEMENT * valuesPerVertex,
-    //     offset: Float32Array.BYTES_PER_ELEMENT * 5,
-    // };
-    // };
-
-    const colorAttribute = new ShaderAttribute("vertexColor", 3, gl.FLOAT,
-        stride, FLOAT32_SIZE * 8)
-    // const colorAttribute = {
-    //     name: "vertexColor",
-    //     location: colorLocation,
-    //     count: 3,
-    //     type: gl.FLOAT,
-    //     stride: Float32Array.BYTES_PER_ELEMENT * valuesPerVertex,
-    //     offset: Float32Array.BYTES_PER_ELEMENT * 8,
-    // };
     var attributes = [positionAttribute, uvAttribute, normalAttribute, colorAttribute];
-    // console.log(positionAttribute);
 
     const uniforms = ["transformationMatrix", "ambientLight", "sunlightAngle", "sunlightIntensity"];
 
