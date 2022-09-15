@@ -25,6 +25,8 @@ var lineVAO;
 // var cubeMesh;
 var sphereRenderer;
 
+const FLOAT32_SIZE = Float32Array.BYTES_PER_ELEMENT;
+
 class ShaderAttribute {
     // name;
     // location;
@@ -32,10 +34,11 @@ class ShaderAttribute {
     // type;
     // stride;
     // offset;
-    constructor(name, location, count, type, stride, offset) {
+    location;
+    constructor(name, valueCount, type, stride, offset) {
         this.name = name;
-        this.location = location;
-        this.count = count;
+        // this.location = location;
+        this.valueCount = valueCount;
         this.type = type;
         this.stride = stride;
         this.offset = offset;
@@ -46,10 +49,18 @@ class Shader {
     // program;
     // attributes;
     // uniforms;
-    constructor(program, attributes, uniforms) {
+    constructor(gl, program, attributes, uniforms) {
         this.program = program;
         this.attributes = attributes;
         this.uniforms = uniforms;
+        for (let attribute of attributes) {
+            let location = gl.getAttribLocation(program, attribute.name);
+            if (location < 0) {
+                console.error("Attribute not found: " + attribute.name);
+                continue;
+            }
+            attribute.location = location;
+        }
     }
 }
 
@@ -82,9 +93,7 @@ function main() {
     cam.position[1] = 2;
 
     Engine.test = function () {
-        // alert("!");
     }
-
     Engine.test();
 
     initGLSettings();
@@ -95,45 +104,66 @@ function main() {
     if (lineShader == null) return;
     gl.useProgram(shaderProgram);
 
-    const valuesPerVertex = 11;
-    const positionLocation = gl.getAttribLocation(shaderProgram, "vertexPosition");
-    const colorLocation = gl.getAttribLocation(shaderProgram, "vertexColor");
-    const normalLocation = gl.getAttribLocation(shaderProgram, "vertexNormal");
-    const uv1Location = gl.getAttribLocation(shaderProgram, "vertexUV1");
-    const positionAttribute = {
-        name: "vertexPosition",
-        location: positionLocation,
-        count: 3,
-        type: gl.FLOAT,
-        stride: Float32Array.BYTES_PER_ELEMENT * valuesPerVertex,
-        offset: 0,
-    };
-    const uvAttribute = {
-        name: "vertexUV1",
-        location: uv1Location,
-        count: 2,
-        type: gl.FLOAT,
-        stride: Float32Array.BYTES_PER_ELEMENT * valuesPerVertex,
-        offset: Float32Array.BYTES_PER_ELEMENT * 3,
-    };
 
-    const normalAttribute = {
-        name: "vertexNormal",
-        location: normalLocation,
-        count: 3,
-        type: gl.FLOAT,
-        stride: Float32Array.BYTES_PER_ELEMENT * valuesPerVertex,
-        offset: Float32Array.BYTES_PER_ELEMENT * 5,
-    };
+
+    // const positionLocation = gl.getAttribLocation(shaderProgram, "vertexPosition");
+    // const colorLocation = gl.getAttribLocation(shaderProgram, "vertexColor");
+    // const normalLocation = gl.getAttribLocation(shaderProgram, "vertexNormal");
+    // const uv1Location = gl.getAttribLocation(shaderProgram, "vertexUV1");
+    const valuesPerVertex = 11;
+    const stride = FLOAT32_SIZE * valuesPerVertex;
+    // const positionAttribute = {
+    //     name: "vertexPosition",
+    //     location: positionLocation,
+    //     valueCount: 3,
+    //     type: gl.FLOAT,
+    //     stride: Float32Array.BYTES_PER_ELEMENT * valuesPerVertex,
+    //     offset: 0,
     // };
-    const colorAttribute = {
-        name: "vertexColor",
-        location: colorLocation,
-        count: 3,
-        type: gl.FLOAT,
-        stride: Float32Array.BYTES_PER_ELEMENT * valuesPerVertex,
-        offset: Float32Array.BYTES_PER_ELEMENT * 8,
-    };
+    const positionAttribute = new ShaderAttribute("vertexPosition", 3, gl.FLOAT, stride, 0);
+    // const uvAttribute = new ShaderAttribute("vertexUV1", 3, gl.FLOAT, FLOAT32_SIZE * valuesPerVertex, 0);
+    const uvAttribute = new ShaderAttribute("vertexUV1", 2, gl.FLOAT,
+        stride, FLOAT32_SIZE * 3);
+
+    // TEMP
+    // positionAttribute.location = positionLocation;
+    // const uvAttribute = {
+    //     name: "vertexUV1",
+    //     location: uv1Location,
+    //     valueCount: 2,
+    //     type: gl.FLOAT,
+    //     stride: Float32Array.BYTES_PER_ELEMENT * valuesPerVertex,
+    //     offset: Float32Array.BYTES_PER_ELEMENT * 3,
+    // };
+
+    const normalAttribute = new ShaderAttribute("vertexNormal", 3, gl.FLOAT,
+        stride, FLOAT32_SIZE * 5);
+
+    // const normalAttribute = {
+    //     name: "vertexNormal",
+    //     location: normalLocation,
+    //     count: 3,
+    //     type: gl.FLOAT,
+    //     stride: Float32Array.BYTES_PER_ELEMENT * valuesPerVertex,
+    //     offset: Float32Array.BYTES_PER_ELEMENT * 5,
+    // };
+    // };
+
+    const colorAttribute = new ShaderAttribute("vertexColor", 3, gl.FLOAT,
+        stride, FLOAT32_SIZE * 8)
+    // const colorAttribute = {
+    //     name: "vertexColor",
+    //     location: colorLocation,
+    //     count: 3,
+    //     type: gl.FLOAT,
+    //     stride: Float32Array.BYTES_PER_ELEMENT * valuesPerVertex,
+    //     offset: Float32Array.BYTES_PER_ELEMENT * 8,
+    // };
+    var attributes = [positionAttribute, normalAttribute, colorAttribute];
+    console.log(positionAttribute);
+
+    var defaultShader = new Shader(gl, shaderProgram, attributes);
+
     const transformMatrixLocation = gl.getUniformLocation(shaderProgram, "transformMatrix");
     const ambientLightLocation = gl.getUniformLocation(shaderProgram, "ambientLight");
     const sunlightAngleLocation = gl.getUniformLocation(shaderProgram, "sunlightAngle");
@@ -160,14 +190,20 @@ function main() {
     }
     // gl.uniformMatrix4fv(transformMatrixLocation, false, this.gameObject.matrix);
 
-    var attributes = [positionAttribute, uvAttribute, normalAttribute, colorAttribute];
-    var defaultShader = new Shader(shaderProgram, attributes);
+    // var attributes = [positionAttribute, uvAttribute, normalAttribute, colorAttribute];
+
+
+
+
 
     // BLOCK MESH
     var cubeMesh = objToMesh(cubeModel);
     cubeMesh.createData();
+    console.log("going once...");
     cubeMesh.createBuffer(gl, attributes);
+    console.log("going twice...");
     cubeMesh.buffer(gl);
+    console.log("going three...");
 
     // PLANE MESH
     var mesh = objToMesh(planeModel);
@@ -176,61 +212,39 @@ function main() {
     mesh.buffer(gl);
 
     // TEXTURE SETUP
-    const texture = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    const level = 0;
-    const internalFormat = gl.RGBA;
-    const width = 1;
-    const height = 1;
-    const border = 0;
-    const srcFormat = gl.RGBA;
-    const srcType = gl.UNSIGNED_BYTE;
-    const pixel = new Uint8Array([0, 0, 255, 255]);
-    gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, width, height, border, srcFormat, srcType, pixel);
-    const image = new Image();
-    image.onload = function () {
-        gl.bindTexture(gl.TEXTURE_2D, texture);
-        gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, srcFormat, srcType, image);
-        gl.generateMipmap(gl.TEXTURE_2D);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST_MIPMAP_LINEAR);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-        drawScene();
-    }
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
-
-    if (isPowerOf2(image.width) && isPowerOf2(image.height)) {
-        console.log("pow2");
-        gl.generateMipmap(gl.TEXTURE_2D);
-    } else {
-        // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-    }
-    // image.crossOrigin = "anonymous";
-    // image.src = "textures/bedrock.png";
-    // image.src = "https://webglfundamentals.org/webgl/resources/f-texture.png";
-    image.src = "textures/bedrock.png";
-    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-    // PLANE OBJECT
-    // var gameObject = new GameObject();
-    // gameObject.position[0] = -2;
-    // gameObject.position[1] = -2;
-    // gameObject.position[2] = -6;
-    // gameObject.rotation[0] = 30;
-    // meshRenderer = new MeshRenderer(gameObject, mesh);
-
-    // gl.activeTexture(gl.TEXTURE0);
-    // const samplerLocation = gl.getUniformLocation(shaderProgram, "uSampler");
-    // gl.activeTexture(gl.TEXTURE0);
-    // // gl.bindTexture(gl.TEXTURE)
-    // gl.uniform1i(samplerLocation, 0);
-
-    // // Bind the texture to texture unit 0
+    // const texture = gl.createTexture();
     // gl.bindTexture(gl.TEXTURE_2D, texture);
+    // const level = 0;
+    // const internalFormat = gl.RGBA;
+    // const width = 1;
+    // const height = 1;
+    // const border = 0;
+    // const srcFormat = gl.RGBA;
+    // const srcType = gl.UNSIGNED_BYTE;
+    // const pixel = new Uint8Array([0, 0, 255, 255]);
+    // gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, width, height, border, srcFormat, srcType, pixel);
+    // const image = new Image();
+    // image.onload = function () {
+    //     gl.bindTexture(gl.TEXTURE_2D, texture);
+    //     gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, srcFormat, srcType, image);
+    //     gl.generateMipmap(gl.TEXTURE_2D);
+    //     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST_MIPMAP_LINEAR);
+    //     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    //     drawScene();
+    // }
+    // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+    // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
 
-    // // Tell the shader we bound the texture to texture unit 0
-    // gl.uniform1i(programInfo.uniformLocations.uSampler, 0);
+    // if (isPowerOf2(image.width) && isPowerOf2(image.height)) {
+    //     console.log("pow2");
+    //     gl.generateMipmap(gl.TEXTURE_2D);
+    // } else {
+    //     // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    //     // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    //     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    // }
+    // image.src = "textures/bedrock.png";
+    // gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 
     // MOKEY 
     var sphereMesh = objToMesh(sphereModel);
