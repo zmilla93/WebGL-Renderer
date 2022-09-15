@@ -28,16 +28,12 @@ var sphereRenderer;
 const FLOAT32_SIZE = Float32Array.BYTES_PER_ELEMENT;
 
 class ShaderAttribute {
-    // name;
-    // location;
-    // count;
-    // type;
-    // stride;
-    // offset;
+    //  Holds data for weblGL vertexAttribPointer
+    //  https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/vertexAttribPointer
+    //  Location is set when it is added ot a shader object.
     location;
     constructor(name, valueCount, type, stride, offset) {
         this.name = name;
-        // this.location = location;
         this.valueCount = valueCount;
         this.type = type;
         this.stride = stride;
@@ -87,7 +83,7 @@ class Shader {
 
 class Material {
     shader;
-    settings;
+    applyUniforms;
 }
 
 class Engine {
@@ -129,6 +125,14 @@ function main() {
     const uniforms = ["transformationMatrix", "ambientLight", "sunlightAngle", "sunlightIntensity"];
 
     var defaultShader = new Shader(gl, "Default Shader", shaderProgram, attributes, uniforms);
+
+    var defaultMaterial = new Material(defaultShader, function () {
+
+    });
+    // defaultMaterial.applyUniforms = function () {
+    //     var shader =
+    //         defaultMaterial.shader.uniform("")
+    // }
 
     var sunAngle = vec3.fromValues(0.5, 1, 0.25);
     vec3.normalize(sunAngle, sunAngle);
@@ -341,7 +345,6 @@ function draw() {
 
 function update() {
     if (pressedKeys.has('w')) {
-        console.log("W")
         vec3.add(cam.position, cam.position, cam.viewDirection);
         drawScene();
     }
