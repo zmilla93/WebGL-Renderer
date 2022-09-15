@@ -73,8 +73,9 @@ function main() {
     var l2 = new Line(vec3.fromValues(0, 0, 0), vec3.fromValues(-5, 5, -5), vec3.fromValues(0, 1, 0));
     var l3 = new Line(vec3.fromValues(0, 0, 0), vec3.fromValues(5, 5, -5), vec3.fromValues(0, 1, 1));
     var l4 = new Line(vec3.fromValues(0, 0, 0), vec3.fromValues(-5, 5, 5), vec3.fromValues(0, 0, 1));
+
     // console.log(Line.lineList);
-    l3.destroy();
+    // l3.destroy();
     // console.log(Line.lineList);
 
     cam = new Camera();
@@ -135,7 +136,6 @@ function main() {
     vec3.rotateZ(sunAngle, sunAngle, ZERO_VECTOR, -45 * DEG2RAD);
     vec3.normalize(sunAngle, sunAngle);
     // vec3.rotateY(sunAngle, sunAngle, ZERO_VECTOR, 45 * DEG2RAD);
-
     // gl.uniform3f(sunlightAngleLocation, false, 0, 1, 0);
     // gl.uniform3f(sunlightAngleLocation, false, 0,0,0);
     // gl.uniform3f(sunlightAngleLocation, false, sunAngle.x, sunAngle.y, sunAngle.z);
@@ -194,8 +194,8 @@ function main() {
             var gameObject = new GameObject();
             // gameObject.init(gl, cube2);
             gameObject.position[0] = x * 2;
-            gameObject.position[1] = -4;
-            gameObject.position[2] = -10 - z * 2;
+            gameObject.position[1] = -1;
+            gameObject.position[2] = z * 2;
             var renderer = new MeshRenderer(gameObject, sphereMesh)
             gameObject.add(renderer);
         }
@@ -219,6 +219,7 @@ function main() {
     gl.bindBuffer(gl.ARRAY_BUFFER, lineBuffer);
     gl.useProgram(lineShader);
     // gl.bufferData(lineData);
+    // gl.bufferData(gl.ARRAY_BUFFER, lineData, gl.DYNAMIC_DRAW);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(lineData), gl.STATIC_DRAW);
     gl.enableVertexAttribArray(lineVertexPos);
     const linePositionAttrib = {
@@ -244,11 +245,14 @@ function main() {
     gl.vertexAttribPointer(lineColorPos, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
     gl.useProgram(shaderProgram);
 
+    // gl.polygonMode(gl.LINE)
+    // gl.wireframe(true)
+    createGrid();
+
     drawScene(gl, shaderProgram);
 
     // window.requestAnimationFrame(draw);
     setInterval(update, 1000 / 60);
-
 }
 
 function drawScene() {
@@ -273,13 +277,11 @@ function drawScene() {
     // mat4.mul(transformMatrix, )
     const projectionMatrixLocation = gl.getUniformLocation(lineShader, "projectionMatrix");
     gl.uniformMatrix4fv(projectionMatrixLocation, false, fullTransform);
-    // console.log(projectionMatrixLocation);
-    // console.log(projectionMatrix);
 
     gl.bindVertexArray(lineVAO);
     var lineData = Line.data;
-    gl.lineWidth(10);
-    gl.bufferData(gl.ARRAY_BUFFER, lineData, gl.STATIC_DRAW);
+    // gl.lineWidth(10);
+    gl.bufferData(gl.ARRAY_BUFFER, lineData, gl.DYNAMIC_DRAW);
     gl.drawArrays(gl.LINES, 0, Line.lineList.length * 2);
 
     // console.log(Line.data);
@@ -287,15 +289,11 @@ function drawScene() {
 
     }
 
-    createGrid();
-
     gl.useProgram(shaderProgram);
 
     for (renderer of MeshRenderer.renderList) {
         renderer.render(gl);
     }
-
-    // sphereRenderer.render(gl);
 
 }
 
@@ -385,7 +383,7 @@ function objToMesh(obj) {
                 break;
             case 'vt':
                 // UVs
-                uvsRaw.push(vec3.fromValues(tokens[1], tokens[2], tokens[3]));
+                uvsRaw.push(vec2.fromValues(tokens[1], tokens[2]));
                 break;
             case 'vn':
                 // Normals
