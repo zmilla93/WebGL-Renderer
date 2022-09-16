@@ -153,6 +153,7 @@ function main() {
 
     initGLSettings();
     shaderProgram = createShaderProgram(gl, litVertexSource, litFragmentSource);
+    const testShaderProgram = createShaderProgram(gl, litVertexSource, litFragmentSource);
     lineShader = createShaderProgram(gl, lineVertexSource, lineFragmentSource);
     if (shaderProgram == null) return;
     if (lineShader == null) return;
@@ -170,7 +171,7 @@ function main() {
     const uniforms = ["transformationMatrix", "ambientLight", "sunlightAngle", "sunlightIntensity"];
 
     var defaultShader = new Shader(gl, "Default Shader", shaderProgram, attributes, uniforms);
-    var testShader = new Shader(gl, "Test Shader", shaderProgram, attributes, uniforms);
+    var testShader = new Shader(gl, "Test Shader", testShaderProgram, attributes, uniforms);
 
     var defaultMaterial = new Material(defaultShader, function () {
 
@@ -362,8 +363,8 @@ function drawScene() {
             // Set the shader using the first element in the array,
             // since by design all elements in the array must use the same shader.
             if (!shaderChanged) {
-                console.log("CHANGE SHADER:");
-                console.log(material.shader);
+                // console.log("CHANGE SHADER:");
+                // console.log(material.shader);
                 gl.useProgram(material.shader.program);
                 material.shader;
                 shaderChanged = true;
