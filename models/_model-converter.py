@@ -1,7 +1,7 @@
 import os
 
 dir = "D:/Projects/Webcraft/Models/"
-outFile = dir + "models.js";
+outFile = dir + "_models.js";
 
 files = os.listdir(dir);
 output = open(outFile, "w")

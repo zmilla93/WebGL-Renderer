@@ -4,6 +4,7 @@
 const mat4 = glMatrix.mat4;
 const vec3 = glMatrix.vec3;
 const vec2 = glMatrix.vec2;
+const FLOAT32_SIZE = Float32Array.BYTES_PER_ELEMENT;
 
 // Multiplying a degree by this constant will give the radian equivalent.
 const DEG2RAD = Math.PI / 180;
@@ -16,9 +17,6 @@ const BACK_VECTOR = vec3.fromValues(0, 0, 1);
 const LEFT_VECTOR = vec3.fromValues(-1, 0, 0);
 const RIGHT_VECTOR = vec3.fromValues(1, 0, 0);
 const ZERO_VECTOR = vec3.fromValues(0, 0, 0);
-
-// Aliases
-const FLOAT32_SIZE = Float32Array.BYTES_PER_ELEMENT;
 
 class GameObject {
     position = vec3.create();

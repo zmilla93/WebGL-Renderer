@@ -15,7 +15,7 @@ files = os.listdir(dir);
 
 
 
-output = open(dir + "shaders.js", "w")
+output = open(dir + "_shaders.js", "w")
 output.write("// This file was auto-generated with shader-converter.py.\n")
 output.write("// It contains a javascript version of all shader code.\n\n")
 

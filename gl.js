@@ -1,12 +1,3 @@
-// // This code depends on glmatrix, a js library for Vector3 and matrix math;
-// // https://glmatrix.net/
-// // Some aliases, for ease of use.
-// const mat4 = glMatrix.mat4;
-// const vec3 = glMatrix.vec3;
-
-// // Multiplying a degree by this constant will give the radian equivalent.
-// const DEG2RAD = Math.PI / 180;
-
 var rotationX = 0;
 var rotationY = 0;
 var camRotationY = 0;
@@ -24,10 +15,6 @@ var lineVAO;
 // var simpleMesh;
 // var cubeMesh;
 var sphereRenderer;
-
-class Engine {
-    static test;
-}
 
 function main() {
     // Get the WebGL Context from the canvas
@@ -70,7 +57,11 @@ function main() {
 
     var defaultShader = new Shader(gl, "Default Shader", litVertexSource, litFragmentSource, attributes, uniforms);
     var testShader = new Shader(gl, "Test Shader", litVertexSource, litFragmentSource, attributes, uniforms);
-    // var unlitShader = new Shader(gl, "Unlit Shader", unlitVertexSource, unlitShaderSource)
+
+    const unlitUniforms = ["transformMatrix", "dominatingColor"];
+    var unlitShader = new Shader(gl, "Unlit Shader", unlitVertexSource, unlitFragmentSource, attributes, unlitUniforms);
+    gl.uniform3f(unlitShader.uniform("dominatingColor"), 1, 0, 0);
+
 
     gl.useProgram(defaultShader.program);
 
@@ -80,6 +71,16 @@ function main() {
     var testMaterial = new Material(defaultShader, function () {
 
     });
+    var unlitMaterial = new Material(unlitShader, function () {
+
+    });
+    var greenMaterial = new Material(unlitShader, function () {
+        gl.uniform3f(unlitShader.uniform("dominatingColor"), 0, 1, 0);
+    });
+    var coralMaterial = new Material(unlitShader, function () {
+        gl.uniform3f(unlitShader.uniform("dominatingColor"), 1, 0.5, 0.31);
+    });
+
     var sunAngle = vec3.fromValues(0.5, 1, 0.25);
     vec3.normalize(sunAngle, sunAngle);
     gl.uniform3f(defaultShader.uniform("sunlightAngle"), sunAngle[0], sunAngle[1], sunAngle[2]);
@@ -98,40 +99,7 @@ function main() {
     mesh.createBuffer(gl, attributes);
     mesh.buffer(gl);
 
-    // TEXTURE SETUP
-    // const texture = gl.createTexture();
-    // gl.bindTexture(gl.TEXTURE_2D, texture);
-    // const level = 0;
-    // const internalFormat = gl.RGBA;
-    // const width = 1;
-    // const height = 1;
-    // const border = 0;
-    // const srcFormat = gl.RGBA;
-    // const srcType = gl.UNSIGNED_BYTE;
-    // const pixel = new Uint8Array([0, 0, 255, 255]);
-    // gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, width, height, border, srcFormat, srcType, pixel);
-    // const image = new Image();
-    // image.onload = function () {
-    //     gl.bindTexture(gl.TEXTURE_2D, texture);
-    //     gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, srcFormat, srcType, image);
-    //     gl.generateMipmap(gl.TEXTURE_2D);
-    //     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST_MIPMAP_LINEAR);
-    //     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-    //     drawScene();
-    // }
-    // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-    // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
-
-    // if (isPowerOf2(image.width) && isPowerOf2(image.height)) {
-    //     console.log("pow2");
-    //     gl.generateMipmap(gl.TEXTURE_2D);
-    // } else {
-    //     // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    //     // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    //     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-    // }
-    // image.src = "textures/bedrock.png";
-    // gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+    
 
     // MOKEY 
     var sphereMesh = objToMesh(sphereModel);
@@ -157,15 +125,17 @@ function main() {
             gameObject.position[0] = x * spacing;
             gameObject.position[1] = 0;
             gameObject.position[2] = z * spacing;
-            var renderer = new MeshRenderer(cubeMesh, defaultMaterial)
+            var renderer = new MeshRenderer(cubeMesh, defaultMaterial);
             gameObject.add(renderer);
         }
     }
 
     // TEST CUBE
     var cubeGO = new GameObject();
-    var cubeRenderer = new MeshRenderer(cubeMesh, defaultMaterial);
+    var cubeRenderer = new MeshRenderer(cubeMesh, greenMaterial);
     cubeGO.add(cubeRenderer);
+    cubeGO.position[1] = 5;
+
     // cubeGO.position[0] = 2;
     // cubeGO.position[2] = 1;
 
@@ -217,7 +187,10 @@ function main() {
     // gl.wireframe(true)
     createGrid();
 
+    console.log(Material.materialMap);
     drawScene(gl, shaderProgram);
+
+    // console.log(Material.materialMap);
 
     // window.requestAnimationFrame(draw);
     setInterval(update, 1000 / 60);
@@ -269,6 +242,8 @@ function drawScene() {
                 gl.useProgram(material.shader.program);
                 shaderChanged = true;
             }
+            if (typeof material.applyPerMaterialUniforms === 'function')
+                material.applyPerMaterialUniforms();
             // Loop through all renderers that use this material and render them.
             material.renderers.forEach((renderer) => {
                 renderer.applyPerObjectUniforms();
