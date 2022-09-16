@@ -37,8 +37,8 @@ function main() {
     cam.position[1] = 3;
 
     initGLSettings();
-    shaderProgram = createShaderProgram(gl, litVertexSource, litFragmentSource);
-    const testShaderProgram = createShaderProgram(gl, litVertexSource, litFragmentSource);
+    shaderProgram = createShaderProgram(gl, simpleLitVertexSource, simpleLitFragmentSource);
+    const testShaderProgram = createShaderProgram(gl, simpleLitVertexSource, simpleLitFragmentSource);
     lineShader = createShaderProgram(gl, lineVertexSource, lineFragmentSource);
     if (shaderProgram == null) return;
     if (lineShader == null) return;
@@ -72,7 +72,7 @@ function main() {
 
     });
     var unlitMaterial = new Material(unlitShader, function () {
-
+        gl.uniform3f(unlitShader.uniform("dominatingColor"), 0, 0.5, 0.31);
     });
     var greenMaterial = new Material(unlitShader, function () {
         gl.uniform3f(unlitShader.uniform("dominatingColor"), 0, 1, 0);
@@ -131,10 +131,18 @@ function main() {
     }
 
     // TEST CUBE
-    var cubeGO = new GameObject();
+    var cube1 = new GameObject();
     var cubeRenderer = new MeshRenderer(cubeMesh, greenMaterial);
-    cubeGO.add(cubeRenderer);
-    cubeGO.position[1] = 5;
+    cube1.add(cubeRenderer);
+    cube1.position[1] = 5;
+
+    var cube2 = new GameObject();
+    var cubeRenderer2 = new MeshRenderer(cubeMesh, unlitMaterial);
+    cube2.add(cubeRenderer2);
+    cube2.position[0] = 1;
+    cube2.position[1] = 5;
+
+    // var testCube2
 
     // cubeGO.position[0] = 2;
     // cubeGO.position[2] = 1;
