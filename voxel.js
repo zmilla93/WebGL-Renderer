@@ -18,22 +18,6 @@ class Chunk {
     }
 }
 
-class Component {
-    gameObject = null;
-    // constructor(gameObject) {
-    //     this.gameObject = gameObject;
-    // }
-    setParent(parent) {
-        this.gameObject = parent;
-    }
-    onAdd = function (gameObject) {
-        console.error("Component failed to implement onAdd function!");
-    }
-    get parent() {
-        return this.gameObject;
-    }
-}
-
 /**
  * A mesh holds all the data for a 3D model.
  * Only one mesh should exist per model (ie one Cube mesh can be used to render many cubes).
