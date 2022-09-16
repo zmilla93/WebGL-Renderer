@@ -162,11 +162,16 @@ class MeshRenderer extends Component {
         // MeshRenderer.renderList.push(this);
     }
     render(gl) {
-        const transformMatrixLocation = gl.getUniformLocation(shaderProgram, "transformMatrix");
-        gl.uniformMatrix4fv(transformMatrixLocation, false, this.gameObject.matrix);
+        // const transformMatrixLocation = gl.getUniformLocation(shaderProgram, "transformMatrix");
+        // gl.uniformMatrix4fv(transformMatrixLocation, false, this.gameObject.matrix);
         gl.bindVertexArray(this.mesh.vao);
         gl.drawElements(gl.TRIANGLES, this.mesh.triangles.length, gl.UNSIGNED_SHORT, 0);
     }
+    applyPerObjectUniforms = function () {
+        // const transformMatrixLocation = gl.getUniformLocation(shaderProgram, "transformMatrix");
+        // gl.uniformMatrix4fv(transformMatrixLocation, false, this.gameObject.matrix);
+        gl.uniformMatrix4fv(this.material.shader.uniform("transformMatrix"), false, this.gameObject.matrix);
+    };
     onAdd = function (gameObject) {
         // console.log("GELLO" + gameObject);
     }

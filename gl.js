@@ -51,13 +51,15 @@ class Shader {
     // program - gl Shader Program
     // Attributes - Array of ShaderAttributes
     // Uniforms - Array of String uniform names
-    constructor(gl, name, program, attributes, uniforms) {
+    constructor(gl, name, vertexShaderSource, fragmentShaderSource, attributes, uniforms) {
         this.name = name;
-        this.program = program;
+        this.program = createShaderProgram(gl, vertexShaderSource, fragmentShaderSource);
+        gl.useProgram(this.program);
+        console.log(this.program);
         this.attributes = attributes;
         this.uniformMap = new Map();
         for (let attribute of attributes) {
-            let location = gl.getAttribLocation(program, attribute.name);
+            let location = gl.getAttribLocation(this.program, attribute.name);
             if (location < 0) {
                 console.error("Attribute location not found: " + attribute.name);
                 continue;
@@ -65,7 +67,7 @@ class Shader {
             attribute.location = location;
         }
         for (let uniform of uniforms) {
-            let location = gl.getUniformLocation(program, uniform);
+            let location = gl.getUniformLocation(this.program, uniform);
             if (location < 0) {
                 console.error("Uniform location not found: " + attribute.name);
                 continue;
@@ -168,10 +170,13 @@ function main() {
 
     var attributes = [positionAttribute, uvAttribute, normalAttribute, colorAttribute];
 
-    const uniforms = ["transformationMatrix", "ambientLight", "sunlightAngle", "sunlightIntensity"];
+    const uniforms = ["transformMatrix", "transformationMatrix", "ambientLight", "sunlightAngle", "sunlightIntensity"];
 
-    var defaultShader = new Shader(gl, "Default Shader", shaderProgram, attributes, uniforms);
-    var testShader = new Shader(gl, "Test Shader", testShaderProgram, attributes, uniforms);
+    var defaultShader = new Shader(gl, "Default Shader", litVertexSource, litFragmentSource, attributes, uniforms);
+    var testShader = new Shader(gl, "Test Shader", litVertexSource, litFragmentSource, attributes, uniforms);
+    // var unlitShader = new Shader(gl, "Unlit Shader", )
+
+    gl.useProgram(defaultShader.program);
 
     var defaultMaterial = new Material(defaultShader, function () {
 
@@ -355,7 +360,7 @@ function drawScene() {
 
     }
 
-    // Loop through all material groups.
+    // Loop through the material map.
     // This is a map where shaderName = [Array of materials using that shader]
     Material.materialMap.forEach((materialGroup) => {
         var shaderChanged = false;
@@ -366,39 +371,15 @@ function drawScene() {
                 // console.log("CHANGE SHADER:");
                 // console.log(material.shader);
                 gl.useProgram(material.shader.program);
-                material.shader;
                 shaderChanged = true;
             }
             // Loop through all renderers that use this material and render them.
             material.renderers.forEach((renderer) => {
+                renderer.applyPerObjectUniforms();
                 renderer.render(gl);
-            })
-        })
-    })
-
-    // for (shaderGroup of Material.materialMap) {
-    //     console.log(shaderGroup);
-    //     // for (materialList of shaderGroup) {
-    //     //     console.log(materialList);
-    //     //     // console.log(material.renderers);
-    //     //     for (material of materialList) {
-    //     //         // console.log(material);
-    //     //         // for (renderer of material.renderers) {
-    //     //         //     renderer.render(gl);
-    //     //         // }
-    //     //     }
-    //     //     // for(renderer of material.renderers){
-    //     //     //     renderer.render(gl);
-    //     //     // }
-
-    //     // }
-    //     // console.log(material.renderers);
-    //     // for(renderer of material.renderers){
-    //     //     renderer.render(gl);
-    //     // }
-    // }
-
-
+            });
+        });
+    });
 
     gl.useProgram(shaderProgram);
 
