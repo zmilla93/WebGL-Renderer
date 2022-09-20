@@ -15,6 +15,7 @@ class ShaderAttribute {
 }
 
 class Shader {
+    gl;
     name;
     program;
     attributes;
@@ -25,6 +26,7 @@ class Shader {
     // Attributes - Array of ShaderAttributes
     // Uniforms - Array of String uniform names
     constructor(gl, name, vertexShaderSource, fragmentShaderSource, attributes, uniforms) {
+        this.gl = gl;
         this.name = name;
         this.program = createShaderProgram(gl, vertexShaderSource, fragmentShaderSource);
         gl.useProgram(this.program);
@@ -34,25 +36,34 @@ class Shader {
         for (let attribute of attributes) {
             let location = gl.getAttribLocation(this.program, attribute.name);
             if (location < 0) {
-                console.warn("Attribute location not found '" + attribute.name + "' when creating shader '" + this.name + "'.");
+                console.warn("Attribute location '" + attribute.name + "' not found when creating shader '" + this.name + "'.");
                 continue;
             }
             attribute.location = location;
         }
-        for (let uniform of uniforms) {
-            let location = gl.getUniformLocation(this.program, uniform);
-            if (location < 0) {
-                console.error("Uniform location not found: " + attribute.name);
-                continue;
+        if (uniforms != null) {
+            for (let uniform of uniforms) {
+                let location = gl.getUniformLocation(this.program, uniform);
+                if (location < 0) {
+                    console.error("Uniform location not found: " + attribute.name);
+                    continue;
+                }
+                this.uniformMap.set(uniform, location);
             }
-            this.uniformMap.set(uniform, location);
         }
     }
-    // Returns the webGL location of the (string) uniform.
-    uniform(uniform) {
-        if (this.uniformMap.has(uniform))
-            return this.uniformMap.get(uniform);
-        console.error("Uniform '" + uniform + "' not found in map for shader '" + this.name + "'. Make sure to register uniform names on shader creation.");
+    // A chacheing version of gl.getUniformLocation.
+    uniform(uniformName) {
+        this.gl.useProgram(this.program);
+        if (this.uniformMap.has(uniformName))
+            return this.uniformMap.get(uniformName);
+        const uniformLocation = gl.getUniformLocation(this.program, uniformName);
+        console.log("LOC:::" + uniformLocation);
+        if (uniformLocation >= 0) {
+            this.uniformMap.set(uniformName, uniformLocation);
+            return uniformLocation;
+        }
+        console.error("Uniform '" + uniformName + "' not found in shader '" + this.name + "'.");
     }
 }
 
@@ -109,7 +120,7 @@ class Material {
  * If a mesh is updated, call buffer() to send data to webgl.
  * Use MeshRenderer to actually render the model.
  */
- class Mesh {
+class Mesh {
     vertices = [];
     triangles = [];
     uvs = [];
@@ -231,14 +242,14 @@ class MeshRenderer extends Component {
         // MeshRenderer.renderList.push(this);
     }
     render(gl) {
-        if(this.gameObject == null) return;
+        if (this.gameObject == null) return;
         // const transformMatrixLocation = gl.getUniformLocation(shaderProgram, "transformMatrix");
         // gl.uniformMatrix4fv(transformMatrixLocation, false, this.gameObject.matrix);
         gl.bindVertexArray(this.mesh.vao);
         gl.drawElements(gl.TRIANGLES, this.mesh.triangles.length, gl.UNSIGNED_SHORT, 0);
     }
     applyPerObjectUniforms = function () {
-        if(this.gameObject == null) return;
+        if (this.gameObject == null) return;
         // const transformMatrixLocation = gl.getUniformLocation(shaderProgram, "transformMatrix");
         // gl.uniformMatrix4fv(transformMatrixLocation, false, this.gameObject.matrix);
         gl.uniformMatrix4fv(this.material.shader.uniform("transformMatrix"), false, this.gameObject.matrix);

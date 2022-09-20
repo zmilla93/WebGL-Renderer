@@ -18,12 +18,27 @@ const LEFT_VECTOR = vec3.fromValues(-1, 0, 0);
 const RIGHT_VECTOR = vec3.fromValues(1, 0, 0);
 const ZERO_VECTOR = vec3.fromValues(0, 0, 0);
 
+class Engine {
+
+}
+
+class Time {
+    static _startTime;      // Internal, first timestamp recorded.
+    static _previousTime;   // Internal, timestamp of previous frame.
+    static deltaTime;       // Seconds since the last frame was rendered.
+    static elapsedTime;     // Seconds since engine began running.
+}
+
 class GameObject {
     position = vec3.create();
     rotation = vec3.create();
     scale = vec3.create();
     shape;
     components = [];
+    static gameObjectList = [];
+    constructor() {
+        GameObject.gameObjectList.push(this);
+    }
     add(component) {
         component.setParent(this);
         this.components.push(component);
@@ -53,6 +68,7 @@ class GameObject {
         mat4.rotateZ(rotationMatrix, rotationMatrix, this.rotation[2] * DEG2RAD);
 
         // Create Projection Matrix
+        // FIXME : Move to camera
         const projectionMatrix = mat4.create();
         mat4.perspective(projectionMatrix, fieldOfView, aspect, zNear, zFar);
 
@@ -62,6 +78,10 @@ class GameObject {
         mat4.mul(transformMatrix, transformMatrix, translationMatrix);
         mat4.mul(transformMatrix, transformMatrix, rotationMatrix);
         return transformMatrix;
+    }
+    destroy() {
+        const index = GameObject.gameObjectList.indexOf(this);
+        GameObject.gameObjectList.splice(index, 1);
     }
 }
 

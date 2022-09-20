@@ -16,6 +16,9 @@ var lineVAO;
 // var cubeMesh;
 var sphereRenderer;
 
+var deltaTime;
+var start;
+
 function main() {
     // Get the WebGL Context from the canvas
     // This contains all of the fun WebGL functions and constants
@@ -28,6 +31,10 @@ function main() {
     var l3 = new Line(vec3.fromValues(0, 0, 0), vec3.fromValues(5, 5, -5), vec3.fromValues(0, 1, 1));
     // var l4 = new Line(vec3.fromValues(0, 0, 0), vec3.fromValues(-5, 5, 5), vec3.fromValues(0, 0, 1));
     var l4 = new Line(vec3.fromValues(0, 0, 0), vec3.fromValues(-5, 5, 5), vec3.fromValues(0, 0, 1), vec3.fromValues(1, 0, 0));
+
+    // const worker = new Worker('test.js');
+
+    console.log(Input);
 
     // l3.destroy();
     // l1.destroy();
@@ -65,6 +72,7 @@ function main() {
 
     gl.useProgram(defaultShader.program);
 
+
     var defaultMaterial = new Material(defaultShader, function () {
 
     });
@@ -99,8 +107,6 @@ function main() {
     mesh.createBuffer(gl, attributes);
     mesh.buffer(gl);
 
-    
-
     // MOKEY 
     var sphereMesh = objToMesh(sphereModel);
     sphereMesh.createData();
@@ -115,20 +121,20 @@ function main() {
     sphere.add(sphereRenderer);
 
     // Block Floor
-    const count = 20;
-    const halfCount = count / 2;
-    const spacing = 1;
-    for (var x = -halfCount; x < halfCount; x++) {
-        for (var z = -halfCount; z < halfCount; z++) {
-            var gameObject = new GameObject();
-            // gameObject.init(gl, cube2);
-            gameObject.position[0] = x * spacing;
-            gameObject.position[1] = 0;
-            gameObject.position[2] = z * spacing;
-            var renderer = new MeshRenderer(cubeMesh, defaultMaterial);
-            gameObject.add(renderer);
-        }
-    }
+    // const count = 20;
+    // const halfCount = count / 2;
+    // const spacing = 1;
+    // for (var x = -halfCount; x < halfCount; x++) {
+    //     for (var z = -halfCount; z < halfCount; z++) {
+    //         var gameObject = new GameObject();
+    //         // gameObject.init(gl, cube2);
+    //         gameObject.position[0] = x * spacing;
+    //         gameObject.position[1] = 0;
+    //         gameObject.position[2] = z * spacing;
+    //         var renderer = new MeshRenderer(cubeMesh, defaultMaterial);
+    //         gameObject.add(renderer);
+    //     }
+    // }
 
     // TEST CUBE
     var cube1 = new GameObject();
@@ -195,13 +201,21 @@ function main() {
     // gl.wireframe(true)
     createGrid();
 
+    // bindEditorHTML();
+    // loadGameObjectList(GameObject.gameObjectList);
+    // GameObject.gameObjectList[4].position[1] = 2;
+
     console.log(Material.materialMap);
     drawScene(gl, shaderProgram);
 
     // console.log(Material.materialMap);
 
-    // window.requestAnimationFrame(draw);
-    setInterval(update, 1000 / 60);
+    window.requestAnimationFrame(draw);
+    // setInterval(update, 1000 / 60);
+}
+
+function setupDefaultShaders() {
+
 }
 
 function drawScene() {
@@ -262,6 +276,12 @@ function drawScene() {
 
     gl.useProgram(shaderProgram);
 
+    var gameObject = GameObject.gameObjectList[0];
+    gameObject.update = function () {
+        gameObject.position[1] = 3 + Math.cos(Time.elapsedTime * 4) *2;
+    }
+    // gameObject.delete();
+
     // for (renderer of MeshRenderer.renderList) {
     //     renderer.render(gl);
     // }
@@ -285,45 +305,88 @@ function createGrid() {
     }
 }
 
-function draw() {
-    console.log("draw");
+var previousTime = 0;
+var elapsedTime = 0;
+
+function draw(timestamp) {
+    // console.log(timestamp);
+    if (Time._startTime == undefined) {
+        Time._startTime = timestamp;
+        Time.deltaTime = 0;
+        Time.elapsedTime = 0;
+    } else {
+        Time.deltaTime = (timestamp - Time._previousTime) / 1000;
+        Time.elapsedTime = (timestamp - Time._startTime) / 1000;
+    }
+    Time._previousTime = timestamp;
+    // console.log(deltaTime);
+    // pollInput();
     if (running) {
         window.requestAnimationFrame(draw);
+        for (gameObject of GameObject.gameObjectList) {
+            if (typeof gameObject.update === 'function') gameObject.update();
+        }
+        update();
+        // drawScene();
     }
 }
 
 function update() {
-    if (pressedKeys.has('w')) {
-        vec3.add(cam.position, cam.position, cam.viewDirection);
+    // console.log(elapsedTime);
+    // var gameObject = GameObject.gameObjectList[0];
+    // gameObject.position[1] = 3 + Math.cos(Time.elapsedTime / 250) * 2;
+    pollInput();
+    Input.pressedThisFrame.clear();
+    drawScene();
+}
+
+function pollInput() {
+    const walkSpeed = 5;
+    const runSpeed = 10;
+    const speed = Input.isKeyPressed('ShiftLeft') || Input.isKeyPressed('ShiftRight') ? runSpeed : walkSpeed;
+    // console.log(Time.deltaTime);
+    // console.log(cam.viewDirection);
+    // console.log(cam.position);
+    if (Input.isKeyPressed('KeyW')) {
+        var scaled = vec3.clone(cam.viewDirection);
+        vec3.scale(scaled, scaled, Time.deltaTime * speed);
+        vec3.add(cam.position, cam.position, scaled);
         drawScene();
     }
-    if (pressedKeys.has('s')) {
+    if (Input.isKeyPressed('KeyS')) {
         var localBack = vec3.create();
         vec3.rotateY(localBack, cam.viewDirection, ZERO_VECTOR, 180 * DEG2RAD)
-        vec3.add(cam.position, cam.position, localBack);
+        var scaled = vec3.clone(localBack);
+        vec3.scale(scaled, scaled, Time.deltaTime * speed);
+        vec3.add(cam.position, cam.position, scaled);
         drawScene();
     }
-    if (pressedKeys.has('a')) {
+    if (Input.isKeyPressed('KeyA')) {
         var localLeft = vec3.create();
         vec3.rotateY(localLeft, cam.viewDirection, ZERO_VECTOR, 90 * DEG2RAD)
-        vec3.add(cam.position, cam.position, localLeft);
+        var scaled = vec3.clone(localLeft);
+        vec3.scale(scaled, scaled, Time.deltaTime * speed);
+        vec3.add(cam.position, cam.position, scaled);
         drawScene();
     }
-    if (pressedKeys.has('d')) {
+    if (Input.isKeyPressed('KeyD')) {
         var localRight = vec3.create();
-        vec3.rotateY(localRight, cam.viewDirection, ZERO_VECTOR, -90 * DEG2RAD)
-        vec3.add(cam.position, cam.position, localRight);
+        vec3.rotateY(localRight, cam.viewDirection, ZERO_VECTOR, -90 * DEG2RAD);
+        var scaled = vec3.clone(localRight);
+        vec3.scale(scaled, scaled, Time.deltaTime * speed);
+        vec3.add(cam.position, cam.position, scaled);
         drawScene();
     }
-    if (pressedKeys.has('q')) {
+    if (Input.isKeyPressed('KeyQ')) {
         vec3.rotateY(cam.viewDirection, cam.viewDirection, ZERO_VECTOR, 4 * DEG2RAD);
         drawScene();
     }
-    if (pressedKeys.has('e')) {
+    if (Input.isKeyPressed('KeyE')) {
         vec3.rotateY(cam.viewDirection, cam.viewDirection, ZERO_VECTOR, -4 * DEG2RAD);
         drawScene();
     }
-    pressedThisFrame.clear();
+    // FIXME : Move to internal
+
 }
 
 function initGLSettings() {

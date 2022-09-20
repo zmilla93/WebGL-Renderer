@@ -1,8 +1,55 @@
-#glCanvas{
-    border:black;
+body{
+    background-color: #353535;
+}
+
+#glCanvas {
+    border: black;
     border-width: 1px;
     border-style: solid;
 }
+
+#editor {
+    /* background-color: bisque; */
+    display: block;
+    display: flex;
+    flex-flow: row nowrap;
+}
+
+#editor div{
+    /* display: flex;
+     */
+    /* display: block; */
+    /* height: 100%; */
+}
+
+#gameObjectListWrapper{
+    display: flex;
+}
+
+#gameObjectList {
+    /* background-color: purple; */
+    color: green;
+    display: flex;
+    padding-left: 5px;
+    padding-right: 5px;
+    /* padding-top: 5px;
+    padding-bottom: 5px; */
+    /* height:fit-content; */
+    /* height: max-content; */
+    /* float: right; */
+    /* height: 600px; */
+    /* display: flex; */
+    /* flex-flow: column; */
+}
+
+#inspector {
+    background-color: orange;
+    /* height: 600px; */
+}
+
+
+
+
 
 /* body{
     color:green;

@@ -11,6 +11,7 @@
     <script src="engine.js"></script>
     <script src="rendering.js"></script>
     <script src="input.js"></script>
+    <script src="editor.js"></script>
     <!-- Assets -->
     <script src="shaders/_shaders.js"></script>
     <script src="models/_models.js"></script>
@@ -20,13 +21,26 @@
 </head>
 
 <body>
-    <canvas id="glCanvas" tabindex ="1" width="900" height="600"></canvas><br>
-    <div>
-        <label>Rotation X</label><input id = "rotationXSlider" type ="range" min="0" max = 360>
-        <label>Rotation Y</label><input id = "rotationYSlider" type ="range" min="0" max = 360>
-        <label>Cam Rotation Y</label><input id = "camRotationYSlider" type ="range" min="0" max = 360>
+    <div id="editor">
+        <div>
+            <canvas id="glCanvas" tabindex="1" width="1280" height="720"></canvas>
+        </div>
+        <!-- <div id="gameObjectListWrapper">
+            <select id="gameObjectList" size="4">
+                <option value="item1">Test1</option>
+            </select>
+        </div>
+        <div id="inspector">
+            Test Element <input type="number"><br>
+        </div> -->
     </div>
-    <select size = "4">
-        <option value="item1">Test1</option>
-    </select>
+    <div>
+        <label>Rotation X</label><input id="rotationXSlider" type="range" min="0" max=360>
+        <label>Rotation Y</label><input id="rotationYSlider" type="range" min="0" max=360>
+        <label>Cam Rotation Y</label><input id="camRotationYSlider" type="range" min="0" max=360>
+    </div>
+    <div id="controls">
+
+    </div>
+
 </body>

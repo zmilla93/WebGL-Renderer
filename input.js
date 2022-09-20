@@ -1,44 +1,39 @@
-// This file handles everything related inputs.
-// This includes mouse, keyboard, and HTML controls.
+// Hadles keyboard input
+// Use Input.isKeyPressed(keyCode) and Input.wasPressedThisFrame(keyCode) to check keyboard state
 
-const pressedThisFrame = new Set();
-const pressedKeys = new Set();
-
-function addKeyboardListeners() {
-    document.addEventListener("keydown", function (e) {
-        updateKey(e.key, true);
-    })
-    document.addEventListener("keyup", function (e) {
-        updateKey(e.key, false);
-    })
-    document.addEventListener("mousemove", function (e) {
-        // if (canvas == document.activeElement)
-        // console.log("mouse");
-    })
-    // canvas.onfocus = function () {
-    //     console.log("focus");
-    // }
-    
-    // Ignore default spacebar scroll
-    // window.addEventListener('keydown', function (e) {
-    //     if (e.code == 'Space' && e.target == document.body) {
-    //         e.preventDefault();
-    //     }
-    // });
-}
-
-function updateKey(key, state) {
-    // console.log("key")
-    if (state) {
-        pressedKeys.add(key);
-        pressedThisFrame.add(key);
-    } else {
-        if (pressedKeys.has(key)) {
-            pressedKeys.delete(key);
+class Input {
+    static pressedThisFrame = new Set();
+    static pressedKeys = new Set();
+    static isKeyPressed(keyCode) {
+        return Input.pressedKeys.has(keyCode);
+    }
+    static wasPressedThisFrame(keyCode) {
+        return Input.pressedThisFrame.has(keyCode);
+    }
+    static addKeyboardListeners() {
+        document.addEventListener("keydown", function (e) {
+            console.log(e);
+            Input.updateKey(e, true);
+        });
+        document.addEventListener("keyup", function (e) {
+            Input.updateKey(e, false);
+        });
+        document.addEventListener("mousemove", function (e) {
+            // if (canvas == document.activeElement)
+            // console.log("mouse");
+        });
+    }
+    static updateKey(e, state) {
+        // console.log("key")
+        if (state) {
+            Input.pressedKeys.add(e.code);
+            Input.pressedThisFrame.add(e.code);
+        } else {
+            if (Input.pressedKeys.has(e.code)) {
+                Input.pressedKeys.delete(e.code);
+            }
         }
     }
 }
 
-window.addEventListener('load', addKeyboardListeners)
-
-// window.onload = hmmm;
+window.addEventListener('load', Input.addKeyboardListeners);
