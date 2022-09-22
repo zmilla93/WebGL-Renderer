@@ -10,15 +10,16 @@ const FLOAT32_SIZE = Float32Array.BYTES_PER_ELEMENT;
 const DEG2RAD = Math.PI / 180;
 
 // Basic Vectors
-const UP_VECTOR = vec3.fromValues(0, 1, 0);
-const DOWN_VECTOR = vec3.fromValues(0, 1, 0);
-const FORWARD_VECTOR = vec3.fromValues(0, 0, -1);
-const BACK_VECTOR = vec3.fromValues(0, 0, 1);
-const LEFT_VECTOR = vec3.fromValues(-1, 0, 0);
-const RIGHT_VECTOR = vec3.fromValues(1, 0, 0);
-const ZERO_VECTOR = vec3.fromValues(0, 0, 0);
+const VECTOR3_UP = vec3.fromValues(0, 1, 0);
+const VECTOR3_DOWN = vec3.fromValues(0, -1, 0);
+const VECTOR3_FORWARD = vec3.fromValues(0, 0, -1);
+const VECTOR3_BACK = vec3.fromValues(0, 0, 1);
+const VECTOR3_LEFT = vec3.fromValues(-1, 0, 0);
+const VECTOR3_RIGHT = vec3.fromValues(1, 0, 0);
+const VECTOR3_ZERO = vec3.fromValues(0, 0, 0);
 
 class Engine {
+    mainCamera;
 
 }
 
@@ -87,9 +88,6 @@ class GameObject {
 
 class Component {
     gameObject = null;
-    // constructor(gameObject) {
-    //     this.gameObject = gameObject;
-    // }
     setParent(parent) {
         this.gameObject = parent;
     }
@@ -101,11 +99,15 @@ class Component {
     }
 }
 
+// Move to rendering?
 class Camera {
     position;
+    rotation;
     viewDirection;
+    worldToViewMatrix;
     constructor() {
         this.position = vec3.create();
+        this.rotation = vec3.create();
         this.viewDirection = vec3.create();
         this.viewDirection[2] = -1;
     }
@@ -113,8 +115,21 @@ class Camera {
         const matrix = mat4.create();
         const lookVector = vec3.create();
         vec3.add(lookVector, this.position, this.viewDirection);
-        mat4.lookAt(matrix, this.position, lookVector, UP_VECTOR);
+        mat4.lookAt(matrix, this.position, lookVector, VECTOR3_UP);
         return matrix;
+    }
+    calculateWorldtoViewMatrix(){
+        this.worldToViewMatrix = mat4.create();
+        const lookVector = vec3.create();
+        vec3.add(lookVector, this.position, this.viewDirection);
+        mat4.lookAt(this.worldToViewMatrix, this.position, lookVector, VECTOR3_UP);
+        // return worldToViewMatrix;
+    }
+    setPosition(x, y, z){
+        
+    }
+    setRotation(x, y, z){
+
     }
 }
 

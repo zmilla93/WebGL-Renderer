@@ -26,6 +26,9 @@ function main() {
     const canvas = document.getElementById("glCanvas");
     gl = canvas.getContext("webgl2", { antialias: true, depth: true });
 
+    Input.addKeyboardListeners();
+    Input.addMouseListeners(canvas);
+
     var l1 = new Line(vec3.fromValues(0, 0, 0), vec3.fromValues(5, 5, 5), vec3.fromValues(1, 1, 0));
     var l2 = new Line(vec3.fromValues(0, 0, 0), vec3.fromValues(-5, 5, -5), vec3.fromValues(0, 1, 0));
     var l3 = new Line(vec3.fromValues(0, 0, 0), vec3.fromValues(5, 5, -5), vec3.fromValues(0, 1, 1));
@@ -60,16 +63,11 @@ function main() {
 
     var attributes = [positionAttribute, uvAttribute, normalAttribute, colorAttribute];
 
-    const uniforms = ["transformMatrix", "transformationMatrix", "ambientLight", "sunlightAngle", "sunlightIntensity"];
+    var defaultShader = new Shader(gl, "Default Shader", litVertexSource, litFragmentSource, attributes);
+    var testShader = new Shader(gl, "Test Shader", litVertexSource, litFragmentSource, attributes);
 
-    var defaultShader = new Shader(gl, "Default Shader", litVertexSource, litFragmentSource, attributes, uniforms);
-    var testShader = new Shader(gl, "Test Shader", litVertexSource, litFragmentSource, attributes, uniforms);
-
-    const unlitUniforms = ["transformMatrix", "dominatingColor"];
-    var unlitShader = new Shader(gl, "Unlit Shader", unlitVertexSource, unlitFragmentSource, attributes, unlitUniforms);
+    var unlitShader = new Shader(gl, "Unlit Shader", unlitVertexSource, unlitFragmentSource, attributes);
     gl.uniform3f(unlitShader.uniform("dominatingColor"), 1, 0, 0);
-
-
     gl.useProgram(defaultShader.program);
 
 
@@ -154,9 +152,7 @@ function main() {
     // cubeGO.position[2] = 1;
 
     // LINE SETUP
-
     const valuesPerLineVertex = 6;
-
     const lineVertexPos = gl.getAttribLocation(lineShader, "vertexPosition");
     const lineColorPos = gl.getAttribLocation(lineShader, "vertexColor");
     lineVAO = gl.createVertexArray();
@@ -278,7 +274,7 @@ function drawScene() {
 
     var gameObject = GameObject.gameObjectList[0];
     gameObject.update = function () {
-        gameObject.position[1] = 3 + Math.cos(Time.elapsedTime * 4) *2;
+        gameObject.position[1] = 3 + Math.cos(Time.elapsedTime * 4) * 2;
     }
     // gameObject.delete();
 
@@ -327,6 +323,7 @@ function draw(timestamp) {
             if (typeof gameObject.update === 'function') gameObject.update();
         }
         update();
+        Input.pressedThisFrame.clear();
         // drawScene();
     }
 }
@@ -336,7 +333,8 @@ function update() {
     // var gameObject = GameObject.gameObjectList[0];
     // gameObject.position[1] = 3 + Math.cos(Time.elapsedTime / 250) * 2;
     pollInput();
-    Input.pressedThisFrame.clear();
+
+
     drawScene();
 }
 
@@ -355,7 +353,7 @@ function pollInput() {
     }
     if (Input.isKeyPressed('KeyS')) {
         var localBack = vec3.create();
-        vec3.rotateY(localBack, cam.viewDirection, ZERO_VECTOR, 180 * DEG2RAD)
+        vec3.rotateY(localBack, cam.viewDirection, VECTOR3_ZERO, 180 * DEG2RAD)
         var scaled = vec3.clone(localBack);
         vec3.scale(scaled, scaled, Time.deltaTime * speed);
         vec3.add(cam.position, cam.position, scaled);
@@ -363,7 +361,7 @@ function pollInput() {
     }
     if (Input.isKeyPressed('KeyA')) {
         var localLeft = vec3.create();
-        vec3.rotateY(localLeft, cam.viewDirection, ZERO_VECTOR, 90 * DEG2RAD)
+        vec3.rotateY(localLeft, cam.viewDirection, VECTOR3_ZERO, 90 * DEG2RAD)
         var scaled = vec3.clone(localLeft);
         vec3.scale(scaled, scaled, Time.deltaTime * speed);
         vec3.add(cam.position, cam.position, scaled);
@@ -371,33 +369,41 @@ function pollInput() {
     }
     if (Input.isKeyPressed('KeyD')) {
         var localRight = vec3.create();
-        vec3.rotateY(localRight, cam.viewDirection, ZERO_VECTOR, -90 * DEG2RAD);
+        vec3.rotateY(localRight, cam.viewDirection, VECTOR3_ZERO, -90 * DEG2RAD);
         var scaled = vec3.clone(localRight);
         vec3.scale(scaled, scaled, Time.deltaTime * speed);
         vec3.add(cam.position, cam.position, scaled);
         drawScene();
     }
+    if (Input.isKeyPressed('Space')) {
+        var scaled = vec3.clone(VECTOR3_UP);
+        vec3.scale(scaled, scaled, Time.deltaTime * speed);
+        vec3.add(cam.position, cam.position, scaled);
+        drawScene();
+    }
+    if (Input.isKeyPressed('ControlLeft')) {
+        var scaled = vec3.clone(VECTOR3_DOWN);
+        vec3.scale(scaled, scaled, Time.deltaTime * speed);
+        vec3.add(cam.position, cam.position, scaled);
+        drawScene();
+    }
     if (Input.isKeyPressed('KeyQ')) {
-        vec3.rotateY(cam.viewDirection, cam.viewDirection, ZERO_VECTOR, 4 * DEG2RAD);
+        vec3.rotateY(cam.viewDirection, cam.viewDirection, VECTOR3_ZERO, 90 * DEG2RAD * Time.deltaTime);
         drawScene();
     }
     if (Input.isKeyPressed('KeyE')) {
-        vec3.rotateY(cam.viewDirection, cam.viewDirection, ZERO_VECTOR, -4 * DEG2RAD);
+        vec3.rotateY(cam.viewDirection, cam.viewDirection, VECTOR3_ZERO, -90 * DEG2RAD * Time.deltaTime);
         drawScene();
     }
-    // FIXME : Move to internal
-
 }
 
 function initGLSettings() {
-    // gl.enable(gl.CULL_FACE)
+    gl.enable(gl.CULL_FACE)
     gl.cullFace(gl.BACK);
     gl.enable(gl.DEPTH_TEST);
     gl.clearColor(144 / 255, 212 / 255, 133 / 255, 1);
     // gl.clearDepth(1.0);
 }
-
-
 
 function objToMesh(obj) {
     var lines = obj.trim().split('\n');
@@ -435,6 +441,77 @@ function objToMesh(obj) {
                     vertices.push(verticesRaw[values[0] - 1]);
                     uvs.push(uvsRaw[values[1] - 1]);
                     normals.push(normalsRaw[values[2] - 1]);
+                }
+                switch (tokens.length - 1) {
+                    case 3:
+                        triangles.push(vertexCount);
+                        triangles.push(vertexCount + 1);
+                        triangles.push(vertexCount + 2);
+                        vertexCount += 3;
+                        break;
+                    case 4:
+                        triangles.push(vertexCount);
+                        triangles.push(vertexCount + 1);
+                        triangles.push(vertexCount + 2);
+                        triangles.push(vertexCount + 2);
+                        triangles.push(vertexCount + 3);
+                        triangles.push(vertexCount);
+                        vertexCount += 4;
+                        break;
+                    default:
+                        console.error("Unhandled Face Vertex Count: " + (tokens.length - 1));
+                        break;
+                }
+                break;
+            default:
+                break;
+        }
+    }
+    const mesh = new Mesh();
+    mesh.vertices = vertices;
+    mesh.uvs = uvs;
+    mesh.normals = normals;
+    mesh.triangles = triangles;
+    return mesh;
+}
+
+function objToVoxelModel(obj) {
+    var lines = obj.trim().split('\n');
+    var verticesRaw = [];
+    var uvsRaw = [];
+    var normalsRaw = [];
+    var vertices = [];
+    var uvs = [];
+    var normals = [];
+    var vertexCount = 0;
+    var triangles = [];
+    for (var line of lines) {
+        var cleanLine = line.trim().replace(/\s+/, " ");
+        var tokens = cleanLine.split(" ");
+        switch (tokens[0]) {
+            case 'o':
+                // Mesh Name
+                break;
+            case 'v':
+                // Vertex
+                verticesRaw.push(vec3.fromValues(tokens[1], tokens[2], tokens[3]));
+                break;
+            case 'vt':
+                // UVs
+                uvsRaw.push(vec2.fromValues(tokens[1], tokens[2]));
+                break;
+            case 'vn':
+                // Normals
+                normalsRaw.push(vec3.fromValues(tokens[1], tokens[2], tokens[3]));
+                break;
+            case 'f':
+                // Face
+                for (let i = 1; i < tokens.length; i++) {
+                    var values = tokens[i].split("/");
+                    vertices.push(verticesRaw[values[0] - 1]);
+                    uvs.push(uvsRaw[values[1] - 1]);
+                    normals.push(normalsRaw[values[2] - 1]);
+                    console.log(normalsRaw[values[2] - 1]);
                 }
                 switch (tokens.length - 1) {
                     case 3:
@@ -523,4 +600,6 @@ function glValue(value) {
     }
 }
 
-window.onload = main;
+window.addEventListener('load', main);
+
+// window.onload = main;

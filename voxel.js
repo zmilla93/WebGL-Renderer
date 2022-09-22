@@ -1,4 +1,18 @@
 
+class VoxelModel {
+    faces = {
+        top: [],
+        bottom: [],
+        north: [],
+        east: [],
+        south: [],
+        west: [],
+    };
+    constructor(data){
+        
+    }
+}
+
 const Blocks = Object.freeze({
     Air: Symbol("Air"),
     Stone: Symbol("Stone"),
