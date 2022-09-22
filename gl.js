@@ -39,9 +39,6 @@ function main() {
 
     console.log(Input);
 
-    // l3.destroy();
-    // l1.destroy();
-
     cam = new Camera();
     cam.position[2] = 20;
     cam.position[1] = 3;
@@ -315,8 +312,6 @@ function draw(timestamp) {
         Time.elapsedTime = (timestamp - Time._startTime) / 1000;
     }
     Time._previousTime = timestamp;
-    // console.log(deltaTime);
-    // pollInput();
     if (running) {
         window.requestAnimationFrame(draw);
         for (gameObject of GameObject.gameObjectList) {
@@ -346,14 +341,14 @@ function pollInput() {
     // console.log(cam.viewDirection);
     // console.log(cam.position);
     if (Input.isKeyPressed('KeyW')) {
-        var scaled = vec3.clone(cam.viewDirection);
+        var scaled = vec3.clone(cam.forward);
         vec3.scale(scaled, scaled, Time.deltaTime * speed);
         vec3.add(cam.position, cam.position, scaled);
         drawScene();
     }
     if (Input.isKeyPressed('KeyS')) {
         var localBack = vec3.create();
-        vec3.rotateY(localBack, cam.viewDirection, VECTOR3_ZERO, 180 * DEG2RAD)
+        vec3.rotateY(localBack, cam.forward, VECTOR3_ZERO, 180 * DEG2RAD)
         var scaled = vec3.clone(localBack);
         vec3.scale(scaled, scaled, Time.deltaTime * speed);
         vec3.add(cam.position, cam.position, scaled);
@@ -361,7 +356,7 @@ function pollInput() {
     }
     if (Input.isKeyPressed('KeyA')) {
         var localLeft = vec3.create();
-        vec3.rotateY(localLeft, cam.viewDirection, VECTOR3_ZERO, 90 * DEG2RAD)
+        vec3.rotateY(localLeft, cam.forward, VECTOR3_ZERO, 90 * DEG2RAD)
         var scaled = vec3.clone(localLeft);
         vec3.scale(scaled, scaled, Time.deltaTime * speed);
         vec3.add(cam.position, cam.position, scaled);
@@ -369,7 +364,7 @@ function pollInput() {
     }
     if (Input.isKeyPressed('KeyD')) {
         var localRight = vec3.create();
-        vec3.rotateY(localRight, cam.viewDirection, VECTOR3_ZERO, -90 * DEG2RAD);
+        vec3.rotateY(localRight, cam.forward, VECTOR3_ZERO, -90 * DEG2RAD);
         var scaled = vec3.clone(localRight);
         vec3.scale(scaled, scaled, Time.deltaTime * speed);
         vec3.add(cam.position, cam.position, scaled);
@@ -388,12 +383,28 @@ function pollInput() {
         drawScene();
     }
     if (Input.isKeyPressed('KeyQ')) {
-        vec3.rotateY(cam.viewDirection, cam.viewDirection, VECTOR3_ZERO, 90 * DEG2RAD * Time.deltaTime);
-        drawScene();
+        var rotationY = cam.rotation[1];
+        rotationY += 90 * DEG2RAD * Time.deltaTime;
+        cam.setRotation(cam.rotation[0], rotationY, cam.rotation[2]);
     }
     if (Input.isKeyPressed('KeyE')) {
-        vec3.rotateY(cam.viewDirection, cam.viewDirection, VECTOR3_ZERO, -90 * DEG2RAD * Time.deltaTime);
-        drawScene();
+        var rotationY = cam.rotation[1];
+        rotationY -= 90 * DEG2RAD * Time.deltaTime;
+        cam.setRotation(cam.rotation[0], rotationY, cam.rotation[2]);
+    }
+    if (Input.isKeyPressed('KeyZ')) {
+        var rotationX = cam.rotation[0];
+        rotationX += 90 * DEG2RAD * Time.deltaTime;
+        cam.setRotation(rotationX, cam.rotation[1], 0);
+    }
+    if (Input.isKeyPressed('KeyX')) {
+        var rotationX = cam.rotation[0];
+        rotationX -= 90 * DEG2RAD * Time.deltaTime;
+        cam.setRotation(rotationX, cam.rotation[1], 0);
+    }
+    if(Input.wasPressedThisFrame('KeyV')){
+        // console.log("W");
+        cam.setRotation(cam.rotation[0], cam.rotation[1], 45);
     }
 }
 
