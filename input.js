@@ -40,6 +40,7 @@ class Input {
             // console.log("mouse");
         });
         document.addEventListener("mouseup", function (e) {
+
             // if (canvas == document.activeElement)
             // console.log("mouse");
         });

@@ -88,11 +88,12 @@ class GameObject {
 
 class Component {
     gameObject = null;
+    update;
     setParent(parent) {
         this.gameObject = parent;
     }
     onAdd = function (gameObject) {
-        console.error("Component failed to implement onAdd function!");
+        // console.error("Component failed to implement onAdd function!");
     }
     get parent() {
         return this.gameObject;
@@ -100,6 +101,7 @@ class Component {
 }
 
 // Move to rendering?
+// TODO : Extend component, move position/rotation to gameObject
 class Camera {
     position;
     rotation;
@@ -148,7 +150,7 @@ class Camera {
 
         // vec3.rotateZ(localViewDirection, localViewDirection, VECTOR3_ZERO, this.rotation[2]);
         // vec3.rotateY(this.rotation[1]);
-        
+
         const lookVector = vec3.create();
         vec3.add(lookVector, this.position, localViewDirection);
 

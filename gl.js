@@ -35,10 +35,6 @@ function main() {
     // var l4 = new Line(vec3.fromValues(0, 0, 0), vec3.fromValues(-5, 5, 5), vec3.fromValues(0, 0, 1));
     var l4 = new Line(vec3.fromValues(0, 0, 0), vec3.fromValues(-5, 5, 5), vec3.fromValues(0, 0, 1), vec3.fromValues(1, 0, 0));
 
-    // const worker = new Worker('test.js');
-
-    console.log(Input);
-
     cam = new Camera();
     cam.position[2] = 20;
     cam.position[1] = 3;
@@ -71,9 +67,7 @@ function main() {
     var defaultMaterial = new Material(defaultShader, function () {
 
     });
-    var testMaterial = new Material(defaultShader, function () {
 
-    });
     var unlitMaterial = new Material(unlitShader, function () {
         gl.uniform3f(unlitShader.uniform("dominatingColor"), 0, 0.5, 0.31);
     });
@@ -190,20 +184,21 @@ function main() {
     gl.vertexAttribPointer(lineColorPos, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
     gl.useProgram(shaderProgram);
 
-    // gl.polygonMode(gl.LINE)
-    // gl.wireframe(true)
+
+    var camControllerObj = new GameObject();
+    var camController = new SimpleCameraController();
+    camControllerObj.add(camController);
+
+
     createGrid();
 
-    // bindEditorHTML();
-    // loadGameObjectList(GameObject.gameObjectList);
-    // GameObject.gameObjectList[4].position[1] = 2;
-
-    console.log(Material.materialMap);
-    drawScene(gl, shaderProgram);
-
-    // console.log(Material.materialMap);
+    // drawScene(gl, shaderProgram);
 
     window.requestAnimationFrame(draw);
+
+
+
+
     // setInterval(update, 1000 / 60);
 }
 
@@ -239,10 +234,6 @@ function drawScene() {
     gl.bufferData(gl.ARRAY_BUFFER, lineData, gl.DYNAMIC_DRAW);
     gl.drawArrays(gl.LINES, 0, Line.lineList.length * 2);
 
-    // console.log(Line.data);
-    for (line of Line.lineList) {
-
-    }
 
     // Loop through the material map.
     // This is a map where shaderName = [Array of materials using that shader]
@@ -316,6 +307,11 @@ function draw(timestamp) {
         window.requestAnimationFrame(draw);
         for (gameObject of GameObject.gameObjectList) {
             if (typeof gameObject.update === 'function') gameObject.update();
+            for(component of gameObject.components){
+                if(typeof component.update === 'function'){
+                    component.update();
+                }
+            }
         }
         update();
         Input.pressedThisFrame.clear();
@@ -327,7 +323,7 @@ function update() {
     // console.log(elapsedTime);
     // var gameObject = GameObject.gameObjectList[0];
     // gameObject.position[1] = 3 + Math.cos(Time.elapsedTime / 250) * 2;
-    pollInput();
+    // pollInput();
 
 
     drawScene();
