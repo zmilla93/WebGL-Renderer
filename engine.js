@@ -32,6 +32,7 @@ class Engine {
         Engine.canvas = canvas;
         Engine.gl = canvas.getContext('webgl2', { antialias: true, depth: true })
         Engine.setupDefaultShaders();
+        Camera.main = new Camera();
         Mesh.initMeshes();
     }
     static setupDefaultShaders() {
@@ -45,29 +46,72 @@ class Engine {
         const colorAttribute = new ShaderAttribute("vertexColor", 3, gl.FLOAT, stride, FLOAT32_SIZE * 8);
         Engine.defaultVertexAttributes = [positionAttribute, uvAttribute, normalAttribute, colorAttribute];
 
+        // Line Attributes
+        const valuesPerLineVertex = 6;
+        const lineStride = FLOAT32_SIZE * valuesPerLineVertex;
+        const linePositionAttrib = new ShaderAttribute("vertexPosition", 3, gl.FLOAT, lineStride, 0);
+        const lineColorAttrib = new ShaderAttribute("vertexColor", 3, gl.FLOAT, lineStride, FLOAT32_SIZE * 3);
+        const lineAttributes = [linePositionAttrib, lineColorAttrib];
+
+
+
         // Default Shaders
+        
         Shader.defaultShader = new Shader(gl, "Default Shader",
             litVertexSource, litFragmentSource, Engine.defaultVertexAttributes);
-        // var defaultShader2 = new Shader(gl, "Default Shader", litVertexSource, litFragmentSource, attributes);
-        // var testShader = new Shader(gl, "Test Shader", litVertexSource, litFragmentSource, attributes);
         Shader.unlitShader = new Shader(gl, "Unlit Shader",
             unlitVertexSource, unlitFragmentSource, Engine.defaultVertexAttributes);
-        // gl.uniform3f(unlitShader.uniform("dominatingColor"), 1, 0, 0);
-        // var defaultMaterial = new Material(this.shaders.defaultShader);
+        Shader.lineShader = new Shader(gl, "Line Shader",
+            lineVertexSource, lineFragmentSource, lineAttributes);
 
-        // const dominatingColor = unlitShader.uniform("dominatingColor");
-        // var unlitMaterial = new Material(unlitShader, function () {
-        //     gl.uniform3f(dominatingColor, 0, 0.5, 0.31);
-        // });
-        // var greenMaterial = new Material(unlitShader, function () {
-        //     gl.uniform3f(dominatingColor, 0, 1, 0);
-        // });
-        // var coralMaterial = new Material(unlitShader, function () {
-        //     gl.uniform3f(dominatingColor, 1, 0.5, 0.31);
-        // });
+        // FIXME : Move this?
+        // Line VAO Setup
+        const lineData = [
+            0, 0, 0,
+            1, 0, 0,
+            10, 10, 10,
+            1, 0, 0,
+        ];
+        Line.vao = gl.createVertexArray();
+        Line.vertexBuffer = gl.createBuffer();
+        gl.bindVertexArray(Line.vao);
+        gl.bindBuffer(gl.ARRAY_BUFFER, Line.vertexBuffer);
+        // console.log(linePositionAttrib.location)
+        // console.log(lineColorAttrib.location)
+        gl.enableVertexAttribArray(linePositionAttrib.location);
+        gl.vertexAttribPointer(linePositionAttrib.location, 3, gl.FLOAT, false, 6 * FLOAT32_SIZE, 0);
+        gl.enableVertexAttribArray(lineColorAttrib.location);
+        gl.vertexAttribPointer(lineColorAttrib.location, 3, gl.FLOAT, false, 6 * FLOAT32_SIZE, 3 * FLOAT32_SIZE);
     }
-
+    static internal_update(timestamp) {
+        // console.log(timestamp);
+        if (Time._startTime == undefined) {
+            Time._startTime = timestamp;
+            Time.deltaTime = 0;
+            Time.elapsedTime = 0;
+        } else {
+            Time.deltaTime = (timestamp - Time._previousTime) / 1000;
+            Time.elapsedTime = (timestamp - Time._startTime) / 1000;
+        }
+        Time._previousTime = timestamp;
+        if (running) {
+            for (gameObject of GameObject.gameObjectList) {
+                if (typeof gameObject.update === 'function') gameObject.update();
+                for (component of gameObject.components) {
+                    if (typeof component.update === 'function') {
+                        component.update();
+                    }
+                }
+            }
+            // update();
+            Input.pressedThisFrame.clear();
+            window.requestAnimationFrame(Engine.internal_update);
+        }
+    }
     static render() {
+        // Clear color and depth buffers.
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        // Render Lines
 
         // Loop through the material map.
         // This is a map where shaderName = [Array of materials using that shader]
@@ -146,7 +190,7 @@ class GameObject {
 
         // Create a transform matrix that holds all matrices combined.
         const transformMatrix = mat4.create();
-        mat4.mul(transformMatrix, projectionMatrix, cam.getWorldtoViewMatrix());
+        mat4.mul(transformMatrix, projectionMatrix, Camera.main.getWorldtoViewMatrix());
         mat4.mul(transformMatrix, transformMatrix, translationMatrix);
         mat4.mul(transformMatrix, transformMatrix, rotationMatrix);
         return transformMatrix;
@@ -182,7 +226,7 @@ class Camera {
 
     // Camera Settings
     fieldOfView = 60 * DEG2RAD;
-    aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
+    aspect = Engine.gl.canvas.clientWidth / Engine.gl.canvas.clientHeight;
     zNear = 0.01;
     zFar = 1000.0;
     projectionMatrix = mat4.create();

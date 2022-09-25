@@ -3,15 +3,15 @@ var rotationY = 0;
 var camRotationY = 0;
 
 var gl;
-var shaderProgram;
+// var shaderProgram;
 var lineShader;
-var cam;
+// var cam;
 var cameraDeltaX = 0;
 var running = true;
 var testChunk;
 
 var meshRenderer;
-var lineVAO;
+// var lineVAO;
 // var simpleMesh;
 // var cubeMesh;
 var sphereRenderer;
@@ -30,37 +30,24 @@ function main() {
     Input.addKeyboardListeners();
     Input.addMouseListeners(canvas);
 
-    cam = new Camera();
-    Camera.main = cam;
-    cam.position[2] = 20;
-    cam.position[1] = 3;
+    // cam = new Camera();
+    // Camera.main = cam;
+    // cam = Camera.main;
+    Camera.main.position[2] = 20;
+    Camera.main.position[1] = 3;
 
     initGLSettings();
-    shaderProgram = createShaderProgram(gl, simpleLitVertexSource, simpleLitFragmentSource);
+    // shaderProgram = createShaderProgram(gl, simpleLitVertexSource, simpleLitFragmentSource);
     const testShaderProgram = createShaderProgram(gl, simpleLitVertexSource, simpleLitFragmentSource);
 
     // Line Shader
     lineShader = createShaderProgram(gl, lineVertexSource, lineFragmentSource);
-    if (shaderProgram == null) return;
+    // if (shaderProgram == null) return;
     if (lineShader == null) return;
-    gl.useProgram(shaderProgram);
+    // gl.useProgram(shaderProgram);
 
-
-    // const valuesPerVertex = 11;
-    // const stride = FLOAT32_SIZE * valuesPerVertex;
-    // const positionAttribute = new ShaderAttribute("vertexPosition", 3, gl.FLOAT, stride, 0);
-    // const uvAttribute = new ShaderAttribute("vertexUV1", 2, gl.FLOAT, stride, FLOAT32_SIZE * 3);
-    // const normalAttribute = new ShaderAttribute("vertexNormal", 3, gl.FLOAT, stride, FLOAT32_SIZE * 5);
-    // const colorAttribute = new ShaderAttribute("vertexColor", 3, gl.FLOAT, stride, FLOAT32_SIZE * 8);
-    // var attributes = [positionAttribute, uvAttribute, normalAttribute, colorAttribute];
-    // // var defaultShader = new Shader(gl, "Default Shader", litVertexSource, litFragmentSource, attributes);
-    // var defaultShader2 = new Shader(gl, "Default Shader", litVertexSource, litFragmentSource, attributes);
-    // var testShader = new Shader(gl, "Test Shader", litVertexSource, litFragmentSource, attributes);
-    // // var unlitShader = new Shader(gl, "Unlit Shader", unlitVertexSource, unlitFragmentSource, attributes);
-
-    
-    // gl.uniform3f(Shader.unlitShader.uniform("dominatingColor"), 1, 0, 0);
-
+    // gl.uniform3f(Shader.unlitShader.uniform("dominatingColor"), 1, 0, 0);    
+    // Engine.gl.useProgram(Shader.defaultShader.program);
     var defaultMaterial = new Material(Shader.defaultShader);
 
     const dominatingColor = Shader.unlitShader.uniform("dominatingColor");
@@ -75,11 +62,6 @@ function main() {
     });
 
     var sunAngle = vec3.fromValues(0.5, 1, 0.25);
-    // vec3.normalize(sunAngle, sunAngle);
-    // gl.useProgram(defaultShader.program);
-    // gl.uniform3f(defaultShader.uniform("sunlightAngle"), sunAngle[0], sunAngle[1], sunAngle[2]);
-    // gl.uniform3f(defaultShader.uniform("ambientLight"), 0.2, 0.2, 0.2);
-    // gl.uniform1f(defaultShader.uniform("sunlightIntensity"), 6);
 
     // TEMP : Default Shader Lighting
     gl.useProgram(Shader.defaultShader.program);
@@ -87,23 +69,11 @@ function main() {
     gl.uniform3f(Shader.defaultShader.uniform("ambientLight"), 0.2, 0.2, 0.2);
     gl.uniform1f(Shader.defaultShader.uniform("sunlightIntensity"), 6);
 
-    // BLOCK MESH
-    // var cubeMesh = objToMesh(cubeModel);
-    // cubeMesh.createData();
-    // cubeMesh.createBuffer(gl, Engine.defaultVertexAttributes);
-    // cubeMesh.buffer(gl);
-
-    // var monsterMesh = objToMesh(monsterModel);
-    // monsterMesh.createData();
-    // monsterMesh.createBuffer(gl,  Engine.defaultVertexAttributes);
-    // monsterMesh.buffer(gl);
-
-    // PLANE MESH
     var mesh = objToMesh(planeModel);
-
 
     // MOKEY 
     var sphereMesh = objToMesh(sphereModel);
+
     // sphereMesh.createData();
     // sphereMesh.createBuffer(gl,  Engine.defaultVertexAttributes);
     // sphereMesh.buffer(gl);
@@ -114,6 +84,10 @@ function main() {
     sphere.rotation[0] = 90;
     sphereRenderer = new MeshRenderer(sphereMesh, defaultMaterial);
     sphere.add(sphereRenderer);
+    var gameObject = GameObject.gameObjectList[0];
+    gameObject.update = function () {
+        gameObject.position[1] = 3 + Math.cos(Time.elapsedTime * 4) * 2;
+    }
 
     // Block Floor
     const count = 20;
@@ -148,53 +122,6 @@ function main() {
     var monsterRenderer = new MeshRenderer(Mesh.monster, defaultMaterial);
     monster.add(monsterRenderer);
 
-
-    // var testCube2
-
-    // cubeGO.position[0] = 2;
-    // cubeGO.position[2] = 1;
-
-    // LINE SETUP
-    const valuesPerLineVertex = 6;
-    const lineVertexPos = gl.getAttribLocation(lineShader, "vertexPosition");
-    const lineColorPos = gl.getAttribLocation(lineShader, "vertexColor");
-    lineVAO = gl.createVertexArray();
-    gl.bindVertexArray(lineVAO);
-    const lineBuffer = gl.createBuffer();
-    const lineData = [
-        0, 0, 0,
-        1, 0, 0,
-        10, 10, 10,
-        1, 0, 0,
-    ];
-    gl.bindBuffer(gl.ARRAY_BUFFER, lineBuffer);
-    gl.useProgram(lineShader);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(lineData), gl.STATIC_DRAW);
-    gl.enableVertexAttribArray(lineVertexPos);
-    const linePositionAttrib = {
-        name: "vertexPosition",
-        location: lineVertexPos,
-        count: 3,
-        type: gl.FLOAT,
-        stride: Float32Array.BYTES_PER_ELEMENT * valuesPerLineVertex,
-        offset: 0,
-    };
-    const lineColorAttrib = {
-        name: "vertexPosition",
-        location: lineVertexPos,
-        count: 3,
-        type: gl.FLOAT,
-        stride: Float32Array.BYTES_PER_ELEMENT * valuesPerLineVertex,
-        offset: 0,
-    };
-    // console.log(lineVertexPos);
-    gl.enableVertexAttribArray(lineVertexPos);
-    gl.vertexAttribPointer(lineVertexPos, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
-    gl.enableVertexAttribArray(lineColorPos);
-    gl.vertexAttribPointer(lineColorPos, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
-    // gl.useProgram(shaderProgram);
-
-
     // Example Lines
     var l1 = new Line(vec3.fromValues(0, 0, 0), vec3.fromValues(5, 5, 5), vec3.fromValues(1, 1, 0));
     var l2 = new Line(vec3.fromValues(0, 0, 0), vec3.fromValues(-5, 5, -5), vec3.fromValues(0, 1, 0));
@@ -203,42 +130,24 @@ function main() {
 
     var camControllerObj = new GameObject();
     var camController = new SimpleCameraController();
-    camControllerObj.add(camController);
-
+    camControllerObj.add(camController)
 
     createGrid();
 
-    // drawScene(gl, shaderProgram);
-
     window.requestAnimationFrame(draw);
-
-    // canvas.onfocus = function () {
-    //     canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock;
-    //     canvas.requestPointerLock();
-    //     if (document.pointerLockElement === canvas ||
-    //         document.mozPointerLockElement === canvas) {
-    //         console.log('The pointer lock status is now locked');
-    //     } else {
-    //         console.log('The pointer lock status is now unlocked');
-    //     }
-    // }
-
-
-    // setInterval(update, 1000 / 60);
 }
 
-function createDefaultShaders() {
-
-}
 
 function drawScene() {
+    var cam = Camera.main;
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     // var uniformLocation = gl.getUniformLocation(shaderProgram, "dominatingColor");
     // gl.uniform4f(uniformLocation, 0.0, 1.0, 1.0, 1.0);
 
     // DRAW LINES
-    gl.useProgram(lineShader);
+    gl.useProgram(Shader.lineShader.program);
+    // gl.useProgram(lineShader);
     const fieldOfView = 60 * DEG2RAD;
     const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
     const zNear = 0.01;
@@ -250,12 +159,16 @@ function drawScene() {
     // mat4.mul(fullTransform, fullTransform, cam.getWorldtoViewMatrix());
     // const transformMatrix = mat4.create();
     // mat4.mul(transformMatrix, )
-    const projectionMatrixLocation = gl.getUniformLocation(lineShader, "projectionMatrix");
-    gl.uniformMatrix4fv(projectionMatrixLocation, false, fullTransform);
+    // const projectionMatrixLocation = gl.getUniformLocation(lineShader, "projectionMatrix");
+    // gl.uniformMatrix4fv(projectionMatrixLocation, false, fullTransform);
+    gl.uniformMatrix4fv(Shader.lineShader.uniform("projectionMatrix"), false, fullTransform);
 
-    gl.bindVertexArray(lineVAO);
+    // gl.bindVertexArray(lineVAO);
+    // gl.bindVertexArray(lineVAO);
+    // console.log(Line.vao);
+    gl.bindVertexArray(Line.vao);
+    gl.bindBuffer(gl.ARRAY_BUFFER, Line.vertexBuffer);
     var lineData = Line.data;
-    // gl.lineWidth(10);
     gl.bufferData(gl.ARRAY_BUFFER, lineData, gl.DYNAMIC_DRAW);
     gl.drawArrays(gl.LINES, 0, Line.lineList.length * 2);
 
@@ -283,12 +196,12 @@ function drawScene() {
         });
     });
 
-    gl.useProgram(shaderProgram);
+    // gl.useProgram(shaderProgram);
 
-    var gameObject = GameObject.gameObjectList[0];
-    gameObject.update = function () {
-        gameObject.position[1] = 3 + Math.cos(Time.elapsedTime * 4) * 2;
-    }
+    // var gameObject = GameObject.gameObjectList[0];
+    // gameObject.update = function () {
+    //     gameObject.position[1] = 3 + Math.cos(Time.elapsedTime * 4) * 2;
+    // }
 }
 
 function isPowerOf2(value) {
@@ -334,7 +247,6 @@ function draw(timestamp) {
         }
         update();
         Input.pressedThisFrame.clear();
-        // drawScene();
     }
 }
 
@@ -346,6 +258,7 @@ function update() {
 
 
     drawScene();
+    // Engine.render();
 }
 
 function pollInput() {
@@ -355,11 +268,11 @@ function pollInput() {
     // console.log(Time.deltaTime);
     // console.log(cam.viewDirection);
     // console.log(cam.position);
+    var cam = Camera.main;
     if (Input.isKeyPressed('KeyW')) {
         var scaled = vec3.clone(cam.forward);
         vec3.scale(scaled, scaled, Time.deltaTime * speed);
         vec3.add(cam.position, cam.position, scaled);
-        drawScene();
     }
     if (Input.isKeyPressed('KeyS')) {
         var localBack = vec3.create();
@@ -367,7 +280,6 @@ function pollInput() {
         var scaled = vec3.clone(localBack);
         vec3.scale(scaled, scaled, Time.deltaTime * speed);
         vec3.add(cam.position, cam.position, scaled);
-        drawScene();
     }
     if (Input.isKeyPressed('KeyA')) {
         var localLeft = vec3.create();
@@ -375,7 +287,6 @@ function pollInput() {
         var scaled = vec3.clone(localLeft);
         vec3.scale(scaled, scaled, Time.deltaTime * speed);
         vec3.add(cam.position, cam.position, scaled);
-        drawScene();
     }
     if (Input.isKeyPressed('KeyD')) {
         var localRight = vec3.create();
@@ -383,19 +294,16 @@ function pollInput() {
         var scaled = vec3.clone(localRight);
         vec3.scale(scaled, scaled, Time.deltaTime * speed);
         vec3.add(cam.position, cam.position, scaled);
-        drawScene();
     }
     if (Input.isKeyPressed('Space')) {
         var scaled = vec3.clone(VECTOR3_UP);
         vec3.scale(scaled, scaled, Time.deltaTime * speed);
         vec3.add(cam.position, cam.position, scaled);
-        drawScene();
     }
     if (Input.isKeyPressed('ControlLeft')) {
         var scaled = vec3.clone(VECTOR3_DOWN);
         vec3.scale(scaled, scaled, Time.deltaTime * speed);
         vec3.add(cam.position, cam.position, scaled);
-        drawScene();
     }
     if (Input.isKeyPressed('KeyQ')) {
         var rotationY = cam.rotation[1];

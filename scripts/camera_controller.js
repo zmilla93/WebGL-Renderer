@@ -1,5 +1,6 @@
 class SimpleCameraController extends Component {
     update = function () {
+        var cam = Camera.main;
         const walkSpeed = 5;
         const runSpeed = 10;
         const speed = Input.isKeyPressed('ShiftLeft') || Input.isKeyPressed('ShiftRight') ? runSpeed : walkSpeed;
