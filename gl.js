@@ -29,19 +29,16 @@ function main() {
     Input.addKeyboardListeners();
     Input.addMouseListeners(canvas);
 
-    var l1 = new Line(vec3.fromValues(0, 0, 0), vec3.fromValues(5, 5, 5), vec3.fromValues(1, 1, 0));
-    var l2 = new Line(vec3.fromValues(0, 0, 0), vec3.fromValues(-5, 5, -5), vec3.fromValues(0, 1, 0));
-    var l3 = new Line(vec3.fromValues(0, 0, 0), vec3.fromValues(5, 5, -5), vec3.fromValues(0, 1, 1));
-    // var l4 = new Line(vec3.fromValues(0, 0, 0), vec3.fromValues(-5, 5, 5), vec3.fromValues(0, 0, 1));
-    var l4 = new Line(vec3.fromValues(0, 0, 0), vec3.fromValues(-5, 5, 5), vec3.fromValues(0, 0, 1), vec3.fromValues(1, 0, 0));
-
     cam = new Camera();
+    Camera.main = cam;
     cam.position[2] = 20;
     cam.position[1] = 3;
 
     initGLSettings();
     shaderProgram = createShaderProgram(gl, simpleLitVertexSource, simpleLitFragmentSource);
     const testShaderProgram = createShaderProgram(gl, simpleLitVertexSource, simpleLitFragmentSource);
+
+    // Line Shader
     lineShader = createShaderProgram(gl, lineVertexSource, lineFragmentSource);
     if (shaderProgram == null) return;
     if (lineShader == null) return;
@@ -53,33 +50,29 @@ function main() {
     const uvAttribute = new ShaderAttribute("vertexUV1", 2, gl.FLOAT, stride, FLOAT32_SIZE * 3);
     const normalAttribute = new ShaderAttribute("vertexNormal", 3, gl.FLOAT, stride, FLOAT32_SIZE * 5);
     const colorAttribute = new ShaderAttribute("vertexColor", 3, gl.FLOAT, stride, FLOAT32_SIZE * 8);
-
     var attributes = [positionAttribute, uvAttribute, normalAttribute, colorAttribute];
-
     var defaultShader = new Shader(gl, "Default Shader", litVertexSource, litFragmentSource, attributes);
+    var defaultShader2 = new Shader(gl, "Default Shader", litVertexSource, litFragmentSource, attributes);
     var testShader = new Shader(gl, "Test Shader", litVertexSource, litFragmentSource, attributes);
-
     var unlitShader = new Shader(gl, "Unlit Shader", unlitVertexSource, unlitFragmentSource, attributes);
     gl.uniform3f(unlitShader.uniform("dominatingColor"), 1, 0, 0);
-    gl.useProgram(defaultShader.program);
 
+    var defaultMaterial = new Material(defaultShader);
 
-    var defaultMaterial = new Material(defaultShader, function () {
-
-    });
-
+    const dominatingColor = unlitShader.uniform("dominatingColor");
     var unlitMaterial = new Material(unlitShader, function () {
-        gl.uniform3f(unlitShader.uniform("dominatingColor"), 0, 0.5, 0.31);
+        gl.uniform3f(dominatingColor, 0, 0.5, 0.31);
     });
     var greenMaterial = new Material(unlitShader, function () {
-        gl.uniform3f(unlitShader.uniform("dominatingColor"), 0, 1, 0);
+        gl.uniform3f(dominatingColor, 0, 1, 0);
     });
     var coralMaterial = new Material(unlitShader, function () {
-        gl.uniform3f(unlitShader.uniform("dominatingColor"), 1, 0.5, 0.31);
+        gl.uniform3f(dominatingColor, 1, 0.5, 0.31);
     });
 
     var sunAngle = vec3.fromValues(0.5, 1, 0.25);
     vec3.normalize(sunAngle, sunAngle);
+    gl.useProgram(defaultShader.program);
     gl.uniform3f(defaultShader.uniform("sunlightAngle"), sunAngle[0], sunAngle[1], sunAngle[2]);
     gl.uniform3f(defaultShader.uniform("ambientLight"), 0.2, 0.2, 0.2);
     gl.uniform1f(defaultShader.uniform("sunlightIntensity"), 6);
@@ -89,6 +82,11 @@ function main() {
     cubeMesh.createData();
     cubeMesh.createBuffer(gl, attributes);
     cubeMesh.buffer(gl);
+
+    var monsterMesh = objToMesh(monsterModel);
+    monsterMesh.createData();
+    monsterMesh.createBuffer(gl, attributes);
+    monsterMesh.buffer(gl);
 
     // PLANE MESH
     var mesh = objToMesh(planeModel);
@@ -110,9 +108,9 @@ function main() {
     sphere.add(sphereRenderer);
 
     // Block Floor
-    // const count = 20;
-    // const halfCount = count / 2;
-    // const spacing = 1;
+    const count = 20;
+    const halfCount = count / 2;
+    const spacing = 1;
     // for (var x = -halfCount; x < halfCount; x++) {
     //     for (var z = -halfCount; z < halfCount; z++) {
     //         var gameObject = new GameObject();
@@ -137,6 +135,12 @@ function main() {
     cube2.position[0] = 1;
     cube2.position[1] = 5;
 
+    // MONSTER GAME OBJECT
+    var monster = new GameObject();
+    var monsterRenderer = new MeshRenderer(monsterMesh, defaultMaterial);
+    monster.add(monsterRenderer);
+
+
     // var testCube2
 
     // cubeGO.position[0] = 2;
@@ -157,8 +161,6 @@ function main() {
     ];
     gl.bindBuffer(gl.ARRAY_BUFFER, lineBuffer);
     gl.useProgram(lineShader);
-    // gl.bufferData(lineData);
-    // gl.bufferData(gl.ARRAY_BUFFER, lineData, gl.DYNAMIC_DRAW);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(lineData), gl.STATIC_DRAW);
     gl.enableVertexAttribArray(lineVertexPos);
     const linePositionAttrib = {
@@ -182,8 +184,14 @@ function main() {
     gl.vertexAttribPointer(lineVertexPos, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
     gl.enableVertexAttribArray(lineColorPos);
     gl.vertexAttribPointer(lineColorPos, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
-    gl.useProgram(shaderProgram);
+    // gl.useProgram(shaderProgram);
 
+
+    // Example Lines
+    var l1 = new Line(vec3.fromValues(0, 0, 0), vec3.fromValues(5, 5, 5), vec3.fromValues(1, 1, 0));
+    var l2 = new Line(vec3.fromValues(0, 0, 0), vec3.fromValues(-5, 5, -5), vec3.fromValues(0, 1, 0));
+    var l3 = new Line(vec3.fromValues(0, 0, 0), vec3.fromValues(5, 5, -5), vec3.fromValues(0, 1, 1));
+    var l4 = new Line(vec3.fromValues(0, 0, 0), vec3.fromValues(-5, 5, 5), vec3.fromValues(0, 0, 1), vec3.fromValues(1, 0, 0));
 
     var camControllerObj = new GameObject();
     var camController = new SimpleCameraController();
@@ -196,13 +204,22 @@ function main() {
 
     window.requestAnimationFrame(draw);
 
-
+    // canvas.onfocus = function () {
+    //     canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock;
+    //     canvas.requestPointerLock();
+    //     if (document.pointerLockElement === canvas ||
+    //         document.mozPointerLockElement === canvas) {
+    //         console.log('The pointer lock status is now locked');
+    //     } else {
+    //         console.log('The pointer lock status is now unlocked');
+    //     }
+    // }
 
 
     // setInterval(update, 1000 / 60);
 }
 
-function setupDefaultShaders() {
+function createDefaultShaders() {
 
 }
 
@@ -216,7 +233,7 @@ function drawScene() {
     gl.useProgram(lineShader);
     const fieldOfView = 60 * DEG2RAD;
     const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
-    const zNear = 1;
+    const zNear = 0.01;
     const zFar = 1000.0;
     const projectionMatrix = mat4.create();
     mat4.perspective(projectionMatrix, fieldOfView, aspect, zNear, zFar);
@@ -264,12 +281,6 @@ function drawScene() {
     gameObject.update = function () {
         gameObject.position[1] = 3 + Math.cos(Time.elapsedTime * 4) * 2;
     }
-    // gameObject.delete();
-
-    // for (renderer of MeshRenderer.renderList) {
-    //     renderer.render(gl);
-    // }
-
 }
 
 function isPowerOf2(value) {
@@ -307,8 +318,8 @@ function draw(timestamp) {
         window.requestAnimationFrame(draw);
         for (gameObject of GameObject.gameObjectList) {
             if (typeof gameObject.update === 'function') gameObject.update();
-            for(component of gameObject.components){
-                if(typeof component.update === 'function'){
+            for (component of gameObject.components) {
+                if (typeof component.update === 'function') {
                     component.update();
                 }
             }
@@ -398,7 +409,7 @@ function pollInput() {
         rotationX -= 90 * DEG2RAD * Time.deltaTime;
         cam.setRotation(rotationX, cam.rotation[1], 0);
     }
-    if(Input.wasPressedThisFrame('KeyV')){
+    if (Input.wasPressedThisFrame('KeyV')) {
         // console.log("W");
         cam.setRotation(cam.rotation[0], cam.rotation[1], 45);
     }
@@ -608,5 +619,3 @@ function glValue(value) {
 }
 
 window.addEventListener('load', main);
-
-// window.onload = main;

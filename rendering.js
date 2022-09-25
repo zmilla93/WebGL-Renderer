@@ -1,3 +1,4 @@
+
 //  Holds data for weblGL vertexAttribPointer
 //  https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/vertexAttribPointer
 class ShaderAttribute {
@@ -19,19 +20,18 @@ class Shader {
     name;
     program;
     attributes;
-    uniformMap;
-    static materialMap = new Map();
+    uniformMap = new Map();
+    // static materialMap = new Map();
     // gl - weblGL Context
     // name - (string) ID
     // vertexShaderSource, fragmentShaderSource - (string) GLSL shader code
     // Attributes - Array of ShaderAttributes
-    constructor(gl, name, vertexShaderSource, fragmentShaderSource, attributes, compileOnCreation = true) {
+    constructor(gl, name, vertexShaderSource, fragmentShaderSource, attributes) {
         this.gl = gl;
         this.name = name;
         this.program = createShaderProgram(gl, vertexShaderSource, fragmentShaderSource);
         gl.useProgram(this.program);
         this.attributes = attributes;
-        this.uniformMap = new Map();
         for (let attribute of attributes) {
             let location = gl.getAttribLocation(this.program, attribute.name);
             if (location < 0) {
@@ -66,9 +66,6 @@ class Material {
         this.applyPerMaterialUniforms = applyPerMaterialUniforms;
         this.renderers = [];
         this.registerMaterial(this);
-
-        // console.log("NEW MAT");
-        // console.log(Material.materialMap);
     }
     registerMaterial(material) {
         var shaderEntry;
@@ -87,17 +84,8 @@ class Material {
         return mat;
     }
     static registerRenderer(material, renderer) {
-        // console.log("REG");
         const mat = Material.getMaterial(material);
-
-        // console.log(mat);
-        // if (mat.renderers == null) mat.renderers = [];
-        // mat.renderers = [];
-        // console.log(mat.renderers);
         mat.renderers.push(renderer);
-    }
-    static test() {
-        console.log("TEST");
     }
 }
 

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+
+<head>
+    <title>WebGL</title>
+
+    <link rel="stylesheet" href="css/styles.css">
+
+    <script src="third-party/gl-matrix-min.js"></script>
+
+    <!-- Core -->
+    <script src="engine.js"></script>
+    <script src="rendering.js"></script>
+    <script src="input.js"></script>
+    <script src="editor.js"></script>
+    <!-- Assets -->
+    <script src="shaders/_shaders.js"></script>
+    <script src="models/_models.js"></script>
+
+    <!-- Scripts -->
+    <script src="scripts/camera_controller.js"></script>
+
+    <script src="voxel.js"></script>
+    <script src="gl.js"></script>
+    <script src="game2.js"></script>
+</head>
+
+<body>
+    <div id="editor">
+        <div>
+            Hello World.
+            <canvas id="glCanvas" tabindex="1" width="1280" height="720"></canvas>
+        </div>
+
+        <!-- <div id="gameObjectListWrapper">
+            <select id="gameObjectList" size="4">
+                <option value="item1">Test1</option>
+            </select>
+        </div>
+        <div id="inspector">
+            Test Element <input type="number"><br>
+        </div> -->
+    </div>
+    <div>
+        <label>Rotation X</label><input id="rotationXSlider" type="range" min="0" max=360>
+        <label>Rotation Y</label><input id="rotationYSlider" type="range" min="0" max=360>
+        <label>Cam Rotation Y</label><input id="camRotationYSlider" type="range" min="0" max=360>
+    </div>
+    <div id="controls">
+
+    </div><br>
+    <div>
+        <canvas id="coolCanvas" tabindex="1" width="900" height="600"></canvas>
+    </div>
+</body>

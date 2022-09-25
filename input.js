@@ -4,11 +4,16 @@
 class Input {
     static pressedThisFrame = new Set();
     static pressedKeys = new Set();
+    static canvasList = [];
     static isKeyPressed(keyCode) {
         return Input.pressedKeys.has(keyCode);
     }
     static wasPressedThisFrame(keyCode) {
         return Input.pressedThisFrame.has(keyCode);
+    }
+
+    static addCanvas(canvas){
+        Input.canvasList.push(canvas);
     }
 
     static preventDefaults() {

@@ -19,8 +19,68 @@ const VECTOR3_RIGHT = vec3.fromValues(1, 0, 0);
 const VECTOR3_ZERO = vec3.fromValues(0, 0, 0);
 
 class Engine {
-    mainCamera;
+    shaders = {};
+    defaultMeshAttributes;
+    constructor(canvas) {
+        this.canvas = canvas;
+        this.gl = canvas.getContext("webgl2", { antialias: true, depth: true });
+        Input.addCanvas(canvas);
+    }
+    setupDefaultShaders() {
+        // Default Mesh Attributes
+        const valuesPerVertex = 11;
+        const stride = FLOAT32_SIZE * valuesPerVertex;
+        const positionAttribute = new ShaderAttribute("vertexPosition", 3, gl.FLOAT, stride, 0);
+        const uvAttribute = new ShaderAttribute("vertexUV1", 2, gl.FLOAT, stride, FLOAT32_SIZE * 3);
+        const normalAttribute = new ShaderAttribute("vertexNormal", 3, gl.FLOAT, stride, FLOAT32_SIZE * 5);
+        const colorAttribute = new ShaderAttribute("vertexColor", 3, gl.FLOAT, stride, FLOAT32_SIZE * 8);
+        var attributes = [positionAttribute, uvAttribute, normalAttribute, colorAttribute];
 
+        // Default Shaders
+        this.shaders.defaultShader = new Shader(gl, "Default Shader", litVertexSource, litFragmentSource, attributes);
+        var defaultShader2 = new Shader(gl, "Default Shader", litVertexSource, litFragmentSource, attributes);
+        var testShader = new Shader(gl, "Test Shader", litVertexSource, litFragmentSource, attributes);
+        this.shaders.unlitShader = new Shader(gl, "Unlit Shader", unlitVertexSource, unlitFragmentSource, attributes);
+        // gl.uniform3f(unlitShader.uniform("dominatingColor"), 1, 0, 0);
+        var defaultMaterial = new Material(this.shaders.defaultShader);
+
+        // const dominatingColor = unlitShader.uniform("dominatingColor");
+        // var unlitMaterial = new Material(unlitShader, function () {
+        //     gl.uniform3f(dominatingColor, 0, 0.5, 0.31);
+        // });
+        // var greenMaterial = new Material(unlitShader, function () {
+        //     gl.uniform3f(dominatingColor, 0, 1, 0);
+        // });
+        // var coralMaterial = new Material(unlitShader, function () {
+        //     gl.uniform3f(dominatingColor, 1, 0.5, 0.31);
+        // });
+    }
+
+    static render() {
+
+        // Loop through the material map.
+        // This is a map where shaderName = [Array of materials using that shader]
+        Material.materialMap.forEach((materialGroup) => {
+            var shaderChanged = false;
+            materialGroup.forEach((material) => {
+                // Set the shader using the first element in the array,
+                // since by design all elements in the array must use the same shader.
+                if (!shaderChanged) {
+                    // console.log("CHANGE SHADER:");
+                    // console.log(material.shader);
+                    gl.useProgram(material.shader.program);
+                    shaderChanged = true;
+                }
+                if (typeof material.applyPerMaterialUniforms === 'function')
+                    material.applyPerMaterialUniforms();
+                // Loop through all renderers that use this material and render them.
+                material.renderers.forEach((renderer) => {
+                    renderer.applyPerObjectUniforms();
+                    renderer.render(gl);
+                });
+            });
+        });
+    }
 }
 
 class Time {
@@ -108,6 +168,18 @@ class Camera {
     viewDirection;
     forward;
     worldToViewMatrix;
+
+    // Camera Settings
+    fieldOfView = 60 * DEG2RAD;
+    aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
+    zNear = 0.01;
+    zFar = 1000.0;
+    projectionMatrix = mat4.create();
+    perspectiveMatrix = mat4.create();
+
+    // Main Camera
+    static main;
+
     constructor() {
         this.position = vec3.create();
         this.rotation = vec3.create();
@@ -124,6 +196,14 @@ class Camera {
         // mat4.lookAt(matrix, this.position, lookVector, VECTOR3_UP);
         // return matrix;
     }
+    calculateProjectionMatrix() {
+        const projectionMatrix = mat4.create();
+        mat4.perspective(projectionMatrix, fieldOfView, aspect, zNear, zFar);
+    }
+    getPerspectiveMatrix(){
+        return this.perspectiveMatrix;
+    }
+
     OLD_calculateWorldtoViewMatrix() {
         this.worldToViewMatrix = mat4.create();
         const lookVector = vec3.create();
@@ -140,7 +220,7 @@ class Camera {
         // this.rotation[1] = 45 * DEG2RAD;
         this.rotation[2] = 0 * DEG2RAD;
         // this.rotation[0] = -45 * DEG2RAD;
-        
+
         // vec3.rotateX(localViewDirection, localViewDirection, VECTOR3_ZERO, this.rotation[0]);
         vec3.rotateX(localViewDirection, localViewDirection, VECTOR3_ZERO, this.rotation[0]);
         // this.forward = vec3.clone(localViewDirection);
