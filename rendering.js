@@ -22,9 +22,9 @@ class Shader {
     attributes;
     uniformMap = new Map();
     // Default Shaders
-    static defaultShader;
-    static litShader;
-    static unlitShader;
+    // static defaultShader;
+    // static litShader;
+    // static unlitShader;
 
     // static materialMap = new Map();
     // gl - weblGL Context

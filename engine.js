@@ -53,31 +53,20 @@ class Engine {
         const lineColorAttrib = new ShaderAttribute("vertexColor", 3, gl.FLOAT, lineStride, FLOAT32_SIZE * 3);
         const lineAttributes = [linePositionAttrib, lineColorAttrib];
 
-
-
         // Default Shaders
-        
-        Shader.defaultShader = new Shader(gl, "Default Shader",
-            litVertexSource, litFragmentSource, Engine.defaultVertexAttributes);
-        Shader.unlitShader = new Shader(gl, "Unlit Shader",
-            unlitVertexSource, unlitFragmentSource, Engine.defaultVertexAttributes);
-        Shader.lineShader = new Shader(gl, "Line Shader",
-            lineVertexSource, lineFragmentSource, lineAttributes);
+        var attrib = Engine.defaultVertexAttributes;
+        Shader.defaultShader = new Shader(gl, "Default Shader", litVertexSource, litFragmentSource, attrib);
+        Shader.simpleLit = new Shader(gl, "Simple Lit", simpleLitVertexSource, simpleLitFragmentSource, attrib);
+        Shader.lit = new Shader(gl, "Lit", litVertexSource, litFragmentSource, attrib);
+        Shader.unlitShader = new Shader(gl, "Unlit Shader", unlitVertexSource, unlitFragmentSource, attrib);
+        Shader.lineShader = new Shader(gl, "Line Shader", lineVertexSource, lineFragmentSource, lineAttributes);
 
-        // FIXME : Move this?
         // Line VAO Setup
-        const lineData = [
-            0, 0, 0,
-            1, 0, 0,
-            10, 10, 10,
-            1, 0, 0,
-        ];
+        // FIXME : Move this?
         Line.vao = gl.createVertexArray();
         Line.vertexBuffer = gl.createBuffer();
         gl.bindVertexArray(Line.vao);
         gl.bindBuffer(gl.ARRAY_BUFFER, Line.vertexBuffer);
-        // console.log(linePositionAttrib.location)
-        // console.log(lineColorAttrib.location)
         gl.enableVertexAttribArray(linePositionAttrib.location);
         gl.vertexAttribPointer(linePositionAttrib.location, 3, gl.FLOAT, false, 6 * FLOAT32_SIZE, 0);
         gl.enableVertexAttribArray(lineColorAttrib.location);

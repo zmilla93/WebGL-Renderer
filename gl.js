@@ -33,8 +33,8 @@ function main() {
     // cam = new Camera();
     // Camera.main = cam;
     // cam = Camera.main;
-    Camera.main.position[2] = 20;
-    Camera.main.position[1] = 3;
+    Camera.main.position[2] = 3;
+    Camera.main.position[1] = 1.5;
 
     initGLSettings();
     // shaderProgram = createShaderProgram(gl, simpleLitVertexSource, simpleLitFragmentSource);
@@ -61,13 +61,24 @@ function main() {
         gl.uniform3f(dominatingColor, 1, 0.5, 0.31);
     });
 
+    var simpleMat = new Material(Shader.simpleLit);
+
     var sunAngle = vec3.fromValues(0.5, 1, 0.25);
 
     // TEMP : Default Shader Lighting
     gl.useProgram(Shader.defaultShader.program);
+    const l = 0.5;
+    gl.uniform3f(Shader.defaultShader.uniform("ambientLight"), l, l, l);
     gl.uniform3f(Shader.defaultShader.uniform("sunlightAngle"), sunAngle[0], sunAngle[1], sunAngle[2]);
     gl.uniform3f(Shader.defaultShader.uniform("ambientLight"), 0.2, 0.2, 0.2);
     gl.uniform1f(Shader.defaultShader.uniform("sunlightIntensity"), 6);
+
+    gl.useProgram(Shader.simpleLit.program);
+    const a = 0.2;
+    gl.uniform3f(Shader.simpleLit.uniform("sunlightColor"), 1, .8, .8);
+    gl.uniform3f(Shader.simpleLit.uniform("ambientLight"), 0.1, 0.1, 0.1);
+    gl.uniform3f(Shader.simpleLit.uniform("sunlightAngle"), sunAngle[0], sunAngle[1], sunAngle[2]);
+    gl.uniform1f(Shader.simpleLit.uniform("sunlightIntensity"), 0.8);
 
     var mesh = objToMesh(planeModel);
 
@@ -121,6 +132,11 @@ function main() {
     var monster = new GameObject();
     var monsterRenderer = new MeshRenderer(Mesh.monster, defaultMaterial);
     monster.add(monsterRenderer);
+
+    var monster2 = new GameObject();
+    monster2.position[0] = 2;
+    monster2.add(new MeshRenderer(Mesh.monster, simpleMat));
+
 
     // Example Lines
     var l1 = new Line(vec3.fromValues(0, 0, 0), vec3.fromValues(5, 5, 5), vec3.fromValues(1, 1, 0));

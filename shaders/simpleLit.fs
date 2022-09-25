@@ -6,12 +6,15 @@ varying mediump vec3 vNormal;
 
 uniform sampler2D uSampler;
 uniform mediump vec3 ambientLight;
+uniform mediump vec3 sunlightColor;
 uniform mediump vec3 sunlightAngle;
 uniform mediump float sunlightIntensity;
 
 void main(void) {
-    float sunlight = dot(sunlightAngle, vNormal) * sunlightIntensity;
-    vec3 color = vColor * ambientLight * sunlight;
+    
+    float surfaceSunlight = dot(sunlightAngle, vNormal) * sunlightIntensity;
+    vec3 litAmbient = ambientLight + sunlightColor * surfaceSunlight;
+    vec3 color = vColor * litAmbient;
     // vec3 color = vec3(0.95, 1, 0.28);
 
     // vec4 lightingColor = vec4(1,1,1,1) * sunlight;
