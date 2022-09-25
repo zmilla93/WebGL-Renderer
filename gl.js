@@ -24,6 +24,7 @@ function main() {
     // This contains all of the fun WebGL functions and constants
     // https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext
     const canvas = document.getElementById("glCanvas");
+    Engine.init(canvas);
     gl = canvas.getContext("webgl2", { antialias: true, depth: true });
 
     Input.addKeyboardListeners();
@@ -43,8 +44,6 @@ function main() {
     if (shaderProgram == null) return;
     if (lineShader == null) return;
     gl.useProgram(shaderProgram);
-
-    Engine.setupDefaultShaders();
 
 
     // const valuesPerVertex = 11;
@@ -89,27 +88,25 @@ function main() {
     gl.uniform1f(Shader.defaultShader.uniform("sunlightIntensity"), 6);
 
     // BLOCK MESH
-    var cubeMesh = objToMesh(cubeModel);
-    cubeMesh.createData();
-    cubeMesh.createBuffer(gl, Engine.defaultVertexAttributes);
-    cubeMesh.buffer(gl);
+    // var cubeMesh = objToMesh(cubeModel);
+    // cubeMesh.createData();
+    // cubeMesh.createBuffer(gl, Engine.defaultVertexAttributes);
+    // cubeMesh.buffer(gl);
 
-    var monsterMesh = objToMesh(monsterModel);
-    monsterMesh.createData();
-    monsterMesh.createBuffer(gl,  Engine.defaultVertexAttributes);
-    monsterMesh.buffer(gl);
+    // var monsterMesh = objToMesh(monsterModel);
+    // monsterMesh.createData();
+    // monsterMesh.createBuffer(gl,  Engine.defaultVertexAttributes);
+    // monsterMesh.buffer(gl);
 
     // PLANE MESH
     var mesh = objToMesh(planeModel);
-    mesh.createData();
-    mesh.createBuffer(gl,  Engine.defaultVertexAttributes);
-    mesh.buffer(gl);
+
 
     // MOKEY 
     var sphereMesh = objToMesh(sphereModel);
-    sphereMesh.createData();
-    sphereMesh.createBuffer(gl,  Engine.defaultVertexAttributes);
-    sphereMesh.buffer(gl);
+    // sphereMesh.createData();
+    // sphereMesh.createBuffer(gl,  Engine.defaultVertexAttributes);
+    // sphereMesh.buffer(gl);
     var sphere = new GameObject();
     sphere.position[0] = 10;
     sphere.position[1] = 10;
@@ -136,19 +133,19 @@ function main() {
 
     // TEST CUBE
     var cube1 = new GameObject();
-    var cubeRenderer = new MeshRenderer(cubeMesh, greenMaterial);
+    var cubeRenderer = new MeshRenderer(Mesh.cube, coralMaterial);
     cube1.add(cubeRenderer);
     cube1.position[1] = 5;
 
     var cube2 = new GameObject();
-    var cubeRenderer2 = new MeshRenderer(cubeMesh, unlitMaterial);
+    var cubeRenderer2 = new MeshRenderer(Mesh.cube, unlitMaterial);
     cube2.add(cubeRenderer2);
     cube2.position[0] = 1;
     cube2.position[1] = 5;
 
     // MONSTER GAME OBJECT
     var monster = new GameObject();
-    var monsterRenderer = new MeshRenderer(monsterMesh, defaultMaterial);
+    var monsterRenderer = new MeshRenderer(Mesh.monster, defaultMaterial);
     monster.add(monsterRenderer);
 
 
@@ -432,201 +429,6 @@ function initGLSettings() {
     gl.enable(gl.DEPTH_TEST);
     gl.clearColor(144 / 255, 212 / 255, 133 / 255, 1);
     // gl.clearDepth(1.0);
-}
-
-function objToMesh(obj) {
-    var lines = obj.trim().split('\n');
-    var verticesRaw = [];
-    var uvsRaw = [];
-    var normalsRaw = [];
-    var vertices = [];
-    var uvs = [];
-    var normals = [];
-    var vertexCount = 0;
-    var triangles = [];
-    for (var line of lines) {
-        var cleanLine = line.trim().replace(/\s+/, " ");
-        var tokens = cleanLine.split(" ");
-        switch (tokens[0]) {
-            case 'o':
-                // Mesh Name
-                break;
-            case 'v':
-                // Vertex
-                verticesRaw.push(vec3.fromValues(tokens[1], tokens[2], tokens[3]));
-                break;
-            case 'vt':
-                // UVs
-                uvsRaw.push(vec2.fromValues(tokens[1], tokens[2]));
-                break;
-            case 'vn':
-                // Normals
-                normalsRaw.push(vec3.fromValues(tokens[1], tokens[2], tokens[3]));
-                break;
-            case 'f':
-                // Face
-                for (let i = 1; i < tokens.length; i++) {
-                    var values = tokens[i].split("/");
-                    vertices.push(verticesRaw[values[0] - 1]);
-                    uvs.push(uvsRaw[values[1] - 1]);
-                    normals.push(normalsRaw[values[2] - 1]);
-                }
-                switch (tokens.length - 1) {
-                    case 3:
-                        triangles.push(vertexCount);
-                        triangles.push(vertexCount + 1);
-                        triangles.push(vertexCount + 2);
-                        vertexCount += 3;
-                        break;
-                    case 4:
-                        triangles.push(vertexCount);
-                        triangles.push(vertexCount + 1);
-                        triangles.push(vertexCount + 2);
-                        triangles.push(vertexCount + 2);
-                        triangles.push(vertexCount + 3);
-                        triangles.push(vertexCount);
-                        vertexCount += 4;
-                        break;
-                    default:
-                        console.error("Unhandled Face Vertex Count: " + (tokens.length - 1));
-                        break;
-                }
-                break;
-            default:
-                break;
-        }
-    }
-    const mesh = new Mesh();
-    mesh.vertices = vertices;
-    mesh.uvs = uvs;
-    mesh.normals = normals;
-    mesh.triangles = triangles;
-    return mesh;
-}
-
-function objToVoxelModel(obj) {
-    var lines = obj.trim().split('\n');
-    var verticesRaw = [];
-    var uvsRaw = [];
-    var normalsRaw = [];
-    var vertices = [];
-    var uvs = [];
-    var normals = [];
-    var vertexCount = 0;
-    var triangles = [];
-    for (var line of lines) {
-        var cleanLine = line.trim().replace(/\s+/, " ");
-        var tokens = cleanLine.split(" ");
-        switch (tokens[0]) {
-            case 'o':
-                // Mesh Name
-                break;
-            case 'v':
-                // Vertex
-                verticesRaw.push(vec3.fromValues(tokens[1], tokens[2], tokens[3]));
-                break;
-            case 'vt':
-                // UVs
-                uvsRaw.push(vec2.fromValues(tokens[1], tokens[2]));
-                break;
-            case 'vn':
-                // Normals
-                normalsRaw.push(vec3.fromValues(tokens[1], tokens[2], tokens[3]));
-                break;
-            case 'f':
-                // Face
-                for (let i = 1; i < tokens.length; i++) {
-                    var values = tokens[i].split("/");
-                    vertices.push(verticesRaw[values[0] - 1]);
-                    uvs.push(uvsRaw[values[1] - 1]);
-                    normals.push(normalsRaw[values[2] - 1]);
-                    console.log(normalsRaw[values[2] - 1]);
-                }
-                switch (tokens.length - 1) {
-                    case 3:
-                        triangles.push(vertexCount);
-                        triangles.push(vertexCount + 1);
-                        triangles.push(vertexCount + 2);
-                        vertexCount += 3;
-                        break;
-                    case 4:
-                        triangles.push(vertexCount);
-                        triangles.push(vertexCount + 1);
-                        triangles.push(vertexCount + 2);
-                        triangles.push(vertexCount + 2);
-                        triangles.push(vertexCount + 3);
-                        triangles.push(vertexCount);
-                        vertexCount += 4;
-                        break;
-                    default:
-                        console.error("Unhandled Face Vertex Count: " + (tokens.length - 1));
-                        break;
-                }
-                break;
-            default:
-                break;
-        }
-    }
-    const mesh = new Mesh();
-    mesh.vertices = vertices;
-    mesh.uvs = uvs;
-    mesh.normals = normals;
-    mesh.triangles = triangles;
-    return mesh;
-}
-
-// Creates a shader program from a given vertex and fragment shader.
-function createShaderProgram(gl, vertexShaderSource, fragmentShaderSource) {
-    // Compile Shaders
-    const vertexShader = compileShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
-    const fragmentShader = compileShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
-    if (vertexShader == null || fragmentShader == null) return;
-
-    // Create a shader program,
-    // attach the shaders to the program,
-    // then link the program.
-    const shaderProgram = gl.createProgram();
-    gl.attachShader(shaderProgram, vertexShader);
-    gl.attachShader(shaderProgram, fragmentShader);
-    gl.linkProgram(shaderProgram);
-    if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
-        alert(`Failed to initialize shaders: ${gl.getProgramInfoLog(shaderProgram)}`);
-        return null;
-    }
-
-    // Delete the shaders (not needed after linking), then use the program.
-    gl.deleteShader(vertexShader);
-    gl.deleteShader(fragmentShader);
-    return shaderProgram;
-}
-
-// Compile a single shader, returning the shader ID.
-// gl - WebGL Context
-// type - Shader Type (gl.VERTEX_SHADER, gl.FRAGMENT_SHADER)
-// shaderSource - Shader source code (string)
-function compileShader(gl, type, shaderSource) {
-    const shader = gl.createShader(type);
-    gl.shaderSource(shader, shaderSource);
-    gl.compileShader(shader);
-    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-        alert(`Error compiling shader (` + glValue(type) + `): ${gl.getShaderInfoLog(shader)}`);
-        gl.deleteShader(shader);
-        return null;
-    }
-    return shader;
-}
-
-function glValue(value) {
-    switch (value) {
-        case 5126:
-            return "gl.FLOAT";
-        case 35632:
-            return "FRAGMENT_SHADER";
-        case 35633:
-            return "VERTEX_SHADER";
-        default:
-            return "Unknown GL Value: " + value;
-    }
 }
 
 window.addEventListener('load', main);

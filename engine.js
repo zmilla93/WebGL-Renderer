@@ -20,13 +20,22 @@ const VECTOR3_ZERO = vec3.fromValues(0, 0, 0);
 
 class Engine {
     shaders = {};
+    static canvas;
+    static gl;
     static defaultVertexAttributes;
-    constructor(canvas) {
-        this.canvas = canvas;
-        this.gl = canvas.getContext("webgl2", { antialias: true, depth: true });
-        Input.addCanvas(canvas);
+    // constructor(canvas) {
+    //     this.canvas = canvas;
+    //     this.gl = canvas.getContext("webgl2", { antialias: true, depth: true });
+    //     Input.addCanvas(canvas);
+    // }
+    static init(canvas) {
+        Engine.canvas = canvas;
+        Engine.gl = canvas.getContext('webgl2', { antialias: true, depth: true })
+        Engine.setupDefaultShaders();
+        Mesh.initMeshes();
     }
     static setupDefaultShaders() {
+        const gl = Engine.gl;
         // Default Mesh Attributes
         const valuesPerVertex = 11;
         const stride = FLOAT32_SIZE * valuesPerVertex;
@@ -251,36 +260,15 @@ class Camera {
     }
 }
 
-class Line {
-    static lineList = [];
-    constructor(v1, v2, color1, color2) {
-        this.v1 = v1;
-        this.v2 = v2;
-        this.color1 = color1;
-        this.color2 = color2 == null ? color1 : color2;
-        Line.lineList.push(this);
-    }
-    destroy() {
-        Line.lineList.splice(Line.lineList.indexOf(this), 1);
-    }
-    static get data() {
-        const stride = 12;
-        const data = new Float32Array(stride * Line.lineList.length);
-        for (let i = 0; i < Line.lineList.length; i++) {
-            var line = Line.lineList[i]
-            data[i * stride] = line.v1[0];
-            data[i * stride + 1] = line.v1[1];
-            data[i * stride + 2] = line.v1[2];
-            data[i * stride + 3] = line.color1[0];
-            data[i * stride + 4] = line.color1[1];
-            data[i * stride + 5] = line.color1[2];
-            data[i * stride + 6] = line.v2[0];
-            data[i * stride + 7] = line.v2[1];
-            data[i * stride + 8] = line.v2[2];
-            data[i * stride + 9] = line.color2[0];
-            data[i * stride + 10] = line.color2[1];
-            data[i * stride + 11] = line.color2[2];
-        }
-        return data;
+function glValue(value) {
+    switch (value) {
+        case 5126:
+            return "gl.FLOAT";
+        case 35632:
+            return "FRAGMENT_SHADER";
+        case 35633:
+            return "VERTEX_SHADER";
+        default:
+            return "Unknown GL Value: " + value;
     }
 }

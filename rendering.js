@@ -112,6 +112,13 @@ class Mesh {
     vertexCount = 0;
     hasBuffer = false;
     data = null;
+    // Default Meshes
+    static cube;
+    static monster;
+    static initMeshes() {
+        Mesh.cube = objToMesh(cubeModel);
+        Mesh.monster = objToMesh(monsterModel);
+    }
     buffer(gl) {
         // FIXME : Remove this check for performance?
         if (!this.hasBuffer) {
@@ -227,4 +234,80 @@ class MeshRenderer extends Component {
         if (this.material == null) return;
         Material.registerRenderer(this.material, this);
     }
+}
+
+// Handles basic line rendering
+class Line {
+    static lineList = [];
+    constructor(v1, v2, color1, color2) {
+        this.v1 = v1;
+        this.v2 = v2;
+        this.color1 = color1;
+        this.color2 = color2 == null ? color1 : color2;
+        Line.lineList.push(this);
+    }
+    destroy() {
+        Line.lineList.splice(Line.lineList.indexOf(this), 1);
+    }
+    static get data() {
+        const stride = 12;
+        const data = new Float32Array(stride * Line.lineList.length);
+        for (let i = 0; i < Line.lineList.length; i++) {
+            var line = Line.lineList[i]
+            data[i * stride] = line.v1[0];
+            data[i * stride + 1] = line.v1[1];
+            data[i * stride + 2] = line.v1[2];
+            data[i * stride + 3] = line.color1[0];
+            data[i * stride + 4] = line.color1[1];
+            data[i * stride + 5] = line.color1[2];
+            data[i * stride + 6] = line.v2[0];
+            data[i * stride + 7] = line.v2[1];
+            data[i * stride + 8] = line.v2[2];
+            data[i * stride + 9] = line.color2[0];
+            data[i * stride + 10] = line.color2[1];
+            data[i * stride + 11] = line.color2[2];
+        }
+        return data;
+    }
+}
+
+// Creates a shader program from a given vertex and fragment shader.
+function createShaderProgram(gl, vertexShaderSource, fragmentShaderSource) {
+    // Compile Shaders
+    const vertexShader = compileShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
+    const fragmentShader = compileShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
+    if (vertexShader == null || fragmentShader == null) return;
+
+    // Create a shader program,
+    // attach the shaders to the program,
+    // then link the program.
+    const shaderProgram = gl.createProgram();
+    gl.attachShader(shaderProgram, vertexShader);
+    gl.attachShader(shaderProgram, fragmentShader);
+    gl.linkProgram(shaderProgram);
+    if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+        alert(`Failed to initialize shaders: ${gl.getProgramInfoLog(shaderProgram)}`);
+        return null;
+    }
+
+    // Delete the shaders (not needed after linking), then use the program.
+    gl.deleteShader(vertexShader);
+    gl.deleteShader(fragmentShader);
+    return shaderProgram;
+}
+
+// Compile a single shader, returning the shader ID.
+// gl - WebGL Context
+// type - Shader Type (gl.VERTEX_SHADER, gl.FRAGMENT_SHADER)
+// shaderSource - Shader source code (string)
+function compileShader(gl, type, shaderSource) {
+    const shader = gl.createShader(type);
+    gl.shaderSource(shader, shaderSource);
+    gl.compileShader(shader);
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        alert(`Error compiling shader (` + glValue(type) + `): ${gl.getShaderInfoLog(shader)}`);
+        gl.deleteShader(shader);
+        return null;
+    }
+    return shader;
 }
