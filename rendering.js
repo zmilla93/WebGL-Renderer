@@ -21,6 +21,11 @@ class Shader {
     program;
     attributes;
     uniformMap = new Map();
+    // Default Shaders
+    static defaultShader;
+    static litShader;
+    static unlitShader;
+
     // static materialMap = new Map();
     // gl - weblGL Context
     // name - (string) ID

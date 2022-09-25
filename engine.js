@@ -20,13 +20,13 @@ const VECTOR3_ZERO = vec3.fromValues(0, 0, 0);
 
 class Engine {
     shaders = {};
-    defaultMeshAttributes;
+    static defaultVertexAttributes;
     constructor(canvas) {
         this.canvas = canvas;
         this.gl = canvas.getContext("webgl2", { antialias: true, depth: true });
         Input.addCanvas(canvas);
     }
-    setupDefaultShaders() {
+    static setupDefaultShaders() {
         // Default Mesh Attributes
         const valuesPerVertex = 11;
         const stride = FLOAT32_SIZE * valuesPerVertex;
@@ -34,15 +34,17 @@ class Engine {
         const uvAttribute = new ShaderAttribute("vertexUV1", 2, gl.FLOAT, stride, FLOAT32_SIZE * 3);
         const normalAttribute = new ShaderAttribute("vertexNormal", 3, gl.FLOAT, stride, FLOAT32_SIZE * 5);
         const colorAttribute = new ShaderAttribute("vertexColor", 3, gl.FLOAT, stride, FLOAT32_SIZE * 8);
-        var attributes = [positionAttribute, uvAttribute, normalAttribute, colorAttribute];
+        Engine.defaultVertexAttributes = [positionAttribute, uvAttribute, normalAttribute, colorAttribute];
 
         // Default Shaders
-        this.shaders.defaultShader = new Shader(gl, "Default Shader", litVertexSource, litFragmentSource, attributes);
-        var defaultShader2 = new Shader(gl, "Default Shader", litVertexSource, litFragmentSource, attributes);
-        var testShader = new Shader(gl, "Test Shader", litVertexSource, litFragmentSource, attributes);
-        this.shaders.unlitShader = new Shader(gl, "Unlit Shader", unlitVertexSource, unlitFragmentSource, attributes);
+        Shader.defaultShader = new Shader(gl, "Default Shader",
+            litVertexSource, litFragmentSource, Engine.defaultVertexAttributes);
+        // var defaultShader2 = new Shader(gl, "Default Shader", litVertexSource, litFragmentSource, attributes);
+        // var testShader = new Shader(gl, "Test Shader", litVertexSource, litFragmentSource, attributes);
+        Shader.unlitShader = new Shader(gl, "Unlit Shader",
+            unlitVertexSource, unlitFragmentSource, Engine.defaultVertexAttributes);
         // gl.uniform3f(unlitShader.uniform("dominatingColor"), 1, 0, 0);
-        var defaultMaterial = new Material(this.shaders.defaultShader);
+        // var defaultMaterial = new Material(this.shaders.defaultShader);
 
         // const dominatingColor = unlitShader.uniform("dominatingColor");
         // var unlitMaterial = new Material(unlitShader, function () {
@@ -200,7 +202,7 @@ class Camera {
         const projectionMatrix = mat4.create();
         mat4.perspective(projectionMatrix, fieldOfView, aspect, zNear, zFar);
     }
-    getPerspectiveMatrix(){
+    getPerspectiveMatrix() {
         return this.perspectiveMatrix;
     }
 

@@ -44,60 +44,71 @@ function main() {
     if (lineShader == null) return;
     gl.useProgram(shaderProgram);
 
-    const valuesPerVertex = 11;
-    const stride = FLOAT32_SIZE * valuesPerVertex;
-    const positionAttribute = new ShaderAttribute("vertexPosition", 3, gl.FLOAT, stride, 0);
-    const uvAttribute = new ShaderAttribute("vertexUV1", 2, gl.FLOAT, stride, FLOAT32_SIZE * 3);
-    const normalAttribute = new ShaderAttribute("vertexNormal", 3, gl.FLOAT, stride, FLOAT32_SIZE * 5);
-    const colorAttribute = new ShaderAttribute("vertexColor", 3, gl.FLOAT, stride, FLOAT32_SIZE * 8);
-    var attributes = [positionAttribute, uvAttribute, normalAttribute, colorAttribute];
-    var defaultShader = new Shader(gl, "Default Shader", litVertexSource, litFragmentSource, attributes);
-    var defaultShader2 = new Shader(gl, "Default Shader", litVertexSource, litFragmentSource, attributes);
-    var testShader = new Shader(gl, "Test Shader", litVertexSource, litFragmentSource, attributes);
-    var unlitShader = new Shader(gl, "Unlit Shader", unlitVertexSource, unlitFragmentSource, attributes);
-    gl.uniform3f(unlitShader.uniform("dominatingColor"), 1, 0, 0);
+    Engine.setupDefaultShaders();
 
-    var defaultMaterial = new Material(defaultShader);
 
-    const dominatingColor = unlitShader.uniform("dominatingColor");
-    var unlitMaterial = new Material(unlitShader, function () {
+    // const valuesPerVertex = 11;
+    // const stride = FLOAT32_SIZE * valuesPerVertex;
+    // const positionAttribute = new ShaderAttribute("vertexPosition", 3, gl.FLOAT, stride, 0);
+    // const uvAttribute = new ShaderAttribute("vertexUV1", 2, gl.FLOAT, stride, FLOAT32_SIZE * 3);
+    // const normalAttribute = new ShaderAttribute("vertexNormal", 3, gl.FLOAT, stride, FLOAT32_SIZE * 5);
+    // const colorAttribute = new ShaderAttribute("vertexColor", 3, gl.FLOAT, stride, FLOAT32_SIZE * 8);
+    // var attributes = [positionAttribute, uvAttribute, normalAttribute, colorAttribute];
+    // // var defaultShader = new Shader(gl, "Default Shader", litVertexSource, litFragmentSource, attributes);
+    // var defaultShader2 = new Shader(gl, "Default Shader", litVertexSource, litFragmentSource, attributes);
+    // var testShader = new Shader(gl, "Test Shader", litVertexSource, litFragmentSource, attributes);
+    // // var unlitShader = new Shader(gl, "Unlit Shader", unlitVertexSource, unlitFragmentSource, attributes);
+
+    
+    // gl.uniform3f(Shader.unlitShader.uniform("dominatingColor"), 1, 0, 0);
+
+    var defaultMaterial = new Material(Shader.defaultShader);
+
+    const dominatingColor = Shader.unlitShader.uniform("dominatingColor");
+    var unlitMaterial = new Material(Shader.unlitShader, function () {
         gl.uniform3f(dominatingColor, 0, 0.5, 0.31);
     });
-    var greenMaterial = new Material(unlitShader, function () {
+    var greenMaterial = new Material(Shader.unlitShader, function () {
         gl.uniform3f(dominatingColor, 0, 1, 0);
     });
-    var coralMaterial = new Material(unlitShader, function () {
+    var coralMaterial = new Material(Shader.unlitShader, function () {
         gl.uniform3f(dominatingColor, 1, 0.5, 0.31);
     });
 
     var sunAngle = vec3.fromValues(0.5, 1, 0.25);
-    vec3.normalize(sunAngle, sunAngle);
-    gl.useProgram(defaultShader.program);
-    gl.uniform3f(defaultShader.uniform("sunlightAngle"), sunAngle[0], sunAngle[1], sunAngle[2]);
-    gl.uniform3f(defaultShader.uniform("ambientLight"), 0.2, 0.2, 0.2);
-    gl.uniform1f(defaultShader.uniform("sunlightIntensity"), 6);
+    // vec3.normalize(sunAngle, sunAngle);
+    // gl.useProgram(defaultShader.program);
+    // gl.uniform3f(defaultShader.uniform("sunlightAngle"), sunAngle[0], sunAngle[1], sunAngle[2]);
+    // gl.uniform3f(defaultShader.uniform("ambientLight"), 0.2, 0.2, 0.2);
+    // gl.uniform1f(defaultShader.uniform("sunlightIntensity"), 6);
+
+    // TEMP : Default Shader Lighting
+    gl.useProgram(Shader.defaultShader.program);
+    gl.uniform3f(Shader.defaultShader.uniform("sunlightAngle"), sunAngle[0], sunAngle[1], sunAngle[2]);
+    gl.uniform3f(Shader.defaultShader.uniform("ambientLight"), 0.2, 0.2, 0.2);
+    gl.uniform1f(Shader.defaultShader.uniform("sunlightIntensity"), 6);
 
     // BLOCK MESH
     var cubeMesh = objToMesh(cubeModel);
     cubeMesh.createData();
-    cubeMesh.createBuffer(gl, attributes);
+    cubeMesh.createBuffer(gl, Engine.defaultVertexAttributes);
     cubeMesh.buffer(gl);
 
     var monsterMesh = objToMesh(monsterModel);
     monsterMesh.createData();
-    monsterMesh.createBuffer(gl, attributes);
+    monsterMesh.createBuffer(gl,  Engine.defaultVertexAttributes);
     monsterMesh.buffer(gl);
 
     // PLANE MESH
     var mesh = objToMesh(planeModel);
     mesh.createData();
-    mesh.createBuffer(gl, attributes);
+    mesh.createBuffer(gl,  Engine.defaultVertexAttributes);
     mesh.buffer(gl);
 
     // MOKEY 
     var sphereMesh = objToMesh(sphereModel);
     sphereMesh.createData();
-    sphereMesh.createBuffer(gl, attributes);
+    sphereMesh.createBuffer(gl,  Engine.defaultVertexAttributes);
     sphereMesh.buffer(gl);
     var sphere = new GameObject();
     sphere.position[0] = 10;
