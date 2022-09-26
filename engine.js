@@ -101,6 +101,15 @@ class Engine {
         // Clear color and depth buffers.
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         // Render Lines
+        gl.useProgram(Shader.lineShader.program);
+        const fullTransform = mat4.create();
+        mat4.mul(fullTransform, Camera.main.getProjectionMatrix(), Camera.main.getWorldtoViewMatrix());
+        gl.uniformMatrix4fv(Shader.lineShader.uniform("projectionMatrix"), false, fullTransform);
+        gl.bindVertexArray(Line.vao);
+        gl.bindBuffer(gl.ARRAY_BUFFER, Line.vertexBuffer);
+        var lineData = Line.data;
+        gl.bufferData(gl.ARRAY_BUFFER, lineData, gl.DYNAMIC_DRAW);
+        gl.drawArrays(gl.LINES, 0, Line.lineList.length * 2);
 
         // Loop through the material map.
         // This is a map where shaderName = [Array of materials using that shader]
@@ -216,10 +225,10 @@ class Camera {
     // Camera Settings
     fieldOfView = 60 * DEG2RAD;
     aspect = Engine.gl.canvas.clientWidth / Engine.gl.canvas.clientHeight;
-    zNear = 0.01;
-    zFar = 1000.0;
+    nearPlane = 0.01;
+    farPlane = 1000.0;
     projectionMatrix = mat4.create();
-    perspectiveMatrix = mat4.create();
+    // perspectiveMatrix = mat4.create();
 
     // Main Camera
     static main;
@@ -229,10 +238,11 @@ class Camera {
         this.rotation = vec3.create();
         this.viewDirection = vec3.clone(VECTOR3_FORWARD);
         this.forward = vec3.clone(VECTOR3_FORWARD);
+        this.calculateProjectionMatrix();
     }
     getWorldtoViewMatrix() {
         // this.calculateWorldtoViewMatrix();
-        this.newCalc();
+        this.calculateWorldToViewMatrix();
         return this.worldToViewMatrix;
         // const matrix = mat4.create();
         // const lookVector = vec3.create();
@@ -241,21 +251,22 @@ class Camera {
         // return matrix;
     }
     calculateProjectionMatrix() {
-        const projectionMatrix = mat4.create();
-        mat4.perspective(projectionMatrix, fieldOfView, aspect, zNear, zFar);
+        // const projectionMatrix = mat4.create();
+        // this.perspectiveMatrix = mat4.create();
+        mat4.perspective(this.projectionMatrix, this.fieldOfView, this.aspect, this.nearPlane, this.farPlane);
     }
-    getPerspectiveMatrix() {
-        return this.perspectiveMatrix;
+    getProjectionMatrix() {
+        return this.projectionMatrix;
     }
 
-    OLD_calculateWorldtoViewMatrix() {
-        this.worldToViewMatrix = mat4.create();
-        const lookVector = vec3.create();
-        vec3.add(lookVector, this.position, this.viewDirection);
-        mat4.lookAt(this.worldToViewMatrix, this.position, lookVector, VECTOR3_UP);
-        // return worldToViewMatrix;
-    }
-    newCalc() {
+    // OLD_calculateWorldtoViewMatrix() {
+    //     this.worldToViewMatrix = mat4.create();
+    //     const lookVector = vec3.create();
+    //     vec3.add(lookVector, this.position, this.viewDirection);
+    //     mat4.lookAt(this.worldToViewMatrix, this.position, lookVector, VECTOR3_UP);
+    //     // return worldToViewMatrix;
+    // }
+    calculateWorldToViewMatrix() {
         this.worldToViewMatrix = mat4.create();
         var localViewDirection = vec3.clone(VECTOR3_FORWARD);
         this.forward = vec3.clone(VECTOR3_FORWARD);

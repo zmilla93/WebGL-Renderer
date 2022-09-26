@@ -1,3 +1,5 @@
+#define NORMAL
+
 precision mediump float;
 
 varying mediump vec3 vColor;
@@ -11,9 +13,13 @@ uniform mediump vec3 sunlightAngle;
 uniform mediump float sunlightIntensity;
 
 void main(void) {
-    
+
     float surfaceSunlight = dot(sunlightAngle, vNormal) * sunlightIntensity;
+    #ifdef NORMAL
     vec3 litAmbient = ambientLight + sunlightColor * surfaceSunlight;
+    #else
+    vec3 litAmbient = ambientLight ;
+    #endif
     vec3 color = vColor * litAmbient;
     // vec3 color = vec3(0.95, 1, 0.28);
 

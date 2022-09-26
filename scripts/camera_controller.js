@@ -8,7 +8,6 @@ class SimpleCameraController extends Component {
             var scaled = vec3.clone(cam.forward);
             vec3.scale(scaled, scaled, Time.deltaTime * speed);
             vec3.add(cam.position, cam.position, scaled);
-            drawScene();
         }
         if (Input.isKeyPressed('KeyS')) {
             var localBack = vec3.create();
@@ -16,7 +15,6 @@ class SimpleCameraController extends Component {
             var scaled = vec3.clone(localBack);
             vec3.scale(scaled, scaled, Time.deltaTime * speed);
             vec3.add(cam.position, cam.position, scaled);
-            drawScene();
         }
         if (Input.isKeyPressed('KeyA')) {
             var localLeft = vec3.create();
@@ -24,7 +22,6 @@ class SimpleCameraController extends Component {
             var scaled = vec3.clone(localLeft);
             vec3.scale(scaled, scaled, Time.deltaTime * speed);
             vec3.add(cam.position, cam.position, scaled);
-            drawScene();
         }
         if (Input.isKeyPressed('KeyD')) {
             var localRight = vec3.create();
@@ -32,19 +29,16 @@ class SimpleCameraController extends Component {
             var scaled = vec3.clone(localRight);
             vec3.scale(scaled, scaled, Time.deltaTime * speed);
             vec3.add(cam.position, cam.position, scaled);
-            drawScene();
         }
         if (Input.isKeyPressed('Space')) {
             var scaled = vec3.clone(VECTOR3_UP);
             vec3.scale(scaled, scaled, Time.deltaTime * speed);
             vec3.add(cam.position, cam.position, scaled);
-            drawScene();
         }
         if (Input.isKeyPressed('ControlLeft')) {
             var scaled = vec3.clone(VECTOR3_DOWN);
             vec3.scale(scaled, scaled, Time.deltaTime * speed);
             vec3.add(cam.position, cam.position, scaled);
-            drawScene();
         }
         if (Input.isKeyPressed('KeyQ')) {
             var rotationY = cam.rotation[1];
@@ -81,7 +75,6 @@ class CameraController extends Component {
             var scaled = vec3.clone(cam.forward);
             vec3.scale(scaled, scaled, Time.deltaTime * speed);
             vec3.add(cam.position, cam.position, scaled);
-            drawScene();
         }
         if (Input.isKeyPressed('KeyS')) {
             var localBack = vec3.create();
@@ -89,7 +82,6 @@ class CameraController extends Component {
             var scaled = vec3.clone(localBack);
             vec3.scale(scaled, scaled, Time.deltaTime * speed);
             vec3.add(cam.position, cam.position, scaled);
-            drawScene();
         }
         if (Input.isKeyPressed('KeyA')) {
             var localLeft = vec3.create();
@@ -97,7 +89,6 @@ class CameraController extends Component {
             var scaled = vec3.clone(localLeft);
             vec3.scale(scaled, scaled, Time.deltaTime * speed);
             vec3.add(cam.position, cam.position, scaled);
-            drawScene();
         }
         if (Input.isKeyPressed('KeyD')) {
             var localRight = vec3.create();
@@ -105,19 +96,16 @@ class CameraController extends Component {
             var scaled = vec3.clone(localRight);
             vec3.scale(scaled, scaled, Time.deltaTime * speed);
             vec3.add(cam.position, cam.position, scaled);
-            drawScene();
         }
         if (Input.isKeyPressed('Space')) {
             var scaled = vec3.clone(VECTOR3_UP);
             vec3.scale(scaled, scaled, Time.deltaTime * speed);
             vec3.add(cam.position, cam.position, scaled);
-            drawScene();
         }
         if (Input.isKeyPressed('ControlLeft')) {
             var scaled = vec3.clone(VECTOR3_DOWN);
             vec3.scale(scaled, scaled, Time.deltaTime * speed);
             vec3.add(cam.position, cam.position, scaled);
-            drawScene();
         }
         if (Input.isKeyPressed('KeyQ')) {
             var rotationY = cam.rotation[1];
