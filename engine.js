@@ -34,6 +34,7 @@ class Engine {
         Engine.setupDefaultShaders();
         Camera.main = new Camera();
         Mesh.initMeshes();
+        window.requestAnimationFrame(Engine.internal_update);
     }
     static setupDefaultShaders() {
         const gl = Engine.gl;
@@ -72,8 +73,10 @@ class Engine {
         gl.enableVertexAttribArray(lineColorAttrib.location);
         gl.vertexAttribPointer(lineColorAttrib.location, 3, gl.FLOAT, false, 6 * FLOAT32_SIZE, 3 * FLOAT32_SIZE);
     }
+    // The engine's internal update loop, called using requestAnimationFrame
+    // https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame
     static internal_update(timestamp) {
-        // console.log(timestamp);
+        // Update Time.deltaTime
         if (Time._startTime == undefined) {
             Time._startTime = timestamp;
             Time.deltaTime = 0;
@@ -84,16 +87,20 @@ class Engine {
         }
         Time._previousTime = timestamp;
         if (running) {
-            for (gameObject of GameObject.gameObjectList) {
+            // Update all game objects
+            for (let gameObject of GameObject.gameObjectList) {
                 if (typeof gameObject.update === 'function') gameObject.update();
-                for (component of gameObject.components) {
+                for (let component of gameObject.components) {
                     if (typeof component.update === 'function') {
                         component.update();
                     }
                 }
             }
-            // update();
+            // Render the scene
+            Engine.render();
+            // Clear single frame key presses
             Input.pressedThisFrame.clear();
+            // Request a new animation frame
             window.requestAnimationFrame(Engine.internal_update);
         }
     }
@@ -110,7 +117,6 @@ class Engine {
         var lineData = Line.data;
         gl.bufferData(gl.ARRAY_BUFFER, lineData, gl.DYNAMIC_DRAW);
         gl.drawArrays(gl.LINES, 0, Line.lineList.length * 2);
-
         // Loop through the material map.
         // This is a map where shaderName = [Array of materials using that shader]
         Material.materialMap.forEach((materialGroup) => {
@@ -119,8 +125,6 @@ class Engine {
                 // Set the shader using the first element in the array,
                 // since by design all elements in the array must use the same shader.
                 if (!shaderChanged) {
-                    // console.log("CHANGE SHADER:");
-                    // console.log(material.shader);
                     gl.useProgram(material.shader.program);
                     shaderChanged = true;
                 }

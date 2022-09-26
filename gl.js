@@ -151,7 +151,7 @@ function main() {
 
     createGrid();
 
-    window.requestAnimationFrame(draw);
+    // window.requestAnimationFrame(draw);
 }
 
 
@@ -216,43 +216,6 @@ function createGrid() {
 
 var previousTime = 0;
 var elapsedTime = 0;
-
-function draw(timestamp) {
-    // console.log(timestamp);
-    if (Time._startTime == undefined) {
-        Time._startTime = timestamp;
-        Time.deltaTime = 0;
-        Time.elapsedTime = 0;
-    } else {
-        Time.deltaTime = (timestamp - Time._previousTime) / 1000;
-        Time.elapsedTime = (timestamp - Time._startTime) / 1000;
-    }
-    Time._previousTime = timestamp;
-    if (running) {
-        window.requestAnimationFrame(draw);
-        for (gameObject of GameObject.gameObjectList) {
-            if (typeof gameObject.update === 'function') gameObject.update();
-            for (component of gameObject.components) {
-                if (typeof component.update === 'function') {
-                    component.update();
-                }
-            }
-        }
-        update();
-        Input.pressedThisFrame.clear();
-    }
-}
-
-function update() {
-    // console.log(elapsedTime);
-    // var gameObject = GameObject.gameObjectList[0];
-    // gameObject.position[1] = 3 + Math.cos(Time.elapsedTime / 250) * 2;
-    // pollInput();
-
-
-    // drawScene();
-    Engine.render();
-}
 
 function pollInput() {
     const walkSpeed = 5;
