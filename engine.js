@@ -30,10 +30,17 @@ class Engine {
     // }
     static init(canvas) {
         Engine.canvas = canvas;
-        Engine.gl = canvas.getContext('webgl2', { antialias: true, depth: true })
+        const gl = canvas.getContext('webgl2', { antialias: true, depth: true })
+        Engine.gl = gl;
+        gl.enable(gl.CULL_FACE)
+        gl.cullFace(gl.BACK);
+        gl.enable(gl.DEPTH_TEST);
+        gl.clearColor(144 / 255, 212 / 255, 133 / 255, 1);
         Engine.setupDefaultShaders();
         Camera.main = new Camera();
         Mesh.initMeshes();
+        Input.addKeyboardListeners();
+        Input.addMouseListeners(canvas);
         window.requestAnimationFrame(Engine.internal_update);
     }
     static setupDefaultShaders() {
@@ -86,25 +93,26 @@ class Engine {
             Time.elapsedTime = (timestamp - Time._startTime) / 1000;
         }
         Time._previousTime = timestamp;
-        if (running) {
-            // Update all game objects
-            for (let gameObject of GameObject.gameObjectList) {
-                if (typeof gameObject.update === 'function') gameObject.update();
-                for (let component of gameObject.components) {
-                    if (typeof component.update === 'function') {
-                        component.update();
-                    }
+        // if (running) {
+        // Update all game objects
+        for (let gameObject of GameObject.gameObjectList) {
+            if (typeof gameObject.update === 'function') gameObject.update();
+            for (let component of gameObject.components) {
+                if (typeof component.update === 'function') {
+                    component.update();
                 }
             }
-            // Render the scene
-            Engine.render();
-            // Clear single frame key presses
-            Input.pressedThisFrame.clear();
-            // Request a new animation frame
-            window.requestAnimationFrame(Engine.internal_update);
         }
+        // Render the scene
+        Engine.render();
+        // Clear single frame key presses
+        Input.pressedThisFrame.clear();
+        // Request a new animation frame
+        window.requestAnimationFrame(Engine.internal_update);
+        // }
     }
     static render() {
+        const gl = Engine.gl;
         // Clear color and depth buffers.
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         // Render Lines
@@ -170,7 +178,7 @@ class GameObject {
     get matrix() {
         // FIXME : Make static
         const fieldOfView = 60 * DEG2RAD;
-        const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
+        const aspect = Engine.gl.canvas.clientWidth / Engine.gl.canvas.clientHeight;
         const zNear = 1;
         const zFar = 1000.0;
 

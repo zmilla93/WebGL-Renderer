@@ -50,7 +50,7 @@ class Shader {
     uniform(uniformName) {
         if (this.uniformMap.has(uniformName))
             return this.uniformMap.get(uniformName);
-        const uniformLocation = gl.getUniformLocation(this.program, uniformName);
+        const uniformLocation = this.gl.getUniformLocation(this.program, uniformName);
         if (uniformLocation != null) {
             this.uniformMap.set(uniformName, uniformLocation);
             return uniformLocation;
@@ -211,7 +211,7 @@ class MeshRenderer extends Component {
     }
     applyPerObjectUniforms = function () {
         if (this.gameObject == null) return;
-        gl.uniformMatrix4fv(this.material.shader.uniform("transformMatrix"), false, this.gameObject.matrix);
+        Engine.gl.uniformMatrix4fv(this.material.shader.uniform("transformMatrix"), false, this.gameObject.matrix);
     };
     render(gl) {
         if (this.gameObject == null) return;
