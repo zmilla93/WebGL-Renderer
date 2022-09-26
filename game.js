@@ -1,22 +1,20 @@
 function run() {
-
     const canvas = document.getElementById('glCanvas');
     Engine.init(canvas);
-    // Engine.setupDefaultShaders();
 
-    // var mat = new Material(Shader.unlitShader, function () {
-    //     Engine.gl.uniform3f(Shader.unlitShader.uniform("dominatingColor"), 1, 0.5, 0.31);
-    // });
-    var mat = new Material(Shader.unlitShader);
+    var litMat = new Material(Shader.simpleLit);
+    var unlitMaterial = new Material(Shader.unlitShader);
 
-    // mat.uniforms.color = vec3.fromValues(1, 0, 0);
-    // Shader.unlitShader.uniformConverter.color(mat);
+    unlitMaterial.uniforms.dominatingColor = vec3.fromValues(1, 0, 0);
 
-    // console.log(Shader.unlitShader);
-    // console.log(Shader.unlitShader.attributes[0]);
+    var monster = new GameObject();
+    monster.add(new MeshRenderer(Mesh.monster, litMat));
+    // monster.update = function () {
+    //     monster.position[1] = 3 + Math.cos(Time.elapsedTime * 2) * 2;
+    // }
 
     var cube = new GameObject();
-    cube.add(new MeshRenderer(Mesh.cube, mat));
+    cube.add(new MeshRenderer(Mesh.cube, unlitMaterial));
 
     const count = 20;
     const halfCount = count / 2;
@@ -24,11 +22,10 @@ function run() {
     for (var x = -halfCount; x < halfCount; x++) {
         for (var z = -halfCount; z < halfCount; z++) {
             var gameObject = new GameObject();
-            // gameObject.init(gl, cube2);
             gameObject.position[0] = x * spacing;
             gameObject.position[1] = 0;
             gameObject.position[2] = z * spacing;
-            gameObject.add(new MeshRenderer(Mesh.cube, mat));
+            gameObject.add(new MeshRenderer(Mesh.cube, unlitMaterial));
         }
     }
 

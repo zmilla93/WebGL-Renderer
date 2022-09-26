@@ -1,4 +1,9 @@
 
+// Static class for holding rendering utility stuff.
+class Rendering {
+
+}
+
 //  Holds data for weblGL vertexAttribPointer
 //  https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/vertexAttribPointer
 class ShaderAttribute {
@@ -313,3 +318,8 @@ function compileShader(gl, type, shaderSource) {
     }
     return shader;
 }
+
+Rendering.colorConverter = function (material, uniformName) {
+    var color = material.uniforms[uniformName] == null ? [1, 1, 1] : material.uniforms[uniformName];
+    Engine.gl.uniform3f(material.shader.uniform(uniformName), color[0], color[1], color[2]);
+} 

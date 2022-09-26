@@ -65,14 +65,13 @@ class Engine {
         var attrib = Engine.defaultVertexAttributes;
         Shader.defaultShader = new Shader(gl, "Default Shader", litVertexSource, litFragmentSource, attrib);
         Shader.simpleLit = new Shader(gl, "Simple Lit", simpleLitVertexSource, simpleLitFragmentSource, attrib);
-        Shader.lit = new Shader(gl, "Lit", litVertexSource, litFragmentSource, attrib);
+        Shader.lit = new Shader(gl, "Lit Shader", litVertexSource, litFragmentSource, attrib);
         Shader.unlitShader = new Shader(gl, "Unlit Shader", unlitVertexSource, unlitFragmentSource, attrib);
         Shader.lineShader = new Shader(gl, "Line Shader", lineVertexSource, lineFragmentSource, lineAttributes);
 
-        Shader.unlitShader.uniformConverter.color = function (material) {
-            var color = material.uniforms.color == null ? [1, 1, 1] : material.uniforms.color;
-            Engine.gl.uniform3f(Shader.unlitShader.uniform("dominatingColor"), color[0], color[1], color[2]);
-        }
+        // Functions that map uniform values to their respective glUniform calls
+        // Function name must match the uniform name!
+        Shader.unlitShader.uniformConverter.dominatingColor = Rendering.colorConverter;
 
         // Line VAO Setup
         // FIXME : Move this?
@@ -148,8 +147,7 @@ class Engine {
                 for (let converter of Object.entries(material.shader.uniformConverter)) {
                     // console.log(converter);
                     if (typeof converter[1] === 'function') {
-                        // console.log("!");
-                        converter[1](material);
+                        converter[1](material, converter[0]);
                     }
                 }
                 if (typeof material.applyPerMaterialUniforms === 'function')
