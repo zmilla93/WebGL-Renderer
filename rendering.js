@@ -20,6 +20,7 @@ class Shader {
     name;
     program;
     attributes;
+    uniformConverter = {};
     uniformMap = new Map();
     // Default Shaders
     // static defaultShader;
@@ -62,6 +63,7 @@ class Shader {
 class Material {
     shader;
     applyUniforms;
+    uniforms = {};
     // renderers = [];
     static materialMap = new Map();
     // Shader - Shader Class

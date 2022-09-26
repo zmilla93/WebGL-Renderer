@@ -27,8 +27,8 @@ function main() {
     Engine.init(canvas);
     gl = canvas.getContext("webgl2", { antialias: true, depth: true });
 
-    Input.addKeyboardListeners();
-    Input.addMouseListeners(canvas);
+    // Input.addKeyboardListeners();
+    // Input.addMouseListeners(canvas);
 
     // cam = new Camera();
     // Camera.main = cam;

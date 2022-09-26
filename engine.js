@@ -69,6 +69,11 @@ class Engine {
         Shader.unlitShader = new Shader(gl, "Unlit Shader", unlitVertexSource, unlitFragmentSource, attrib);
         Shader.lineShader = new Shader(gl, "Line Shader", lineVertexSource, lineFragmentSource, lineAttributes);
 
+        Shader.unlitShader.uniformConverter.color = function (material) {
+            var color = material.uniforms.color == null ? [1, 1, 1] : material.uniforms.color;
+            Engine.gl.uniform3f(Shader.unlitShader.uniform("dominatingColor"), color[0], color[1], color[2]);
+        }
+
         // Line VAO Setup
         // FIXME : Move this?
         Line.vao = gl.createVertexArray();
@@ -112,9 +117,10 @@ class Engine {
         // }
     }
     static render() {
+        // Clear color and depth buffers.    
         const gl = Engine.gl;
-        // Clear color and depth buffers.
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
         // Render Lines
         gl.useProgram(Shader.lineShader.program);
         const fullTransform = mat4.create();
@@ -125,6 +131,7 @@ class Engine {
         var lineData = Line.data;
         gl.bufferData(gl.ARRAY_BUFFER, lineData, gl.DYNAMIC_DRAW);
         gl.drawArrays(gl.LINES, 0, Line.lineList.length * 2);
+
         // Loop through the material map.
         // This is a map where shaderName = [Array of materials using that shader]
         Material.materialMap.forEach((materialGroup) => {
@@ -135,6 +142,15 @@ class Engine {
                 if (!shaderChanged) {
                     gl.useProgram(material.shader.program);
                     shaderChanged = true;
+                }
+                // console.log(material.shader.uniformConverter);
+                // console.log(Object.entries(material.shader.uniformConverter));
+                for (let converter of Object.entries(material.shader.uniformConverter)) {
+                    // console.log(converter);
+                    if (typeof converter[1] === 'function') {
+                        // console.log("!");
+                        converter[1](material);
+                    }
                 }
                 if (typeof material.applyPerMaterialUniforms === 'function')
                     material.applyPerMaterialUniforms();
