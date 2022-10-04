@@ -71,7 +71,8 @@ class Engine {
 
         // Functions that map uniform values to their respective glUniform calls
         // Function name must match the uniform name!
-        Shader.unlitShader.uniformConverter.dominatingColor = Rendering.colorConverter;
+        Shader.simpleLit.uniformConverter.sunlightColor = Rendering.vector3Converter;
+        Shader.unlitShader.uniformConverter.dominatingColor = Rendering.vector3Converter;
 
         // Line VAO Setup
         // FIXME : Move this?
@@ -142,6 +143,8 @@ class Engine {
                     gl.useProgram(material.shader.program);
                     shaderChanged = true;
                 }
+                if (typeof material.applyPerMaterialUniforms === 'function')
+                    material.applyPerMaterialUniforms();
                 // console.log(material.shader.uniformConverter);
                 // console.log(Object.entries(material.shader.uniformConverter));
                 for (let converter of Object.entries(material.shader.uniformConverter)) {
@@ -150,8 +153,7 @@ class Engine {
                         converter[1](material, converter[0]);
                     }
                 }
-                if (typeof material.applyPerMaterialUniforms === 'function')
-                    material.applyPerMaterialUniforms();
+
                 // Loop through all renderers that use this material and render them.
                 material.renderers.forEach((renderer) => {
                     renderer.applyPerObjectUniforms();

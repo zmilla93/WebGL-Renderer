@@ -33,8 +33,9 @@ function main() {
     // cam = new Camera();
     // Camera.main = cam;
     // cam = Camera.main;
-    Camera.main.position[2] = 3;
     Camera.main.position[1] = 1.5;
+    Camera.main.position[2] = 10;
+
 
     initGLSettings();
     // shaderProgram = createShaderProgram(gl, simpleLitVertexSource, simpleLitFragmentSource);
@@ -52,7 +53,7 @@ function main() {
 
     const dominatingColor = Shader.unlitShader.uniform("dominatingColor");
     var unlitMaterial = new Material(Shader.unlitShader, function () {
-        gl.uniform3f(dominatingColor, 0, 0.5, 0.31);
+        // gl.uniform3f(dominatingColor, 0, 0.5, 0.31);
     });
     var greenMaterial = new Material(Shader.unlitShader, function () {
         gl.uniform3f(dominatingColor, 0, 1, 0);
@@ -62,6 +63,9 @@ function main() {
     });
 
     var simpleMat = new Material(Shader.simpleLit);
+
+    unlitMaterial.uniforms.dominatingColor = vec3.fromValues(1, 0, 0);
+    coralMaterial.uniforms.dominatingColor = vec3.fromValues(1, 0.5, 0.31);
 
     var sunAngle = vec3.fromValues(0.5, 1, 0.25);
 
@@ -75,16 +79,21 @@ function main() {
 
     gl.useProgram(Shader.simpleLit.program);
     const a = 0.2;
-    gl.uniform3f(Shader.simpleLit.uniform("sunlightColor"), .8, .8, .8);
+    // gl.uniform3f(Shader.simpleLit.uniform("sunlightColor"), .8, .8, .8);
+
     // gl.uniform3f(Shader.simpleLit.uniform("sunlightColor"), 0.1, 0.1, 0.1);
     gl.uniform3f(Shader.simpleLit.uniform("ambientLight"), 0.2, 0.2, 0.2);
     gl.uniform3f(Shader.simpleLit.uniform("sunlightAngle"), sunAngle[0], sunAngle[1], sunAngle[2]);
     gl.uniform1f(Shader.simpleLit.uniform("sunlightIntensity"), 0.8);
 
+    Shader.unlitShader.dominatingColor = vec3.fromValues(0, 1, 0);
+
     var mesh = objToMesh(planeModel);
 
     // MOKEY 
     var sphereMesh = objToMesh(sphereModel);
+
+    defaultMaterial.uniforms.sunlightColor = vec3.fromValues(1, 0, 0);
 
     // sphereMesh.createData();
     // sphereMesh.createBuffer(gl,  Engine.defaultVertexAttributes);

@@ -16,7 +16,7 @@ function run() {
     var cube = new GameObject();
     cube.add(new MeshRenderer(Mesh.cube, unlitMaterial));
 
-    const count = 20;
+    const count = 10;
     const halfCount = count / 2;
     const spacing = 1;
     for (var x = -halfCount; x < halfCount; x++) {
@@ -28,6 +28,9 @@ function run() {
             gameObject.add(new MeshRenderer(Mesh.cube, unlitMaterial));
         }
     }
+
+    var g = new GameObject();
+    console.log(g);
 
     var controller = new GameObject();
     controller.add(new SimpleCameraController());

@@ -1,4 +1,3 @@
-
 // Static class for holding rendering utility stuff.
 class Rendering {
 
@@ -243,6 +242,10 @@ class MeshRenderer extends Component {
     }
 }
 
+class Light extends Component{
+
+}
+
 // Handles basic line rendering
 class Line {
     static lineList = [];
@@ -319,7 +322,7 @@ function compileShader(gl, type, shaderSource) {
     return shader;
 }
 
-Rendering.colorConverter = function (material, uniformName) {
-    var color = material.uniforms[uniformName] == null ? [1, 1, 1] : material.uniforms[uniformName];
-    Engine.gl.uniform3f(material.shader.uniform(uniformName), color[0], color[1], color[2]);
+Rendering.vector3Converter = function (material, uniformName) {
+    const vector = material.uniforms[uniformName] == null ? [1, 1, 1] : material.uniforms[uniformName];
+    Engine.gl.uniform3f(material.shader.uniform(uniformName), vector[0], vector[1], vector[2]);
 } 
