@@ -102,12 +102,14 @@ function objToVoxelModel(obj) {
                 break;
             case 'f':
                 // Face
+                // var direction = ;
                 for (let i = 1; i < tokens.length; i++) {
                     var values = tokens[i].split("/");
                     vertices.push(verticesRaw[values[0] - 1]);
                     uvs.push(uvsRaw[values[1] - 1]);
                     normals.push(normalsRaw[values[2] - 1]);
                     console.log(normalsRaw[values[2] - 1]);
+                    console.log(getFacingDirection(normalsRaw[values[2] - 1]));
                 }
                 switch (tokens.length - 1) {
                     case 3:

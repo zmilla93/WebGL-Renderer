@@ -64,7 +64,7 @@ function main() {
 
     var simpleMat = new Material(Shader.simpleLit);
 
-    unlitMaterial.uniforms.dominatingColor = vec3.fromValues(1, 0, 0);
+    unlitMaterial.uniforms.dominatingColor = vec3.fromValues(0, 1, 0);
     coralMaterial.uniforms.dominatingColor = vec3.fromValues(1, 0.5, 0.31);
 
     var sunAngle = vec3.fromValues(0.5, 1, 0.25);
@@ -81,19 +81,21 @@ function main() {
     const a = 0.2;
     // gl.uniform3f(Shader.simpleLit.uniform("sunlightColor"), .8, .8, .8);
 
-    // gl.uniform3f(Shader.simpleLit.uniform("sunlightColor"), 0.1, 0.1, 0.1);
+    gl.uniform3f(Shader.simpleLit.uniform("sunlightColor"), 0.1, 0.1, 0.1);
     gl.uniform3f(Shader.simpleLit.uniform("ambientLight"), 0.2, 0.2, 0.2);
     gl.uniform3f(Shader.simpleLit.uniform("sunlightAngle"), sunAngle[0], sunAngle[1], sunAngle[2]);
     gl.uniform1f(Shader.simpleLit.uniform("sunlightIntensity"), 0.8);
 
-    Shader.unlitShader.dominatingColor = vec3.fromValues(0, 1, 0);
+    // Shader.simpleLit.ambientLight = [0.2, 0.2, 0.2];
+
+    // Shader.unlitShader.dominatingColor = vec3.fromValues(0, 1, 0);
 
     var mesh = objToMesh(planeModel);
 
     // MOKEY 
     var sphereMesh = objToMesh(sphereModel);
 
-    defaultMaterial.uniforms.sunlightColor = vec3.fromValues(1, 0, 0);
+    // defaultMaterial.uniforms.sunlightColor = vec3.fromValues(1, 0, 0);
 
     // sphereMesh.createData();
     // sphereMesh.createBuffer(gl,  Engine.defaultVertexAttributes);

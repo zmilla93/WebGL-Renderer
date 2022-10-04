@@ -18,6 +18,16 @@ const VECTOR3_LEFT = vec3.fromValues(-1, 0, 0);
 const VECTOR3_RIGHT = vec3.fromValues(1, 0, 0);
 const VECTOR3_ZERO = vec3.fromValues(0, 0, 0);
 
+const Direction = Object.freeze({
+    Up: Symbol("Up"),
+    Down: Symbol("Down"),
+    Forward: Symbol("Forward"),
+    Right: Symbol("Right"),
+    Back: Symbol("Back"),
+    Left: Symbol("Left"),
+    Unknown: Symbol("Unknown"),
+});
+
 class Engine {
     shaders = {};
     static canvas;
@@ -71,7 +81,12 @@ class Engine {
 
         // Functions that map uniform values to their respective glUniform calls
         // Function name must match the uniform name!
+
+        // Uniform Converters
+        Shader.simpleLit.uniformConverter.sunlightIntensity = Rendering.floatConverter;
         Shader.simpleLit.uniformConverter.sunlightColor = Rendering.vector3Converter;
+        Shader.simpleLit.uniformConverter.sunlightAngle = Rendering.vector3Converter;
+        Shader.simpleLit.uniformConverter.ambientLight = Rendering.vector3Converter;
         Shader.unlitShader.uniformConverter.dominatingColor = Rendering.vector3Converter;
 
         // Line VAO Setup

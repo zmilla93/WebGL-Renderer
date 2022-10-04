@@ -1,5 +1,5 @@
 
-class VoxelModel {
+class VoxelMesh {
     faces = {
         top: [],
         bottom: [],
@@ -7,10 +7,36 @@ class VoxelModel {
         east: [],
         south: [],
         west: [],
+        unaligned: [],
     };
-    constructor(data){
-        
+    constructor(data) {
+
     }
+}
+
+function getFacingDirection(normal) {
+    if(normal[1] == 0 && normal[2] == 0){
+        if(normal[0] == 1){
+            return Direction.Right;
+        }else if (normal[0] == -1){
+            return Direction.Left;
+        }
+    }
+    if(normal[0] == 0 && normal[2] == 0){
+        if(normal[1] == 1){
+            return Direction.Up;
+        }else if (normal[1] == -1){
+            return Direction.Down;
+        }
+    }
+    if(normal[0] == 0 && normal[1] == 0){
+        if(normal[2] == 1){
+            return Direction.Back;
+        }else if (normal[2] == -1){
+            return Direction.Forward;
+        }
+    }
+    return Direction.Unknown;
 }
 
 const Blocks = Object.freeze({

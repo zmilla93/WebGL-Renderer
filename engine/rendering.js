@@ -323,7 +323,12 @@ function compileShader(gl, type, shaderSource) {
     return shader;
 }
 
+Rendering.floatConverter = function (material, uniformName) {
+    const value = material.uniforms[uniformName] == null ? 1 : material.uniforms[uniformName];
+    Engine.gl.uniform1f(material.shader.uniform(uniformName), value);
+} 
+
 Rendering.vector3Converter = function (material, uniformName) {
     const vector = material.uniforms[uniformName] == null ? [1, 1, 1] : material.uniforms[uniformName];
     Engine.gl.uniform3f(material.shader.uniform(uniformName), vector[0], vector[1], vector[2]);
-} 
+}
