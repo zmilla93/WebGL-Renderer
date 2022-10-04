@@ -5,6 +5,8 @@ outFile = dir + "_models.js";
 
 files = os.listdir(dir);
 output = open(outFile, "w")
+output.write("// This file was auto-generated using model-converter.py.\n")
+output.write("// It contains javascript variables for all .obj files in the models folder.\n\n")
 
 for file in files:
     if file.endswith(".obj"):

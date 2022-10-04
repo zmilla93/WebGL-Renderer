@@ -30,11 +30,15 @@ function run() {
     }
 
     var g = new GameObject();
-    console.log(g);
+    // console.log(g);
+    console.log(this);
+    console.log(noise);
 
     var controller = new GameObject();
     controller.add(new SimpleCameraController());
 
+
+
 }
 
-window.onload = run;
+window.addEventListener('load', run);

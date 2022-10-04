@@ -98,7 +98,6 @@ class Engine {
             Time.elapsedTime = (timestamp - Time._startTime) / 1000;
         }
         Time._previousTime = timestamp;
-        // if (running) {
         // Update all game objects
         for (let gameObject of GameObject.gameObjectList) {
             if (typeof gameObject.update === 'function') gameObject.update();
@@ -114,7 +113,6 @@ class Engine {
         Input.pressedThisFrame.clear();
         // Request a new animation frame
         window.requestAnimationFrame(Engine.internal_update);
-        // }
     }
     static render() {
         // Clear color and depth buffers.    

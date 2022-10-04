@@ -1,3 +1,6 @@
+// This file was auto-generated using model-converter.py.
+// It contains javascript variables for all .obj files in the models folder.
+
 const cubeModel = `
 # Blender v2.91.2 OBJ File: 'Cube.blend'
 # www.blender.org

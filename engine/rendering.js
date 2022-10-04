@@ -94,6 +94,7 @@ class Material {
         const mat = shaderGroup[shaderGroup.indexOf(material)];
         return mat;
     }
+    // FIXME : get material seems unnessecary??
     static registerRenderer(material, renderer) {
         const mat = Material.getMaterial(material);
         mat.renderers.push(renderer);
