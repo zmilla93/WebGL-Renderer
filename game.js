@@ -19,7 +19,7 @@ function run() {
     litMat.uniforms.ambientLight = [0.2, 0.2, 0.2];
     litMat.uniforms.sunlightIntensity = 1;
     litMat.uniforms.sunlightAngle = [0, 1, 0];
-    litMat.uniforms.sunlightColor = [1, 0, 0];
+    litMat.uniforms.sunlightColor = [0, 1, 0];
 
     var cube = new GameObject();
     cube.add(new MeshRenderer(Mesh.cube, unlitMaterial));
