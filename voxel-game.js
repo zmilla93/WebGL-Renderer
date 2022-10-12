@@ -5,16 +5,10 @@ function run() {
     var litMat = new Material(Shader.simpleLit);
 
     createGrid();
-
-    // var go = new GameObject();
-    // go.add(new MeshRenderer(Mesh.cube, litMat))
-    // Camera.main.position[2] = -10;
-    Camera.main.position = [0, 2, 10];
+    Camera.main.position = [0, 15, 30];
 
     // console.log(cubeModel);
     var voxelModel = objToVoxelMesh(cubeModel);
-    // console.log(voxelModel);
-    // console.log(VoxelMesh.Cube);
 
     litMat.uniforms.ambientLight = [0.2, 0.2, 0.2];
     litMat.uniforms.sunlightAngle = vec3.fromValues(0.25, 1, 0.5);
@@ -51,24 +45,23 @@ function run() {
         }
     }
 
-
     var chunk = new Chunk();
 
-    // 
-    // chunk.mesh.createBuffer();
-    console.log(chunk.mesh);
+    // var perlin = new Perlin();
+    // perlin.GetValue(0, 0, 0);
+
     generateChunk(chunk);
     generateMesh(chunk);
     // chunk.mesh.buffer();
 
-    console.log(chunk.mesh.triangles.length);
+    // console.log(chunk.mesh.triangles.length);
 
-    console.log(chunk.mesh);
+    // console.log(chunk.mesh);
 
     var chunkGO = new GameObject();
     var chunkRenderer = new MeshRenderer(chunk.mesh, litMat);
     chunkGO.add(chunkRenderer);
-    
+
 
 }
 

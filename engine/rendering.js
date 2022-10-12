@@ -104,7 +104,7 @@ class Camera {
 //  Holds data for weblGL vertexAttribPointer
 //  https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/vertexAttribPointer
 class ShaderAttribute {
-    // Location is set when it is added to a shader object,
+    // Location is set automatically when it is added to a shader object,
     // since location is based on the shader program.
     location;
     constructor(name, valueCount, type, stride, offset) {

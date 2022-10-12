@@ -28,16 +28,31 @@ const Direction = Object.freeze({
     Unknown: Symbol("Unknown"),
 });
 
+function directionToVector(direction) {
+    switch (direction) {
+        case Direction.Up:
+            return VECTOR3_UP;
+        case Direction.Down:
+            return VECTOR3_DOWN;
+        case Direction.Forward:
+            return VECTOR3_FORWARD;
+        case Direction.Right:
+            return VECTOR3_RIGHT;
+        case Direction.Back:
+            return VECTOR3_BACK;
+        case Direction.Left:
+            return VECTOR3_LEFT;
+        default:
+            console.error("Bad direction!");
+            return VECTOR3_ZERO;
+    }
+}
+
 class Engine {
     shaders = {};
     static canvas;
     static gl;
     static defaultVertexAttributes;
-    // constructor(canvas) {
-    //     this.canvas = canvas;
-    //     this.gl = canvas.getContext("webgl2", { antialias: true, depth: true });
-    //     Input.addCanvas(canvas);
-    // }
     static init(canvas) {
         Engine.canvas = canvas;
         const gl = canvas.getContext('webgl2', { antialias: true, depth: true })
