@@ -216,6 +216,7 @@ class Mesh {
     vao;
     vertexCount = 0;
     hasBuffer = false;
+    useColors = false;
     data = null;
     // Default Meshes
     static cube;
@@ -296,9 +297,20 @@ class Mesh {
             // this.data[i * stride + 7] = this.normals[i][1];
             // this.data[i * stride + 8] = this.normals[i][2]; 
             // Color
-            this.data[i * stride + 8] = 1;
-            this.data[i * stride + 9] = 1;
-            this.data[i * stride + 10] = 1;
+            // FIXME : colors?
+            if (this.useColors) {
+                this.data[i * stride + 8] = this.colors[i][0];
+                this.data[i * stride + 9] = this.colors[i][1];
+                this.data[i * stride + 10] = this.colors[i][2];
+            } else {
+                this.data[i * stride + 8] = 1;
+                this.data[i * stride + 9] = 1;
+                this.data[i * stride + 10] = 1;
+            }
+
+            // this.data[i * stride + 8] = 1;
+            // this.data[i * stride + 9] = 1;
+            // this.data[i * stride + 10] = 1;
         }
     }
 }
