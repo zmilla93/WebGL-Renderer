@@ -58,9 +58,9 @@ class Chunk {
     gameObject = null;
     mesh = new Mesh();
     data = []
-    static sizeX = 32;
-    static sizeY = 8;
-    static sizeZ = 32;
+    static sizeX = 16;
+    static sizeY = 16;
+    static sizeZ = 16;
     chunkX;
     chunkY;
     chunkZ;
@@ -96,36 +96,22 @@ class Chunk {
         noise.seed(Chunk.seed);
         perlin.Seed = Chunk.seed;
         perlin.NoiseQuality = NoiseUtil.NoiseQuality.QUALITY_FAST;
-        console.log(this.chunkX + ":" + this.chunkY + ":" + this.chunkZ + ":");
-        console.log(Chunk.seed);
         for (var y = 0; y < Chunk.sizeY; y++) {
             for (var z = 0; z < Chunk.sizeZ; z++) {
                 for (var x = 0; x < Chunk.sizeX; x++) {
-                    const chunkSize = 16;
+                    // FIXME : Currently the chunk size influnces the noise
+                    // Could make noise size independent, but needs some extra math.
                     var sampleX = this.chunkX + x / Chunk.sizeX;
                     var sampleY = this.chunkY + y / Chunk.sizeY;
                     var sampleZ = this.chunkZ + z / Chunk.sizeZ;
-
-                    // var v = noise.perlin3(sampleX, sampleY, sampleZ);
-                    var v = perlin.GetValue(sampleX, sampleY, sampleZ);
-                    // var v = p.GetValue(thix.x / chunkSize, y / chunkSize, z / chunkSize);
-                    // var sampleX = this.chunkX + x / chunkSize;
-                    // console.log(sampleX);
-                    // var v = p.GetValue(
-                    //     this.chunkX + x / chunkSize,
-                    //     this.chunkY + y / chunkSize,
-                    //     this.chunkZ + z / chunkSize);
-                    // var value = perlin.GetValue(x / chunkSize, y / chunkSize, z / chunkSize);
-
-
-                    if (v > 0.25) this.setBlock(x, y, z, Blocks.Stone);
+                    var value = perlin.GetValue(sampleX, sampleY, sampleZ);
+                    if (value > 0.25) this.setBlock(x, y, z, Blocks.Stone);
                 }
             }
         }
     }
 
-
-    generateMesh(chunk) {
+    generateMesh() {
         var vertexCount = 0;
         var triCount = 0;
         for (var y = 0; y < Chunk.sizeY; y++) {
@@ -133,43 +119,44 @@ class Chunk {
                 for (var x = 0; x < Chunk.sizeX; x++) {
                     var block = this.getBlock(x, y, z);
                     if (block === Blocks.Stone) {
-                        for (var faceEntry of Object.entries(VoxelMesh.Cube.faces)) {
-                            for (let face of faceEntry[1]) {
-                                // Check if the neighbor to this face is a solid block.
-                                //If so, don't render this face.
-                                // FIXME : This calculation is done per face but really only needs to be done once per face entry due to the shared normal.
-                                // Could be moved out one loop.
-                                var offset = directionToVector(Direction[faceEntry[0]]);
-                                var pos = vec3.fromValues(x, y, z);
-                                vec3.add(pos, pos, offset);
-                                var neighbor = this.getBlock(pos[0], pos[1], pos[2]);
-                                if (neighbor != null) continue;
+                        triCount = this.addVoxelToMesh(triCount, x, y, z);
+                        // for (var faceEntry of Object.entries(VoxelMesh.Cube.faces)) {
+                        //     for (let face of faceEntry[1]) {
+                        //         // Check if the neighbor to this face is a solid block.
+                        //         //If so, don't render this face.
+                        //         // FIXME : This calculation is done per face but really only needs to be done once per face entry due to the shared normal.
+                        //         // Could be moved out one loop.
+                        //         var offset = directionToVector(Direction[faceEntry[0]]);
+                        //         var pos = vec3.fromValues(x, y, z);
+                        //         vec3.add(pos, pos, offset);
+                        //         var neighbor = this.getBlock(pos[0], pos[1], pos[2]);
+                        //         if (neighbor != null) continue;
 
-                                // Add the face to the chunk mesh.
-                                for (var i = 0; i < face.vertexCount; i++) {
-                                    var offsetPos = vec3.create();
-                                    vec3.add(offsetPos, face.vertices[i], vec3.fromValues(x, y, z));
-                                    this.mesh.vertices.push(offsetPos);
-                                    this.mesh.uvs.push(face.uvs[i]);
-                                    this.mesh.normals.push(face.normals[i]);
-                                    var color = vec3.fromValues(Math.random(), Math.random(), Math.random());
-                                    if(this.chunkX >= 0) color[0] = 1;
-                                    if(this.chunkZ >= 0) color[1] = 1;
-                                    this.mesh.colors.push(color);
-                                }
-                                // Add the triangle data to the chunk mesh
-                                // FIXME : Add support for 3 point faces!
-                                if (face.vertexCount == 4) {
-                                    this.mesh.triangles.push(triCount);
-                                    this.mesh.triangles.push(triCount + 1);
-                                    this.mesh.triangles.push(triCount + 2);
-                                    this.mesh.triangles.push(triCount + 2);
-                                    this.mesh.triangles.push(triCount + 3);
-                                    this.mesh.triangles.push(triCount);
-                                    triCount += 4;
-                                }
-                            }
-                        }
+                        //         // Add the face to the chunk mesh.
+                        //         for (var i = 0; i < face.vertexCount; i++) {
+                        //             var offsetPos = vec3.create();
+                        //             vec3.add(offsetPos, face.vertices[i], vec3.fromValues(x, y, z));
+                        //             this.mesh.vertices.push(offsetPos);
+                        //             this.mesh.uvs.push(face.uvs[i]);
+                        //             this.mesh.normals.push(face.normals[i]);
+                        //             var color = vec3.fromValues(Math.random(), Math.random(), Math.random());
+                        //             if (this.chunkX >= 0) color[0] = 1;
+                        //             if (this.chunkZ >= 0) color[1] = 1;
+                        //             this.mesh.colors.push(color);
+                        //         }
+                        //         // Add the triangle data to the chunk mesh
+                        //         // FIXME : Add support for 3 point faces!
+                        //         if (face.vertexCount == 4) {
+                        //             this.mesh.triangles.push(triCount);
+                        //             this.mesh.triangles.push(triCount + 1);
+                        //             this.mesh.triangles.push(triCount + 2);
+                        //             this.mesh.triangles.push(triCount + 2);
+                        //             this.mesh.triangles.push(triCount + 3);
+                        //             this.mesh.triangles.push(triCount);
+                        //             triCount += 4;
+                        //         }
+                        //     }
+                        // }
                     }
                 }
             }
@@ -178,6 +165,49 @@ class Chunk {
         this.mesh.vertexCount = vertexCount;
         this.mesh.buffer();
     }
+
+    addVoxelToMesh(triCount, x, y, z) {
+        for (var faceEntry of Object.entries(VoxelMesh.Cube.faces)) {
+            for (let face of faceEntry[1]) {
+                // Check if the neighbor to this face is a solid block.
+                //If so, don't render this face.
+                // FIXME : This calculation is done per face but really only needs to be done once per face entry due to the shared normal.
+                // Could be moved out one loop.
+                var offset = directionToVector(Direction[faceEntry[0]]);
+                var pos = vec3.fromValues(x, y, z);
+                vec3.add(pos, pos, offset);
+                var neighbor = this.getBlock(pos[0], pos[1], pos[2]);
+                if (neighbor != null) continue;
+    
+                // Add the face to the chunk mesh.
+                for (var i = 0; i < face.vertexCount; i++) {
+                    var offsetPos = vec3.create();
+                    vec3.add(offsetPos, face.vertices[i], vec3.fromValues(x, y, z));
+                    this.mesh.vertices.push(offsetPos);
+                    this.mesh.uvs.push(face.uvs[i]);
+                    this.mesh.normals.push(face.normals[i]);
+                    var color = vec3.fromValues(Math.random(), Math.random(), Math.random());
+                    if (this.chunkX >= 0) color[0] = 1;
+                    if (this.chunkZ >= 0) color[1] = 1;
+                    this.mesh.colors.push(color);
+                }
+                // Add the triangle data to the chunk mesh
+                // FIXME : Add support for 3 point faces!
+                if (face.vertexCount == 4) {
+                    this.mesh.triangles.push(triCount);
+                    this.mesh.triangles.push(triCount + 1);
+                    this.mesh.triangles.push(triCount + 2);
+                    this.mesh.triangles.push(triCount + 2);
+                    this.mesh.triangles.push(triCount + 3);
+                    this.mesh.triangles.push(triCount);
+                    triCount += 4;
+                }
+            }
+        }
+        return triCount;
+}
+
+
 }
 
 function generateChunk(chunk) {
