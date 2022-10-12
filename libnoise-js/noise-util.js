@@ -318,11 +318,11 @@ class NoiseUtil {
     }
 
     static GradientCoherentNoise3D(x, y, z, seed, noiseQuality) {
-        var x0 = (x > 0.0 ? Math.floor(x) : Math.floor(x) - 1);
+        var x0 = Math.floor(x);
         var x1 = x0 + 1;
-        var y0 = (y > 0.0 ? Math.floor(y) : Math.floor(y) - 1);
+        var y0 = Math.floor(y);
         var y1 = y0 + 1;
-        var z0 = (z > 0.0 ? Math.floor(z) : Math.floor(z) - 1);
+        var z0 = Math.floor(z);
         var z1 = z0 + 1;
 
         var xs = 0, ys = 0, zs = 0;
@@ -411,11 +411,11 @@ class NoiseUtil {
     static ValueCoherentNoise3D(x, y, z, seed, noiseQuality) {
         // Create a unit-length cube aligned along an integer boundary.  This cube
         // surrounds the input point.
-        var x0 = (x > 0.0 ? Math.floor(x) : Math.floor(x) - 1);
+        var x0 = Math.floor(x);
         var x1 = x0 + 1;
-        var y0 = (y > 0.0 ? Math.floor(y) : Math.floor(y) - 1);
+        var y0 = Math.floor(y);
         var y1 = y0 + 1;
-        var z0 = (z > 0.0 ? Math.floor(z) : Math.floor(z) - 1);
+        var z0 = Math.floor(z);
         var z1 = z0 + 1;
 
         // Map the difference between the coordinates of the input value and the
