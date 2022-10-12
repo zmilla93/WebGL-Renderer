@@ -49,6 +49,7 @@ class Engine {
         Engine.setupDefaultShaders();
         Camera.main = new Camera();
         Mesh.initMeshes();
+        VoxelMesh.initMeshes();
         Input.addKeyboardListeners();
         Input.addMouseListeners(canvas);
         window.requestAnimationFrame(Engine.internal_update);
@@ -177,6 +178,20 @@ class Engine {
     }
 }
 
+// FIXME:
+function createGrid() {
+    const gridRadius = 20;
+    const gridStep = 1;
+    const color = vec3.fromValues(70 / 255, 70 / 255, 70 / 255);
+    // const color = vec3.fromValues(1, 0, 0);
+    for (let i = -gridRadius * gridStep; i <= gridRadius * gridStep; i += gridStep) {
+        var line = new Line(vec3.fromValues(-gridRadius, 0, i), vec3.fromValues(gridRadius, 0, i), color)
+    }
+    for (let i = -gridRadius * gridStep; i <= gridRadius * gridStep; i += gridStep) {
+        var line = new Line(vec3.fromValues(i, 0, -gridRadius), vec3.fromValues(i, 0, gridRadius), color)
+    }
+}
+
 class Time {
     static _startTime;      // Internal, first timestamp recorded.
     static _previousTime;   // Internal, timestamp of previous frame.
@@ -240,97 +255,6 @@ class Component {
     }
     get parent() {
         return this.gameObject;
-    }
-}
-
-// Move to rendering?
-// TODO : Extend component, move position/rotation to gameObject
-class Camera {
-    position;
-    rotation;
-    viewDirection;
-    forward;
-    worldToViewMatrix;
-
-    // Camera Settings
-    fieldOfView = 60 * DEG2RAD;
-    aspect = Engine.gl.canvas.clientWidth / Engine.gl.canvas.clientHeight;
-    nearPlane = 0.01;
-    farPlane = 1000.0;
-    projectionMatrix = mat4.create();
-    // perspectiveMatrix = mat4.create();
-
-    // Main Camera
-    static main;
-
-    constructor() {
-        this.position = vec3.create();
-        this.rotation = vec3.create();
-        this.viewDirection = vec3.clone(VECTOR3_FORWARD);
-        this.forward = vec3.clone(VECTOR3_FORWARD);
-        this.calculateProjectionMatrix();
-    }
-    getWorldtoViewMatrix() {
-        // this.calculateWorldtoViewMatrix();
-        this.calculateWorldToViewMatrix();
-        return this.worldToViewMatrix;
-        // const matrix = mat4.create();
-        // const lookVector = vec3.create();
-        // vec3.add(lookVector, this.position, this.viewDirection);
-        // mat4.lookAt(matrix, this.position, lookVector, VECTOR3_UP);
-        // return matrix;
-    }
-    calculateProjectionMatrix() {
-        // const projectionMatrix = mat4.create();
-        // this.perspectiveMatrix = mat4.create();
-        mat4.perspective(this.projectionMatrix, this.fieldOfView, this.aspect, this.nearPlane, this.farPlane);
-    }
-    getProjectionMatrix() {
-        return this.projectionMatrix;
-    }
-
-    // OLD_calculateWorldtoViewMatrix() {
-    //     this.worldToViewMatrix = mat4.create();
-    //     const lookVector = vec3.create();
-    //     vec3.add(lookVector, this.position, this.viewDirection);
-    //     mat4.lookAt(this.worldToViewMatrix, this.position, lookVector, VECTOR3_UP);
-    //     // return worldToViewMatrix;
-    // }
-    calculateWorldToViewMatrix() {
-        this.worldToViewMatrix = mat4.create();
-        var localViewDirection = vec3.clone(VECTOR3_FORWARD);
-        this.forward = vec3.clone(VECTOR3_FORWARD);
-        // console.log(localViewDirection);
-        // console.log(this.rotation);
-        // this.rotation[1] = 45 * DEG2RAD;
-        this.rotation[2] = 0 * DEG2RAD;
-        // this.rotation[0] = -45 * DEG2RAD;
-
-        // vec3.rotateX(localViewDirection, localViewDirection, VECTOR3_ZERO, this.rotation[0]);
-        vec3.rotateX(localViewDirection, localViewDirection, VECTOR3_ZERO, this.rotation[0]);
-        // this.forward = vec3.clone(localViewDirection);
-        vec3.rotateY(localViewDirection, localViewDirection, VECTOR3_ZERO, this.rotation[1]);
-        vec3.rotateY(this.forward, this.forward, VECTOR3_ZERO, this.rotation[1]);
-        this.viewDirection = localViewDirection;
-
-        // vec3.rotateZ(localViewDirection, localViewDirection, VECTOR3_ZERO, this.rotation[2]);
-        // vec3.rotateY(this.rotation[1]);
-
-        const lookVector = vec3.create();
-        vec3.add(lookVector, this.position, localViewDirection);
-
-        var upVector = vec3.clone(VECTOR3_UP);
-        vec3.rotateZ(upVector, upVector, VECTOR3_ZERO, this.rotation[2]);
-        vec3.rotateX(upVector, upVector, VECTOR3_ZERO, this.rotation[0]);
-        vec3.rotateY(upVector, upVector, VECTOR3_ZERO, this.rotation[1]);
-
-        mat4.lookAt(this.worldToViewMatrix, this.position, lookVector, upVector);
-    }
-    setPosition(x, y, z) {
-        this.position = vec3.fromValues(x, y, z);
-    }
-    setRotation(x, y, z) {
-        this.rotation = vec3.fromValues(x, y, z);
     }
 }
 

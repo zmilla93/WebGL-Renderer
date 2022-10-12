@@ -12,14 +12,11 @@ function run() {
 
     var monster = new GameObject();
     monster.add(new MeshRenderer(Mesh.monster, litMat));
-    // monster.update = function () {
-    //     monster.position[1] = 3 + Math.cos(Time.elapsedTime * 2) * 2;
-    // }
 
     litMat.uniforms.ambientLight = [0.2, 0.2, 0.2];
     litMat.uniforms.sunlightIntensity = 1;
     litMat.uniforms.sunlightAngle = [0, 1, 0];
-    litMat.uniforms.sunlightColor = [0, 1, 0];
+    litMat.uniforms.sunlightColor = [245 / 255, 215 / 255, 66 / 255];
 
     var cube = new GameObject();
     cube.add(new MeshRenderer(Mesh.cube, unlitMaterial));
@@ -38,15 +35,20 @@ function run() {
     }
 
     var g = new GameObject();
-    // console.log(g);
     console.log(this);
     console.log(noise);
 
+    // Create a game object to hold controller scripts
     var controller = new GameObject();
+    var orthoToggle = new Component();
+    // Add controller components to the controller
     controller.add(new SimpleCameraController());
-
-
-
+    controller.add(orthoToggle);
+    orthoToggle.update = function () {
+        if (Input.wasPressedThisFrame("KeyT")) {
+            Camera.main.ortho = !Camera.main.ortho;
+        }
+    }
 }
 
 window.addEventListener('load', run);

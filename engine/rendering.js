@@ -1,6 +1,104 @@
 // Static class for holding rendering utility stuff.
 class Rendering {
+    // Converter functions
+    static floatConverter;
+    static vector3Converter;
+}
 
+class Camera {
+    // FIXME : Extend component, move position/rotation to gameObject
+    position;
+    rotation;
+    viewDirection;
+    forward;
+    worldToViewMatrix;
+    // Mutual Settings
+    nearPlane = 0.01;
+    farPlane = 1000;
+    // Perspective Settings
+    fieldOfView = 80 * DEG2RAD;
+    aspectRatio = Engine.gl.canvas.clientWidth / Engine.gl.canvas.clientHeight;
+    projectionMatrix = mat4.create();
+    // Orthographic Settings
+    _ortho = false;
+    // Camera.main is used to render the scene
+    static main;
+    constructor() {
+        this.position = vec3.create();
+        this.rotation = vec3.create();
+        this.viewDirection = vec3.clone(VECTOR3_FORWARD);
+        this.forward = vec3.clone(VECTOR3_FORWARD);
+        this.calculateProjectionMatrix();
+    }
+    // Getters/Setters
+    set ortho(state) {
+        this._ortho = state;
+        this.calculateProjectionMatrix();
+    }
+    get ortho() {
+        return this._ortho;
+    }
+    getWorldtoViewMatrix() {
+        // FIXME : Lazy calculation
+        this.calculateWorldToViewMatrix();
+        return this.worldToViewMatrix;
+    }
+    calculateProjectionMatrix() {
+        // const projectionMatrix = mat4.create();
+        // this.perspectiveMatrix = mat4.create();
+        if (this._ortho) {
+            mat4.ortho(this.projectionMatrix, -5, 5, -5, 5, this.nearPlane, this.farPlane);
+        } else {
+            mat4.perspective(this.projectionMatrix, this.fieldOfView, this.aspectRatio, this.nearPlane, this.farPlane);
+        }
+    }
+    getProjectionMatrix() {
+        return this.projectionMatrix;
+    }
+
+    // OLD_calculateWorldtoViewMatrix() {
+    //     this.worldToViewMatrix = mat4.create();
+    //     const lookVector = vec3.create();
+    //     vec3.add(lookVector, this.position, this.viewDirection);
+    //     mat4.lookAt(this.worldToViewMatrix, this.position, lookVector, VECTOR3_UP);
+    //     // return worldToViewMatrix;
+    // }
+    calculateWorldToViewMatrix() {
+        this.worldToViewMatrix = mat4.create();
+        var localViewDirection = vec3.clone(VECTOR3_FORWARD);
+        this.forward = vec3.clone(VECTOR3_FORWARD);
+        // console.log(localViewDirection);
+        // console.log(this.rotation);
+        // this.rotation[1] = 45 * DEG2RAD;
+        this.rotation[2] = 0 * DEG2RAD;
+        // this.rotation[0] = -45 * DEG2RAD;
+
+        // vec3.rotateX(localViewDirection, localViewDirection, VECTOR3_ZERO, this.rotation[0]);
+        vec3.rotateX(localViewDirection, localViewDirection, VECTOR3_ZERO, this.rotation[0]);
+        // this.forward = vec3.clone(localViewDirection);
+        vec3.rotateY(localViewDirection, localViewDirection, VECTOR3_ZERO, this.rotation[1]);
+        vec3.rotateY(this.forward, this.forward, VECTOR3_ZERO, this.rotation[1]);
+        this.viewDirection = localViewDirection;
+
+        // vec3.rotateZ(localViewDirection, localViewDirection, VECTOR3_ZERO, this.rotation[2]);
+        // vec3.rotateY(this.rotation[1]);
+
+        const lookVector = vec3.create();
+        vec3.add(lookVector, this.position, localViewDirection);
+
+        var upVector = vec3.clone(VECTOR3_UP);
+        vec3.rotateZ(upVector, upVector, VECTOR3_ZERO, this.rotation[2]);
+        vec3.rotateX(upVector, upVector, VECTOR3_ZERO, this.rotation[0]);
+        vec3.rotateY(upVector, upVector, VECTOR3_ZERO, this.rotation[1]);
+
+        mat4.lookAt(this.worldToViewMatrix, this.position, lookVector, upVector);
+    }
+    setPosition(x, y, z) {
+        this.position = vec3.fromValues(x, y, z);
+    }
+    setRotation(x, y, z) {
+        this.rotation = vec3.fromValues(x, y, z);
+    }
 }
 
 //  Holds data for weblGL vertexAttribPointer
@@ -126,7 +224,8 @@ class Mesh {
         Mesh.cube = objToMesh(cubeModel);
         Mesh.monster = objToMesh(monsterModel);
     }
-    buffer(gl) {
+    buffer() {
+        const gl = Engine.gl;
         // FIXME : Remove this check for performance?
         if (!this.hasBuffer) {
             console.error("Attempted to buffer data to a mesh renderer with no buffer!");
@@ -139,7 +238,9 @@ class Mesh {
     }
     // Creates two new webGL buffers, one for vertex data and one for triangle data.
     // Will enable an array of vertex attributes, then store everything in a Vertex Array Object.
-    createBuffer(gl, vertexAttributes) {
+    createBuffer(vertexAttributes) {
+        const gl = Engine.gl;
+        if (vertexAttributes == null) vertexAttributes = Engine.defaultVertexAttributes;
         if (this.hasBuffer) {
             // FIXME : Add name to error messages once this object has more data
             console.error("Mesh renderer requested a buffer when one already exists!");
@@ -194,6 +295,7 @@ class Mesh {
             // this.data[i * stride + 6] = this.normals[i][0];
             // this.data[i * stride + 7] = this.normals[i][1];
             // this.data[i * stride + 8] = this.normals[i][2]; 
+            // Color
             this.data[i * stride + 8] = 1;
             this.data[i * stride + 9] = 1;
             this.data[i * stride + 10] = 1;
@@ -243,7 +345,7 @@ class MeshRenderer extends Component {
     }
 }
 
-class Light extends Component{
+class Light extends Component {
 
 }
 
@@ -323,10 +425,13 @@ function compileShader(gl, type, shaderSource) {
     return shader;
 }
 
+// Converter functions apply a uniform given a material and a uniform name.
+// WebGL will already be using the material's shader when these are called.
+
 Rendering.floatConverter = function (material, uniformName) {
     const value = material.uniforms[uniformName] == null ? 1 : material.uniforms[uniformName];
     Engine.gl.uniform1f(material.shader.uniform(uniformName), value);
-} 
+}
 
 Rendering.vector3Converter = function (material, uniformName) {
     const vector = material.uniforms[uniformName] == null ? [1, 1, 1] : material.uniforms[uniformName];

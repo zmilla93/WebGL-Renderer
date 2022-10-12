@@ -212,18 +212,18 @@ function isPowerOf2(value) {
     return value & (value - 1) === 0;
 }
 
-function createGrid() {
-    const gridRadius = 20;
-    const gridStep = 1;
-    const color = vec3.fromValues(70 / 255, 70 / 255, 70 / 255);
-    // const color = vec3.fromValues(1, 0, 0);
-    for (let i = -gridRadius * gridStep; i <= gridRadius * gridStep; i += gridStep) {
-        var line = new Line(vec3.fromValues(-gridRadius, 0, i), vec3.fromValues(gridRadius, 0, i), color)
-    }
-    for (let i = -gridRadius * gridStep; i <= gridRadius * gridStep; i += gridStep) {
-        var line = new Line(vec3.fromValues(i, 0, -gridRadius), vec3.fromValues(i, 0, gridRadius), color)
-    }
-}
+// function createGrid() {
+//     const gridRadius = 20;
+//     const gridStep = 1;
+//     const color = vec3.fromValues(70 / 255, 70 / 255, 70 / 255);
+//     // const color = vec3.fromValues(1, 0, 0);
+//     for (let i = -gridRadius * gridStep; i <= gridRadius * gridStep; i += gridStep) {
+//         var line = new Line(vec3.fromValues(-gridRadius, 0, i), vec3.fromValues(gridRadius, 0, i), color)
+//     }
+//     for (let i = -gridRadius * gridStep; i <= gridRadius * gridStep; i += gridStep) {
+//         var line = new Line(vec3.fromValues(i, 0, -gridRadius), vec3.fromValues(i, 0, gridRadius), color)
+//     }
+// }
 
 var previousTime = 0;
 var elapsedTime = 0;
