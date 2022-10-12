@@ -50,7 +50,7 @@ class SimpleCameraController extends Component {
             rotationY -= 90 * DEG2RAD * Time.deltaTime;
             cam.setRotation(cam.rotation[0], rotationY, cam.rotation[2]);
         }
-        if (Input.isKeyPressed('KeyZ')) {
+        if (Input.isKeyPressed('KeyC')) {
             var rotationX = cam.rotation[0];
             rotationX += 90 * DEG2RAD * Time.deltaTime;
             cam.setRotation(rotationX, cam.rotation[1], 0);

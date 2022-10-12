@@ -59,7 +59,7 @@ function run() {
     console.log(chunk.mesh);
     generateChunk(chunk);
     generateMesh(chunk);
-    chunk.mesh.buffer();
+    // chunk.mesh.buffer();
 
     console.log(chunk.mesh.triangles.length);
 

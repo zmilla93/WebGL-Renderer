@@ -65,7 +65,6 @@ function objToMesh(obj) {
     mesh.uvs = uvs;
     mesh.normals = normals;
     mesh.triangles = triangles;
-    mesh.createData();
     mesh.createBuffer(Engine.defaultVertexAttributes);
     mesh.buffer(Engine.gl);
     return mesh;

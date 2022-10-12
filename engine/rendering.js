@@ -206,37 +206,53 @@ class Material {
  * Use MeshRenderer to actually render the model.
  */
 class Mesh {
+    // webGL Vertex Array Object
+    // https://developer.mozilla.org/en-US/docs/Web/API/WebGLVertexArrayObject
+    vao; 
+    // Mesh Data
     vertices = [];
     triangles = [];
     uvs = [];
     normals = [];
     colors = [];
-    indexBuffer = null;
-    vertexBuffer = null;
-    vao;
-    vertexCount = 0;
+    // WebGL buffers
     hasBuffer = false;
-    useColors = false;
+    vertexBuffer = null;
+    indexBuffer = null;
+    // Interleaved data that will get sent to WebGL
+    // Call createData to create this from mesh data.
     data = null;
+    // Settings
+    vertexCount = 0;
+    useColors = false;
     // Default Meshes
     static cube;
     static monster;
+
     static initMeshes() {
         Mesh.cube = objToMesh(cubeModel);
         Mesh.monster = objToMesh(monsterModel);
     }
+
+    // Sends data to WebGL.
+    // This should be called any time the mesh data changes.
     buffer() {
+        this.createData();
         const gl = Engine.gl;
         // FIXME : Remove this check for performance?
         if (!this.hasBuffer) {
             console.error("Attempted to buffer data to a mesh renderer with no buffer!");
             return;
         }
+        if (this.vertices.length > 65535) {
+            console.error("Mesh has more than WebGL limit of 65535 vertices!\nThe object will still be rendered, but will appear incorrectly.");
+        }
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, this.data, gl.STATIC_DRAW);
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.triangles), gl.STATIC_DRAW);
     }
+
     // Creates two new webGL buffers, one for vertex data and one for triangle data.
     // Will enable an array of vertex attributes, then store everything in a Vertex Array Object.
     createBuffer(vertexAttributes) {
@@ -273,13 +289,13 @@ class Mesh {
         gl.deleteBuffer(this.indexBuffer);
         this.hasBuffer = false;
     }
-    createDataOld() {
-        this.data = new Float32Array(this.vertices.length * 3 + this.colors.length * 3);
-        for (let i = 0; i < this.vertices.length; i++) {
-            this.data[i * 3] = this.vertices[i];
-            this.data[i * 2 + 1] = this.colors[i];
-        }
-    }
+    // createDataOld() {
+    //     this.data = new Float32Array(this.vertices.length * 3 + this.colors.length * 3);
+    //     for (let i = 0; i < this.vertices.length; i++) {
+    //         this.data[i * 3] = this.vertices[i];
+    //         this.data[i * 2 + 1] = this.colors[i];
+    //     }
+    // }
     createData() {
         const values = 3;
         const stride = 11;

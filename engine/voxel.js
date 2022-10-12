@@ -54,7 +54,7 @@ class Chunk {
     mesh = new Mesh();
     data = []
     static sizeX = 16;
-    static sizeY = 16;
+    static sizeY = 11;
     static sizeZ = 16;
     constructor() {
         this.mesh = new Mesh();
@@ -117,11 +117,11 @@ function generateMesh(chunk) {
                     // for()
 
                     // Add block to mesh
-
-                    // for(let faceArray of Object.entries(VoxelMesh.Cube.faces)){
-                        // console.log(faceArray);
-                        for (var face of VoxelMesh.Cube.faces.Up) {
-                        // for (let face of faceArray) {
+                    // console.log(VoxelMesh.Cube.faces);
+                    for (var faceEntry of Object.entries(VoxelMesh.Cube.faces)) {
+                        // console.log(faceEntry);
+                        // for (var face of VoxelMesh.Cube.faces.Up) {
+                        for (let face of faceEntry[1]) {
                             // console.log(face);
                             for (var i = 0; i < face.vertexCount; i++) {
                                 var offset = vec3.create();
@@ -157,18 +157,19 @@ function generateMesh(chunk) {
                         }
                     }
 
-                    
+
                     // mesh.vertices.push()
 
                     // Add block to mesh
-                // }
-                
+                }
+
             }
         }
     }
     chunk.mesh.useColors = true;
     chunk.mesh.vertexCount = vertexCount;
-    chunk.mesh.createData();
+    console.log("Vert count:" + chunk.mesh.vertexCount);
+    console.log("Vert count:" + chunk.mesh.vertices.length);
     chunk.mesh.buffer();
 
     // return mesh;
