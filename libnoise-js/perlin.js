@@ -19,12 +19,12 @@ class Perlin {
         return 0;
     }
 
-    GetValue(x,  y, z) {
-         var value = 0.0;
-         var signal = 0.0;
-         var curPersistence = 1.0;
-         var nx, ny, nz;
-         var seed;
+    GetValue(x, y, z) {
+        var value = 0.0;
+        var signal = 0.0;
+        var curPersistence = 1.0;
+        var nx, ny, nz;
+        var seed;
 
         x *= this.Frequency;
         y *= this.Frequency;

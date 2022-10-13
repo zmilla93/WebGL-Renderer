@@ -29,6 +29,9 @@ class Input {
             if (e.code == "Space") e.preventDefault();
             // FIXME : Only prevent default if canvas is focused
             // e.preventDefault();
+            if(document.activeElement === Engine.canvas){
+                e.preventDefault();
+            }
             Input.updateKey(e, true);
         });
         document.addEventListener("keyup", function (e) {
