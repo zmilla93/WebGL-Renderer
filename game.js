@@ -1,6 +1,7 @@
 function run() {
     const canvas = document.getElementById('glCanvas');
     Engine.init(canvas);
+    createGrid();
 
     Camera.main.position = [0, 2, 10];
     // Camera.main.rotation = [1, 0, 0];
@@ -24,15 +25,40 @@ function run() {
     const count = 10;
     const halfCount = count / 2;
     const spacing = 1;
-    for (var x = -halfCount; x < halfCount; x++) {
-        for (var z = -halfCount; z < halfCount; z++) {
-            var gameObject = new GameObject();
-            gameObject.position[0] = x * spacing;
-            gameObject.position[1] = 0;
-            gameObject.position[2] = z * spacing;
-            gameObject.add(new MeshRenderer(Mesh.cube, unlitMaterial));
-        }
-    }
+    // for (var x = -halfCount; x < halfCount; x++) {
+    //     for (var z = -halfCount; z < halfCount; z++) {
+    //         var gameObject = new GameObject();
+    //         gameObject.position[0] = x * spacing;
+    //         gameObject.position[1] = 0;
+    //         gameObject.position[2] = z * spacing;
+    //         gameObject.add(new MeshRenderer(Mesh.cube, unlitMaterial));
+    //     }
+    // }
+
+    var target = new GameObject();
+    target.add(new MeshRenderer(Mesh.cube, litMat));
+    target.position = [0, 4, 0];
+
+
+    target.setRotation(45, 0, 0);
+
+    
+    var rot = vec3.create();
+    quat.getAxisAngle(rot, target._rotationQuaternion);
+    console.log("rot:");
+    console.log(rot);
+
+    var angle = quat.getAngle(QUATERNION_IDENTITY, target._rotationQuaternion);
+
+
+
+    // console.log(quat.getAngle());
+    console.log(180 * DEG2RAD);
+    console.log(3.14 * RAD2DEG);
+    console.log(angle);
+    console.log(angle * RAD2DEG);
+
+
 
     var g = new GameObject();
     console.log(this);

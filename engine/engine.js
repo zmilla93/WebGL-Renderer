@@ -1,13 +1,17 @@
 // This code depends on glmatrix, a js library for Vector3 and matrix math;
 // https://glmatrix.net/
 // Some aliases, for ease of use.
-const mat4 = glMatrix.mat4;
-const vec3 = glMatrix.vec3;
 const vec2 = glMatrix.vec2;
+const vec3 = glMatrix.vec3;
+const mat4 = glMatrix.mat4;
+const quat = glMatrix.quat;
 const FLOAT32_SIZE = Float32Array.BYTES_PER_ELEMENT;
 
-// Multiplying a degree by this constant will give the radian equivalent.
+// Conversion constants for degrees and radians.
+// 180 * DEG2RAD = ~3.14;
+// 3.14 * RAD2DEG = ~180;
 const DEG2RAD = Math.PI / 180;
+const RAD2DEG = 1 / (Math.PI / 180);
 
 // Basic Vectors
 const VECTOR3_UP = vec3.fromValues(0, 1, 0);
@@ -17,6 +21,7 @@ const VECTOR3_BACK = vec3.fromValues(0, 0, 1);
 const VECTOR3_LEFT = vec3.fromValues(-1, 0, 0);
 const VECTOR3_RIGHT = vec3.fromValues(1, 0, 0);
 const VECTOR3_ZERO = vec3.fromValues(0, 0, 0);
+const QUATERNION_IDENTITY = quat.create();
 
 const Direction = Object.freeze({
     Up: Symbol("Up"),
@@ -229,6 +234,7 @@ class Time {
 class GameObject {
     position = vec3.create();
     rotation = vec3.create();
+    _rotationQuaternion = quat.create();
     scale = vec3.create();
     shape;
     components = [];
@@ -246,6 +252,13 @@ class GameObject {
         this.components.splice(index, 1);
         component.onRemove(this);
     }
+    setRotation(x, y, z) {
+        quat.fromEuler(this._rotationQuaternion, x, y, z);
+    }
+    getRotation() {
+
+    }
+
     get matrix() {
         // Create Translation Matrix
         const translationMatrix = mat4.create();
