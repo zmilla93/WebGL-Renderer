@@ -53,6 +53,7 @@ class Engine {
     static canvas;
     static gl;
     static defaultVertexAttributes;
+    static actionQueue = [];
     static init(canvas) {
         Engine.canvas = canvas;
         const gl = canvas.getContext('webgl2', { antialias: true, depth: true })
@@ -130,6 +131,10 @@ class Engine {
         }
         Time._previousTime = timestamp;
         // Update all game objects
+        if (Engine.actionQueue.length > 0) {
+            const action = Engine.actionQueue.shift();
+            action();
+        }
         for (let gameObject of GameObject.gameObjectList) {
             if (typeof gameObject.update === 'function') gameObject.update();
             for (let component of gameObject.components) {
@@ -172,17 +177,12 @@ class Engine {
                     gl.useProgram(material.shader.program);
                     shaderChanged = true;
                 }
-                if (typeof material.applyPerMaterialUniforms === 'function')
-                    material.applyPerMaterialUniforms();
-                // console.log(material.shader.uniformConverter);
-                // console.log(Object.entries(material.shader.uniformConverter));
+                if (typeof material.applyPerMaterialUniforms === 'function') material.applyPerMaterialUniforms();
                 for (let converter of Object.entries(material.shader.uniformConverter)) {
-                    // console.log(converter);
                     if (typeof converter[1] === 'function') {
                         converter[1](material, converter[0]);
                     }
                 }
-
                 // Loop through all renderers that use this material and render them.
                 material.renderers.forEach((renderer) => {
                     renderer.applyPerObjectUniforms();
@@ -190,6 +190,11 @@ class Engine {
                 });
             });
         });
+    }
+    // Queues a function to be run at a later time. One action from the queue is run per frame.
+    static queueAction(action) {
+        if (typeof action === "function") Engine.actionQueue.push(action);
+        else console.error("Attempted to queue something that isn't a function!");
     }
 }
 
