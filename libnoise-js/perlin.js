@@ -50,7 +50,6 @@ class Perlin {
             z *= this.Lacunarity;
             curPersistence *= this.Persistence;
         }
-
         return value;
     }
 }

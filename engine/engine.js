@@ -53,6 +53,7 @@ class Engine {
     static canvas;
     static gl;
     static defaultVertexAttributes;
+    static maxActionsPerFrame = 1;
     static actionQueue = [];
     static init(canvas) {
         Engine.canvas = canvas;
@@ -132,8 +133,12 @@ class Engine {
         Time._previousTime = timestamp;
         // Update all game objects
         if (Engine.actionQueue.length > 0) {
-            const action = Engine.actionQueue.shift();
-            action();
+            for (var i = 0; i < Engine.maxActionsPerFrame; i++) {
+                const action = Engine.actionQueue.shift();
+                action();
+                if (Engine.actionQueue.length == 0) break;
+            }
+
         }
         for (let gameObject of GameObject.gameObjectList) {
             if (typeof gameObject.update === 'function') gameObject.update();

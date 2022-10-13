@@ -47,6 +47,11 @@ const Blocks = Object.freeze({
     Air: Symbol("Air"),
     Stone: Symbol("Stone"),
     Grass: Symbol("Grass"),
+    Log: Symbol("Log"),
+    Wood: Symbol("Wood"),
+    Sand: Symbol("Sand"),
+    Water: Symbol("Water"),
+    Glass: Symbol("Glass"),
 });
 
 class Chunk {
@@ -57,6 +62,12 @@ class Chunk {
     static sizeX = 16;
     static sizeY = 16;
     static sizeZ = 16;
+    static blockColors = {
+        Grass: [52 / 255, 245 / 255, 94 / 255],
+        Stone: [117 / 255, 127 / 255, 143 / 255],
+    };
+    // NOTE: World height currently needs to be set manually!
+    static worldHeight = Chunk.sizeY;
     chunkX;
     chunkY;
     chunkZ;
@@ -88,20 +99,37 @@ class Chunk {
     }
 
     generateChunk() {
-        var perlin = new Perlin();
-        noise.seed(Chunk.seed);
-        perlin.Seed = Chunk.seed;
-        perlin.NoiseQuality = NoiseUtil.NoiseQuality.QUALITY_FAST;
+        var biomePerlin = new Perlin();
+        biomePerlin.Seed = 123;
+
+        var rocky = new Perlin();
+        rocky.Seed = Chunk.seed;
+        rocky.Frequency = 0.1;
+        rocky.Persistence = 0.25;
+        rocky.NoiseQuality = NoiseUtil.NoiseQuality.QUALITY_FAST;
         for (var y = 0; y < Chunk.sizeY; y++) {
             for (var z = 0; z < Chunk.sizeZ; z++) {
                 for (var x = 0; x < Chunk.sizeX; x++) {
-                    // FIXME : Currently the chunk size influnces the noise
+                    const worldY = this.chunkY * Chunk.sizeY + y;
+                    // FIXME : Currently the chunk size influnces the noise.
                     // Could make noise size independent, but needs some extra math.
                     var sampleX = this.chunkX + x / Chunk.sizeX;
                     var sampleY = this.chunkY + y / Chunk.sizeY;
                     var sampleZ = this.chunkZ + z / Chunk.sizeZ;
-                    var value = perlin.GetValue(sampleX, sampleY, sampleZ);
-                    if (y < 2 || value > 0.25) this.setBlock(x, y, z, Blocks.Stone);
+
+                    var heightBias = worldY / Chunk.worldHeight * 2;
+                    var valleyBias = 1 - worldY / Chunk.worldHeight;
+
+                    var value = rocky.GetValue(sampleX, sampleY, sampleZ);
+                    value -= heightBias;
+                    // value += valleyBias;
+                    // if (worldY < Chunk.worldHeight / 2) value += valleyBias;
+                    if (
+                        worldY < 2 ||
+                        value > 0) this.setBlock(x, y, z, Blocks.Grass);
+                    else {
+                        // this.setBlock(x, y, z, Blocks.Air);
+                    }
                 }
             }
         }
@@ -118,8 +146,8 @@ class Chunk {
             for (var z = 0; z < Chunk.sizeZ; z++) {
                 for (var x = 0; x < Chunk.sizeX; x++) {
                     var block = this.getBlock(x, y, z);
-                    if (block === Blocks.Stone) {
-                        triCount = this.addVoxelToMesh(triCount, x, y, z);
+                    if (block != null && block != Blocks.Air) {
+                        triCount = this.addVoxelToMesh(triCount, x, y, z, block);
                     }
                 }
             }
@@ -129,8 +157,10 @@ class Chunk {
         this.mesh.buffer();
     }
 
-    addVoxelToMesh(triCount, x, y, z) {
+    addVoxelToMesh(triCount, x, y, z, block) {
         for (var faceEntry of Object.entries(VoxelMesh.Cube.faces)) {
+            const s = 10;
+            var p = Math.random() / s;
             for (let face of faceEntry[1]) {
                 // Check if the neighbor to this face is a solid block.
                 // If so, don't render this face.
@@ -149,9 +179,23 @@ class Chunk {
                     this.mesh.vertices.push(offsetPos);
                     this.mesh.uvs.push(face.uvs[i]);
                     this.mesh.normals.push(face.normals[i]);
-                    var color = vec3.fromValues(Math.random(), Math.random(), Math.random());
-                    if (this.chunkX >= 0) color[0] = 1;
-                    if (this.chunkZ >= 0) color[1] = 1;
+                    var rngColor = vec3.fromValues(Math.random(), Math.random(), Math.random());
+                    // var c = Chunk.blockColors[symbolToString(block)];
+
+                    var c = Chunk.blockColors[symbolToString(block)];
+                    var color = vec3.create();
+                    vec3.copy(color, c);
+                    if (this.chunkZ >= 4) color[2] = 1;
+
+                    var p1 = Math.random() / s;
+                    var p2 = Math.random() / s;
+                    var p3 = Math.random() / s;
+                    // color[0] += p1;
+                    // color[1] += p2;
+                    // color[2] += p3;
+                    color[0] += p;
+                    color[1] += p;
+                    color[2] += p;
                     this.mesh.colors.push(color);
                 }
                 // Add the triangle data to the chunk mesh

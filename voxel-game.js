@@ -6,34 +6,40 @@ function run() {
     var litMat = new Material(Shader.simpleLit);
 
     createGrid();
-    Camera.main.position = [0, 15, 30];
-
-    // console.log(cubeModel);
-    // var voxelModel = objToVoxelMesh(cubeModel);
+    Camera.main.position = [0, 60, 30];
 
     litMat.uniforms.ambientLight = [0.2, 0.2, 0.2];
     litMat.uniforms.sunlightAngle = vec3.fromValues(0.25, 1, 0.5);
     litMat.uniforms.sunlightColor = vec3.fromValues(1, 1, 1);
     litMat.uniforms.sunlightColor = vec3.fromValues(1, 1, 1);
 
-    noise.seed(Math.random());
+    // Create Chunks
+    const chunkCountXZ = 10;
+    const chunkCountY = 4;
+    const halfCountXZ = Math.round(chunkCountXZ / 2);
 
-    Chunk.seed = Math.floor(Math.random() * 50000);
-    const count = 20;
-    const halfCount = count / 2;
-    for (var x = -halfCount; x < halfCount; x++) {
-        for (var z = -halfCount; z < halfCount; z++) {
-            const finalX = x;
-            const finalZ = z;
-            Engine.queueAction(function () {
-                var chunk = new Chunk(finalX, 0, finalZ);
-                chunk.createGameObject(litMat);
-                chunk.generateChunk();
-                chunk.generateMesh();
-                chunk.mesh.freeData();
-            });
+    // Chunk.seed = Math.floor(Math.random() * 50000);
+    Chunk.seed = 1231;
+    Chunk.worldHeight = Chunk.sizeY * chunkCountY;
+
+    Engine.maxActionsPerFrame = 4;
+    for (var x = -halfCountXZ; x < halfCountXZ; x++) {
+        for (var z = -halfCountXZ; z < halfCountXZ; z++) {
+            for (var y = 0; y < chunkCountY; y++) {
+                const finalX = x;
+                const finalY = y;
+                const finalZ = z;
+                Engine.queueAction(function () {
+                    var chunk = new Chunk(finalX, finalY, finalZ);
+                    chunk.createGameObject(litMat);
+                    chunk.generateChunk();
+                    chunk.generateMesh();
+                    chunk.mesh.freeData();
+                });
+            }
         }
     }
+
 
     // Create a camera controller
     var controller = new GameObject();
