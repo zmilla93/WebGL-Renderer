@@ -49,10 +49,6 @@ const Blocks = Object.freeze({
     Grass: Symbol("Grass"),
 });
 
-class ChunkManager {
-
-}
-
 class Chunk {
     static seed;
     gameObject = null;

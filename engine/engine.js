@@ -177,7 +177,9 @@ class Engine {
                     gl.useProgram(material.shader.program);
                     shaderChanged = true;
                 }
-                if (typeof material.applyPerMaterialUniforms === 'function') material.applyPerMaterialUniforms();
+
+                // Apply per material uniforms
+                // if (typeof material.applyPerMaterialUniforms === 'function') material.applyPerMaterialUniforms();
                 for (let converter of Object.entries(material.shader.uniformConverter)) {
                     if (typeof converter[1] === 'function') {
                         converter[1](material, converter[0]);

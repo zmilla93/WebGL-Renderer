@@ -219,6 +219,7 @@ class Mesh {
     hasBuffer = false;
     vertexBuffer = null;
     indexBuffer = null;
+    triCount = 0;
     // Interleaved data that will get sent to WebGL
     // Call createData to create this from mesh data.
     data = null;
@@ -289,16 +290,11 @@ class Mesh {
         gl.deleteBuffer(this.indexBuffer);
         this.hasBuffer = false;
     }
-    // createDataOld() {
-    //     this.data = new Float32Array(this.vertices.length * 3 + this.colors.length * 3);
-    //     for (let i = 0; i < this.vertices.length; i++) {
-    //         this.data[i * 3] = this.vertices[i];
-    //         this.data[i * 2 + 1] = this.colors[i];
-    //     }
-    // }
+
     createData() {
         const values = 3;
         const stride = 11;
+        this.triCount = this.triangles.length;
         this.data = new Float32Array(Float32Array.BYTES_PER_ELEMENT * this.vertices.length * values);
         for (let i = 0; i < this.vertices.length; i++) {
             this.data[i * stride] = this.vertices[i][0];
@@ -323,11 +319,15 @@ class Mesh {
                 this.data[i * stride + 9] = 1;
                 this.data[i * stride + 10] = 1;
             }
-
-            // this.data[i * stride + 8] = 1;
-            // this.data[i * stride + 9] = 1;
-            // this.data[i * stride + 10] = 1;
         }
+    }
+    // Frees the mesh data. This can be called after the data has been buffered to openGL to free up some memory.
+    freeData(){
+        this.vertices = [];
+        this.normals = []
+        this.uvs = [];
+        this.colors = [];
+        this.triangles = [];
     }
 }
 
@@ -353,7 +353,7 @@ class MeshRenderer extends Component {
     render(gl) {
         if (this.gameObject == null) return;
         gl.bindVertexArray(this.mesh.vao);
-        gl.drawElements(gl.TRIANGLES, this.mesh.triangles.length, gl.UNSIGNED_SHORT, 0);
+        gl.drawElements(gl.TRIANGLES, this.mesh.triCount, gl.UNSIGNED_SHORT, 0);
     }
     onAdd = function (gameObject) {
 

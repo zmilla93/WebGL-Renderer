@@ -30,6 +30,7 @@ function run() {
                 chunk.createGameObject(litMat);
                 chunk.generateChunk();
                 chunk.generateMesh();
+                chunk.mesh.freeData();
             });
         }
     }
