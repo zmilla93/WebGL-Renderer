@@ -12,14 +12,14 @@ class Input {
         return Input.pressedThisFrame.has(keyCode);
     }
 
-    static addCanvas(canvas){
+    static addCanvas(canvas) {
         Input.canvasList.push(canvas);
     }
 
     static preventDefaults() {
-        window.bind('keydown', 'ctrl+s', function(e) {
+        window.bind('keydown', 'ctrl+s', function (e) {
             e.preventDefault();
-            alert('Ctrl+S'); 
+            alert('Ctrl+S');
             return false;
         });
     }
@@ -29,8 +29,12 @@ class Input {
             if (e.code == "Space") e.preventDefault();
             // FIXME : Only prevent default if canvas is focused
             // e.preventDefault();
-            if(document.activeElement === Engine.canvas){
-                e.preventDefault();
+            if (document.activeElement === Engine.canvas) {
+                // console.log(e.code);
+                if (e.code != "F5") {
+                    e.preventDefault();
+                }
+
             }
             Input.updateKey(e, true);
         });

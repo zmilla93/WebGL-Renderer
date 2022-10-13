@@ -7,6 +7,7 @@ function run() {
 
     createGrid();
     Camera.main.position = [0, 60, 30];
+    // Camera.main.rotation = [-1, 0, 0];
 
     litMat.uniforms.ambientLight = [0.2, 0.2, 0.2];
     litMat.uniforms.sunlightAngle = vec3.fromValues(0.25, 1, 0.5);
@@ -18,8 +19,8 @@ function run() {
     const chunkCountY = 4;
     const halfCountXZ = Math.round(chunkCountXZ / 2);
 
-    // Chunk.seed = Math.floor(Math.random() * 50000);
-    Chunk.seed = 1231;
+    Chunk.seed = Math.floor(Math.random() * 50000);
+    // Chunk.seed = 1231;
     Chunk.worldHeight = Chunk.sizeY * chunkCountY;
 
     Engine.maxActionsPerFrame = 4;
