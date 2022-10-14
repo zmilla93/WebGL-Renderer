@@ -7,12 +7,14 @@ uniform mat4 modelViewMatrix;
 // uniform mat4 projectionMatrix;
 uniform mat4 transformMatrix;
 uniform vec4 dominatingColor;
+uniform mediump vec3 skyColor;
 // uniform vec3 ambientLight;
 // uniform vec3 sunlightAngle;
 // uniform float sunlightIntensity;
 
 varying mediump vec3 vColor;
 varying mediump vec3 vNormal;
+varying mediump vec3 vSkyColor;
 varying mediump vec2 vUV1;
 // varying lowp vec3 vColor;
 
@@ -24,6 +26,7 @@ void main() {
     vColor = vertexColor;
     vUV1 = vertexUV1;
     vNormal = vertexNormal;
+    vSkyColor = skyColor;
 
     gl_Position = transformMatrix * vertexPosition;
     // float lighting = dot(sunlightAngle, vertexNormal);

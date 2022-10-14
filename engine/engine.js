@@ -79,6 +79,7 @@ class Engine {
     }
     static setupDefaultShaders() {
         const gl = Engine.gl;
+        gl.enable(gl.DEPTH_TEST);
         // Default Mesh Attributes
         const valuesPerVertex = 11;
         const stride = FLOAT32_SIZE * valuesPerVertex;
@@ -111,6 +112,7 @@ class Engine {
         Shader.simpleLit.uniformConverter.sunlightColor = Rendering.vector3Converter;
         Shader.simpleLit.uniformConverter.sunlightAngle = Rendering.vector3Converter;
         Shader.simpleLit.uniformConverter.ambientLight = Rendering.vector3Converter;
+        Shader.simpleLit.uniformConverter.skyColor = Rendering.vector3Converter;
         Shader.unlitShader.uniformConverter.dominatingColor = Rendering.vector3Converter;
 
         // Line VAO Setup

@@ -8,11 +8,13 @@ function run() {
     createGrid();
     Camera.main.position = [0, 60, 30];
 
-    litMat.uniforms.ambientLight = [0.5, 0.5, 0.5];
-    litMat.uniforms.sunlightIntensity = 0.75;
+    litMat.uniforms.ambientLight = [0.75, 0.75, 0.75];
+    // litMat.uniforms.ambientLight = [17 / 255, 20 / 255, 54 / 255];  // Night
+    litMat.uniforms.sunlightIntensity = 0.5;
     litMat.uniforms.sunlightAngle = vec3.fromValues(0.25, 1, 0.5);
     litMat.uniforms.sunlightColor = vec3.fromValues(1, 1, 1);
-    litMat.uniforms.sunlightColor = vec3.fromValues(1, 1, 1);
+    litMat.uniforms.skyColor = vec3.fromValues(1, 0, 0);
+    // litMat.uniforms.sunlightColor = vec3.fromValues(1, 0.5, 0.5);
 
     // Create Chunks
     const chunkCountXZ = 20;
