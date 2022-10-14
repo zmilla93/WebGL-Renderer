@@ -8,19 +8,11 @@ function run() {
     createGrid();
     Camera.main.position = [0, 60, 30];
 
-    litMat.uniforms.ambientLight = [0.2, 0.2, 0.2];
+    litMat.uniforms.ambientLight = [0.5, 0.5, 0.5];
+    litMat.uniforms.sunlightIntensity = 0.75;
     litMat.uniforms.sunlightAngle = vec3.fromValues(0.25, 1, 0.5);
     litMat.uniforms.sunlightColor = vec3.fromValues(1, 1, 1);
     litMat.uniforms.sunlightColor = vec3.fromValues(1, 1, 1);
-
-    console.log("LERP:");
-    // console.log(lerp(5, 10, 0));
-    // console.log(lerp(5, 10, 1));
-    // console.log(lerp(5, 10, 0.5));
-    // console.log(lerp(0.25, 0.5, 0.3));
-    // console.log(lerp(1 + -0.25, 1 + 0.25, 1));
-    // console.log(lerp(1 + -0.25, 1 + 0.25, 1 + 0.25));
-    // // console.log(NoiseUtil.LinearInterp(-0.25, 0.25, 0));
 
     // Create Chunks
     const chunkCountXZ = 20;
@@ -28,7 +20,6 @@ function run() {
     const halfCountXZ = Math.round(chunkCountXZ / 2);
 
     Chunk.seed = Math.floor(Math.random() * 50000);
-    // Chunk.seed = 1231;
     Chunk.worldHeight = Chunk.sizeY * chunkCountY;
 
     Engine.maxActionsPerFrame = 1;
@@ -48,7 +39,6 @@ function run() {
             }
         }
     }
-
 
     // Create a camera controller
     var controller = new GameObject();
