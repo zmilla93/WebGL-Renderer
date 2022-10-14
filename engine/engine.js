@@ -67,7 +67,8 @@ class Engine {
         gl.enable(gl.CULL_FACE)
         gl.cullFace(gl.BACK);
         gl.enable(gl.DEPTH_TEST);
-        gl.clearColor(144 / 255, 212 / 255, 133 / 255, 1);
+        // gl.clearColor(144 / 255, 212 / 255, 133 / 255, 1);
+        gl.clearColor(106 / 255, 204 / 255, 181 / 255, 1);
         Engine.setupDefaultShaders();
         Camera.main = new Camera();
         Mesh.initMeshes();

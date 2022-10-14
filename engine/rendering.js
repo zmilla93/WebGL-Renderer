@@ -170,9 +170,8 @@ class Material {
     static materialMap = new Map();
     // Shader - Shader Class
     // applyUniforms - function, called once before rendering all objects that use this material
-    constructor(shader, applyPerMaterialUniforms) {
+    constructor(shader) {
         this.shader = shader;
-        this.applyPerMaterialUniforms = applyPerMaterialUniforms;
         this.renderers = [];
         this.registerMaterial(this);
     }
@@ -208,7 +207,7 @@ class Material {
 class Mesh {
     // webGL Vertex Array Object
     // https://developer.mozilla.org/en-US/docs/Web/API/WebGLVertexArrayObject
-    vao; 
+    vao;
     // Mesh Data
     vertices = [];
     triangles = [];
@@ -321,8 +320,8 @@ class Mesh {
             }
         }
     }
-    // Frees the mesh data. This can be called after the data has been buffered to openGL to free up some memory.
-    freeData(){
+    // Frees the mesh data from RAM. This can be called after the data has been buffered to openGL to free up some memory.
+    freeData() {
         this.vertices = [];
         this.normals = []
         this.uvs = [];
@@ -331,9 +330,9 @@ class Mesh {
     }
 }
 
-function meshToData(mesh) {
-    const data = data = new Float32Array(mesh.vertices.length * 3 * 2);
-}
+// function meshToData(mesh) {
+//     const data = data = new Float32Array(mesh.vertices.length * 3 * 2);
+// }
 
 /**
  * Renders a mesh for a given game object.

@@ -63,7 +63,7 @@ class Chunk {
     static sizeY = 16;
     static sizeZ = 16;
     static blockColors = {
-        Grass: [52 / 255, 245 / 255, 94 / 255],
+        Grass: [68 / 255, 130 / 255, 33 / 255],
         Stone: [117 / 255, 127 / 255, 143 / 255],
     };
     // NOTE: World height currently needs to be set manually!
