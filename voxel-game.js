@@ -13,8 +13,17 @@ function run() {
     litMat.uniforms.sunlightColor = vec3.fromValues(1, 1, 1);
     litMat.uniforms.sunlightColor = vec3.fromValues(1, 1, 1);
 
+    console.log("LERP:");
+    // console.log(lerp(5, 10, 0));
+    // console.log(lerp(5, 10, 1));
+    // console.log(lerp(5, 10, 0.5));
+    // console.log(lerp(0.25, 0.5, 0.3));
+    // console.log(lerp(1 + -0.25, 1 + 0.25, 1));
+    // console.log(lerp(1 + -0.25, 1 + 0.25, 1 + 0.25));
+    // // console.log(NoiseUtil.LinearInterp(-0.25, 0.25, 0));
+
     // Create Chunks
-    const chunkCountXZ = 10;
+    const chunkCountXZ = 20;
     const chunkCountY = 4;
     const halfCountXZ = Math.round(chunkCountXZ / 2);
 
@@ -22,7 +31,7 @@ function run() {
     // Chunk.seed = 1231;
     Chunk.worldHeight = Chunk.sizeY * chunkCountY;
 
-    Engine.maxActionsPerFrame = 4;
+    Engine.maxActionsPerFrame = 1;
     for (var x = -halfCountXZ; x < halfCountXZ; x++) {
         for (var z = -halfCountXZ; z < halfCountXZ; z++) {
             for (var y = 0; y < chunkCountY; y++) {

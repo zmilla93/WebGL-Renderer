@@ -299,6 +299,15 @@ class Component {
     }
 }
 
+// function lerp(n0, n1, a) {
+//     return ((1.0 - a) * n0) + (a * n1);
+// }
+
+function lerp(a, b, t) {
+    // return (1 - t) * a + t * b;
+    return a + t * (b - a);
+}
+
 function glValue(value) {
     switch (value) {
         case 5126:
