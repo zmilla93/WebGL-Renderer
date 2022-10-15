@@ -246,12 +246,28 @@ class Chunk {
                 // Add the triangle data to the chunk mesh
                 // FIXME : Add support for 3 point faces!
                 if (face.vertexCount == 4) {
-                    this.mesh.triangles.push(triCount);
-                    this.mesh.triangles.push(triCount + 1);
-                    this.mesh.triangles.push(triCount + 2);
-                    this.mesh.triangles.push(triCount + 2);
-                    this.mesh.triangles.push(triCount + 3);
-                    this.mesh.triangles.push(triCount);
+                    if (this.mesh.wireframe) {
+                        this.mesh.trianglesWireframe.push(triCount);
+                        this.mesh.trianglesWireframe.push(triCount + 1);
+                        this.mesh.trianglesWireframe.push(triCount + 1);
+                        this.mesh.trianglesWireframe.push(triCount + 2);
+                        this.mesh.trianglesWireframe.push(triCount + 2);
+                        this.mesh.trianglesWireframe.push(triCount + 0);
+                        this.mesh.trianglesWireframe.push(triCount + 1);
+                        this.mesh.trianglesWireframe.push(triCount + 3);
+                        this.mesh.trianglesWireframe.push(triCount + 3);
+                        this.mesh.trianglesWireframe.push(triCount);
+                        this.mesh.trianglesWireframe.push(triCount);
+                        this.mesh.trianglesWireframe.push(triCount + 2);
+                        this.mesh.lineCount += 12;
+                    } else {
+                        this.mesh.triangles.push(triCount);
+                        this.mesh.triangles.push(triCount + 1);
+                        this.mesh.triangles.push(triCount + 2);
+                        this.mesh.triangles.push(triCount + 2);
+                        this.mesh.triangles.push(triCount + 3);
+                        this.mesh.triangles.push(triCount);
+                    }
                     triCount += 4;
                 }
             }

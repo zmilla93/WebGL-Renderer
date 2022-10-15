@@ -46,6 +46,8 @@ function run() {
     quad.add(new MeshRenderer(Mesh.quad, litMat));
     quad.position = [2, 0.25, 4];
 
+
+
     const count = 10;
     const halfCount = count / 2;
     const spacing = 1;
@@ -97,6 +99,10 @@ function run() {
     orthoToggle.update = function () {
         if (Input.wasPressedThisFrame("KeyT")) {
             Camera.main.ortho = !Camera.main.ortho;
+        }
+        if (Input.wasPressedThisFrame("KeyY")) {
+            Mesh.monkey.setWireframe(!Mesh.monkey.wireframe);
+            // Mesh.monkey.wireframe = !Mesh.monkey.wireframe;
         }
     }
 }

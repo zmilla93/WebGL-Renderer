@@ -36,6 +36,7 @@ function run() {
                 Engine.queueAction(function () {
                     var chunk = new Chunk(finalX, finalY, finalZ);
                     chunk.createGameObject(litMat);
+                    // chunk.mesh.setWireframe(true);
                     chunk.generateChunk();
                     chunk.generateMesh();
                     chunk.mesh.freeData();

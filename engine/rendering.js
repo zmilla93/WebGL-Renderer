@@ -238,7 +238,7 @@ class Mesh {
         Mesh.smoothSphere = objToMesh(smoothSphereModel);
         Mesh.cube = objToMesh(cubeModel, true);
         Mesh.cubeWire = objToMesh(cubeModel, true);
-        Mesh.monster = objToMesh(monsterModel, false);
+        Mesh.monster = objToMesh(monsterModel, true);
         Mesh.monkey = objToMesh(monkeyModel, true);
         Mesh.cone = objToMesh(coneTModel, false);
         Mesh.quad = objToMesh(quadTModel, true);
@@ -300,11 +300,7 @@ class Mesh {
         gl.deleteBuffer(this.indexBuffer);
         this.hasBuffer = false;
     }
-
     createData() {
-        this.createTriangleData();
-    }
-    createTriangleData() {
         const values = 3;
         const stride = 11;
         // this.triCount = this.wireframe ? this.trianglesWireframe.length : this.triangles.length;
@@ -335,45 +331,30 @@ class Mesh {
             }
         }
     }
-    createWireframeData() {
-        // const values = 3;
-        // const stride = 11;
-        // this.triCount = this.triangles.length;
-        // this.data = new Float32Array(Float32Array.BYTES_PER_ELEMENT * this.vertices.length * values);
-        // for (let i = 0; i < this.vertices.length; i++) {
-        //     this.data[i * stride] = this.vertices[i][0];
-        //     this.data[i * stride + 1] = this.vertices[i][1];
-        //     this.data[i * stride + 2] = this.vertices[i][2];
-        //     this.data[i * stride + 3] = this.uvs[i][0];
-        //     this.data[i * stride + 4] = this.uvs[i][1];
-        //     this.data[i * stride + 5] = this.normals[i][0];
-        //     this.data[i * stride + 6] = this.normals[i][1];
-        //     this.data[i * stride + 7] = this.normals[i][2];
-        //     // this.data[i * stride + 6] = this.normals[i][0];
-        //     // this.data[i * stride + 7] = this.normals[i][1];
-        //     // this.data[i * stride + 8] = this.normals[i][2]; 
-        //     // Color
-        //     // FIXME : colors?
-        //     if (this.useColors) {
-        //         this.data[i * stride + 8] = this.colors[i][0];
-        //         this.data[i * stride + 9] = this.colors[i][1];
-        //         this.data[i * stride + 10] = this.colors[i][2];
-        //     } else {
-        //         this.data[i * stride + 8] = 1;
-        //         this.data[i * stride + 9] = 1;
-        //         this.data[i * stride + 10] = 1;
-        //     }
-        // }
+    setWireframe(state){
+        this.wireframe = state;
+        const gl = Engine.gl;
+        gl.bindVertexArray(this.vao);
+        // gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
+        // gl.bufferData(gl.ARRAY_BUFFER, this.data, gl.STATIC_DRAW);
+        // gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.triangles), gl.STATIC_DRAW);
+        var triData = this.wireframe ? new Uint16Array(this.trianglesWireframe) : new Uint16Array(this.triangles);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, triData, gl.STATIC_DRAW);
     }
-
-    // Frees the mesh data from RAM. This can be called after the data has been buffered to openGL to free up some memory.
+    // Frees all mesh data from RAM.
+    // If you want to be able to toggle wireframe, call freeVertexData instead!
     freeData() {
+        this.freeVertexData();
+        this.triangles = [];
+        this.trianglesWireframe = [];
+    }
+    // Frees most mesh data from RAM, but keeps triangle data to be able to toggle wireframe.
+    freeVertexData(){
         this.vertices = [];
         this.normals = []
         this.uvs = [];
         this.colors = [];
-        this.triangles = [];
-        this.trianglesWireframe = [];
     }
 }
 
