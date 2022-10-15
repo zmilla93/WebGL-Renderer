@@ -1,6 +1,6 @@
-# Blender v2.91.2 OBJ File: 'icosphere.blend'
+# Blender v2.91.2 OBJ File: 'icosphere2.blend'
 # www.blender.org
-mtllib icoSphere.mtl
+mtllib icoSphere2.mtl
 o Icosphere
 v 0.000000 -1.000000 0.000000
 v 0.723607 -0.447220 0.525725

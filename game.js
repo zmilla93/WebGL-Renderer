@@ -14,6 +14,10 @@ function run() {
     var monster = new GameObject();
     monster.add(new MeshRenderer(Mesh.monster, litMat));
 
+    var wireMonster = new GameObject();
+    wireMonster.add(new MeshRenderer(Mesh.cubeWire, litMat));
+    wireMonster.position = [3, 0, 0];
+
     litMat.uniforms.ambientLight = [0.2, 0.2, 0.2];
     litMat.uniforms.sunlightIntensity = 1;
     litMat.uniforms.sunlightAngle = [0, 1, 0];
@@ -21,6 +25,26 @@ function run() {
 
     var cube = new GameObject();
     cube.add(new MeshRenderer(Mesh.cube, unlitMaterial));
+
+    var sphere = new GameObject();
+    sphere.add(new MeshRenderer(Mesh.sphere, litMat));
+    sphere.position = [5, 0, 0];
+
+    var icoSphere = new GameObject();
+    icoSphere.add(new MeshRenderer(Mesh.icoSphere, litMat));
+    icoSphere.position = [-5, 0, 0];
+
+    var monkey = new GameObject();
+    monkey.add(new MeshRenderer(Mesh.monkey, litMat));
+    monkey.position = [-3, 5, 0];
+
+    var cone = new GameObject();
+    cone.add(new MeshRenderer(Mesh.cone, litMat));
+    cone.position = [0, 0, 4];
+
+    var quad = new GameObject();
+    quad.add(new MeshRenderer(Mesh.quad, litMat));
+    quad.position = [2, 0.25, 4];
 
     const count = 10;
     const halfCount = count / 2;
@@ -42,7 +66,7 @@ function run() {
 
     target.setRotation(45, 0, 0);
 
-    
+
     var rot = vec3.create();
     quat.getAxisAngle(rot, target._rotationQuaternion);
     console.log("rot:");

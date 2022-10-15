@@ -220,6 +220,7 @@ class Mesh {
     vertexBuffer = null;
     indexBuffer = null;
     triCount = 0;
+    lineCount = 0;
     // Interleaved data that will get sent to WebGL
     // Call createData to create this from mesh data.
     data = null;
@@ -232,10 +233,16 @@ class Mesh {
     static monster;
 
     static initMeshes() {
-        Mesh.cube = objToMesh(cubeModel);
-        Mesh.monster = objToMesh(monsterModel);
+        Mesh.icoSphere = objToMesh(icoSphere2Model, true);
+        Mesh.sphere = objToMesh(sphereModel, true);
+        Mesh.smoothSphere = objToMesh(smoothSphereModel);
+        Mesh.cube = objToMesh(cubeModel, true);
+        Mesh.cubeWire = objToMesh(cubeModel, true);
+        Mesh.monster = objToMesh(monsterModel, false);
+        Mesh.monkey = objToMesh(monkeyModel, true);
+        Mesh.cone = objToMesh(coneTModel, false);
+        Mesh.quad = objToMesh(quadTModel, true);
     }
-
     // Sends data to WebGL.
     // This should be called any time the mesh data changes.
     buffer() {
@@ -252,7 +259,9 @@ class Mesh {
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, this.data, gl.STATIC_DRAW);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.triangles), gl.STATIC_DRAW);
+        // gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.triangles), gl.STATIC_DRAW);
+        var triData = this.wireframe ? new Uint16Array(this.trianglesWireframe) : new Uint16Array(this.triangles);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, triData, gl.STATIC_DRAW);
     }
 
     // Creates two new webGL buffers, one for vertex data and one for triangle data.
@@ -295,9 +304,10 @@ class Mesh {
     createData() {
         this.createTriangleData();
     }
-    createTriangleData(){
+    createTriangleData() {
         const values = 3;
         const stride = 11;
+        // this.triCount = this.wireframe ? this.trianglesWireframe.length : this.triangles.length;
         this.triCount = this.triangles.length;
         this.data = new Float32Array(Float32Array.BYTES_PER_ELEMENT * this.vertices.length * values);
         for (let i = 0; i < this.vertices.length; i++) {
@@ -325,7 +335,7 @@ class Mesh {
             }
         }
     }
-    createWireframeData(){
+    createWireframeData() {
         // const values = 3;
         // const stride = 11;
         // this.triCount = this.triangles.length;
@@ -355,7 +365,7 @@ class Mesh {
         //     }
         // }
     }
-    
+
     // Frees the mesh data from RAM. This can be called after the data has been buffered to openGL to free up some memory.
     freeData() {
         this.vertices = [];
@@ -363,6 +373,7 @@ class Mesh {
         this.uvs = [];
         this.colors = [];
         this.triangles = [];
+        this.trianglesWireframe = [];
     }
 }
 
@@ -388,7 +399,13 @@ class MeshRenderer extends Component {
     render(gl) {
         if (this.gameObject == null) return;
         gl.bindVertexArray(this.mesh.vao);
-        gl.drawElements(gl.TRIANGLES, this.mesh.triCount, gl.UNSIGNED_SHORT, 0);
+        if (this.mesh.wireframe) {
+            // console.log(this.mesh.triCount);
+            gl.drawElements(gl.LINES, this.mesh.lineCount, gl.UNSIGNED_SHORT, 0);
+        } else {
+            gl.drawElements(gl.TRIANGLES, this.mesh.triCount, gl.UNSIGNED_SHORT, 0);
+        }
+
     }
     onAdd = function (gameObject) {
 

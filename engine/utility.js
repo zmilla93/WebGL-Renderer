@@ -1,4 +1,4 @@
-function objToMesh(obj) {
+function objToMesh(obj, wireframe = false) {
     var lines = obj.trim().split('\n');
     var verticesRaw = [];
     var uvsRaw = [];
@@ -7,13 +7,18 @@ function objToMesh(obj) {
     var uvs = [];
     var normals = [];
     var vertexCount = 0;
+    var vertexCountWireframe = 0;
+    var lineCount = 0;
     var triangles = [];
+    var trianglesWireframe = [];
+    var name = "UNNAMED MESH";
     for (var line of lines) {
         var cleanLine = line.trim().replace(/\s+/, " ");
         var tokens = cleanLine.split(" ");
         switch (tokens[0]) {
             case 'o':
                 // Mesh Name
+                name = tokens[1];
                 break;
             case 'v':
                 // Vertex
@@ -35,11 +40,19 @@ function objToMesh(obj) {
                     uvs.push(uvsRaw[values[1] - 1]);
                     normals.push(normalsRaw[values[2] - 1]);
                 }
-                switch (tokens.length - 1) {
+                var faceVertexCount = tokens.length -1;
+                switch (faceVertexCount) {
                     case 3:
                         triangles.push(vertexCount);
                         triangles.push(vertexCount + 1);
                         triangles.push(vertexCount + 2);
+                        trianglesWireframe.push(vertexCount);
+                        trianglesWireframe.push(vertexCount + 1);
+                        trianglesWireframe.push(vertexCount + 1);
+                        trianglesWireframe.push(vertexCount + 2);
+                        trianglesWireframe.push(vertexCount + 2);
+                        trianglesWireframe.push(vertexCount);
+                        lineCount += 6;
                         vertexCount += 3;
                         break;
                     case 4:
@@ -49,10 +62,23 @@ function objToMesh(obj) {
                         triangles.push(vertexCount + 2);
                         triangles.push(vertexCount + 3);
                         triangles.push(vertexCount);
+                        trianglesWireframe.push(vertexCount + 0);
+                        trianglesWireframe.push(vertexCount + 1);
+                        trianglesWireframe.push(vertexCount + 1);
+                        trianglesWireframe.push(vertexCount + 2);
+                        trianglesWireframe.push(vertexCount + 2);
+                        trianglesWireframe.push(vertexCount + 0);
+                        trianglesWireframe.push(vertexCount + 2);
+                        trianglesWireframe.push(vertexCount + 3);
+                        trianglesWireframe.push(vertexCount + 3);
+                        trianglesWireframe.push(vertexCount + 0);
+                        trianglesWireframe.push(vertexCount + 0);
+                        trianglesWireframe.push(vertexCount + 2);
+                        lineCount += 12;
                         vertexCount += 4;
                         break;
                     default:
-                        console.error("Unhandled Face Vertex Count: " + (tokens.length - 1));
+                        console.error("Mesh \"" + name + "\" has a face with an unsupported vertex count (" + faceVertexCount + "). The face will not be rendered. Triangulate the model to fix this problem.");
                         break;
                 }
                 break;
@@ -61,10 +87,13 @@ function objToMesh(obj) {
         }
     }
     const mesh = new Mesh();
+    mesh.wireframe = wireframe;
     mesh.vertices = vertices;
     mesh.uvs = uvs;
     mesh.normals = normals;
     mesh.triangles = triangles;
+    mesh.trianglesWireframe = trianglesWireframe;
+    mesh.lineCount = lineCount;
     mesh.createBuffer(Engine.defaultVertexAttributes);
     mesh.buffer(Engine.gl);
     return mesh;
