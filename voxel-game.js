@@ -24,6 +24,8 @@ function run() {
     Chunk.seed = Math.floor(Math.random() * 50000);
     Chunk.worldHeight = Chunk.sizeY * chunkCountY;
 
+    NoiseSample.init(Chunk.seed);
+
     Engine.maxActionsPerFrame = 1;
     for (var x = -halfCountXZ; x < halfCountXZ; x++) {
         for (var z = -halfCountXZ; z < halfCountXZ; z++) {
@@ -48,8 +50,11 @@ function run() {
     var orthoToggle = new Component();
     controller.add(orthoToggle);
     orthoToggle.update = function () {
+        if (Time.deltaTime > 0.1)
+            console.log(Time.deltaTime);
         if (Input.wasPressedThisFrame("KeyT")) {
             Camera.main.ortho = !Camera.main.ortho;
+
         }
     }
 

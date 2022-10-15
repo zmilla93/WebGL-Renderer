@@ -211,6 +211,7 @@ class Mesh {
     // Mesh Data
     vertices = [];
     triangles = [];
+    trianglesWireframe = [];
     uvs = [];
     normals = [];
     colors = [];
@@ -225,6 +226,7 @@ class Mesh {
     // Settings
     vertexCount = 0;
     useColors = false;
+    wireframe = false;
     // Default Meshes
     static cube;
     static monster;
@@ -291,6 +293,9 @@ class Mesh {
     }
 
     createData() {
+        this.createTriangleData();
+    }
+    createTriangleData(){
         const values = 3;
         const stride = 11;
         this.triCount = this.triangles.length;
@@ -320,6 +325,37 @@ class Mesh {
             }
         }
     }
+    createWireframeData(){
+        // const values = 3;
+        // const stride = 11;
+        // this.triCount = this.triangles.length;
+        // this.data = new Float32Array(Float32Array.BYTES_PER_ELEMENT * this.vertices.length * values);
+        // for (let i = 0; i < this.vertices.length; i++) {
+        //     this.data[i * stride] = this.vertices[i][0];
+        //     this.data[i * stride + 1] = this.vertices[i][1];
+        //     this.data[i * stride + 2] = this.vertices[i][2];
+        //     this.data[i * stride + 3] = this.uvs[i][0];
+        //     this.data[i * stride + 4] = this.uvs[i][1];
+        //     this.data[i * stride + 5] = this.normals[i][0];
+        //     this.data[i * stride + 6] = this.normals[i][1];
+        //     this.data[i * stride + 7] = this.normals[i][2];
+        //     // this.data[i * stride + 6] = this.normals[i][0];
+        //     // this.data[i * stride + 7] = this.normals[i][1];
+        //     // this.data[i * stride + 8] = this.normals[i][2]; 
+        //     // Color
+        //     // FIXME : colors?
+        //     if (this.useColors) {
+        //         this.data[i * stride + 8] = this.colors[i][0];
+        //         this.data[i * stride + 9] = this.colors[i][1];
+        //         this.data[i * stride + 10] = this.colors[i][2];
+        //     } else {
+        //         this.data[i * stride + 8] = 1;
+        //         this.data[i * stride + 9] = 1;
+        //         this.data[i * stride + 10] = 1;
+        //     }
+        // }
+    }
+    
     // Frees the mesh data from RAM. This can be called after the data has been buffered to openGL to free up some memory.
     freeData() {
         this.vertices = [];

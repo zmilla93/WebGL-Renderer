@@ -59,9 +59,10 @@ class Chunk {
     gameObject = null;
     mesh = new Mesh();
     data = []
-    static sizeX = 16;
-    static sizeY = 16;
-    static sizeZ = 16;
+    static CHUNK_SIZE = 20;
+    static sizeX = Chunk.CHUNK_SIZE;
+    static sizeY = Chunk.CHUNK_SIZE;
+    static sizeZ = Chunk.CHUNK_SIZE;
     static blockColors = {
         Grass: [68 / 255, 130 / 255, 33 / 255],
         Stone: [117 / 255, 127 / 255, 143 / 255],
@@ -142,26 +143,37 @@ class Chunk {
                     var sampleY = this.chunkY + y / Chunk.sizeY;
                     var sampleZ = this.chunkZ + z / Chunk.sizeZ;
 
-                    const biomeSample = biomeP.GetValue(sampleX, 0, sampleZ);
+                    // const biomeSample = biomeP.GetValue(sampleX, 0, sampleZ);
+                    const biomeSample = NoiseSample.SampleBiome(sampleX, 0, sampleZ);
                     const plainSample = NoiseSample.SamplePlains(sampleX, sampleY, sampleZ, worldY);
                     const rockySample = NoiseSample.SampleRocky(sampleX, sampleY, sampleZ, worldY);
 
+                    // TEMP : SOLID BIOME
+                    // var value = NoiseSample.SampleRocky(sampleX, sampleY, sampleZ, worldY);
+                    // this.setBlock(x, y, z, NoiseSample.checkBlock(value, worldY));
+                    // continue;
+
                     if (biomeSample <= PLAINS_LOWER_THRESHOLD) {
-                        var value = NoiseSample.SamplePlains(sampleX, sampleX, sampleZ, worldY);
-                        this.setBlock(x, y, z, NoiseSample.checkBlock(value, worldY));
+                        // var value = NoiseSample.SamplePlains(sampleX, sampleX, sampleZ, worldY);
+                        this.setBlock(x, y, z, NoiseSample.checkBlock(plainSample, worldY));
                     } else if (biomeSample > PLAINS_LOWER_THRESHOLD && biomeSample <= MOUNTAIN_LOWER_THRESHOLD) {
                         // Normalize the sample to 0-1 range. This depends on starting range.
-                        // var normalSample = (biomeSample + 0.25) * 2;
+                        var normalSample = (biomeSample + 0.25) * 2;
                         var magic = normalizeRange(PLAINS_LOWER_THRESHOLD, PLAINS_UPPER_THRESHOLD);
-                        var normalSample = biomeSample * magic;
+                        // var normalSample = biomeSample * magic;
+                        // if(plainSample == 0) console.log("ERR");
                         var value = lerp(plainSample, rockySample, normalSample);
+                        // var value = plainSample < rockySample ? lerp(plainSample, rockySample, normalSample) :  lerp(rockySample, plainSample, normalSample);
                         var block = NoiseSample.checkBlock(value, worldY);
-                        if (block != null) block = Blocks.Dirt;
+                        if (block != null) {
+                            block = Blocks.Dirt;
+                            if (normalSample <= 0) block = Blocks.Sand;
+                        }
                         this.setBlock(x, y, z, block);
                     } else {
                         // Rocky Biome
-                        var value = NoiseSample.SampleRocky(sampleX, sampleY, sampleZ, worldY);
-                        this.setBlock(x, y, z, NoiseSample.checkBlock(value, worldY));
+                        // var value = NoiseSample.SampleRocky(sampleX, sampleY, sampleZ, worldY);
+                        this.setBlock(x, y, z, NoiseSample.checkBlock(rockySample, worldY));
                     }
                 }
             }
@@ -223,9 +235,9 @@ class Chunk {
                     var p1 = Math.random() / s;
                     var p2 = Math.random() / s;
                     var p3 = Math.random() / s;
-                    // color[0] += p1;
-                    // color[1] += p2;
-                    // color[2] += p3;
+                    color[0] += p1;
+                    color[1] += p2;
+                    color[2] += p3;
                     color[0] += p;
                     color[1] += p;
                     color[2] += p;
@@ -257,114 +269,49 @@ function normalizeRange(lower, upper) {
 
 // Noise Sampling
 class NoiseSample {
-    static PlainSample = new Perlin();
+    static PlainsPerlin = new Perlin();
     static RockyPerlin = new Perlin();
+    static BiomePerlin = new Perlin();
     static FLOOR = 4;
     static init(seed) {
-        PlainSample.Seed = seed + 1;
-        PlainSample.Frequency = 0.25;
-        PlainSample.Persistence = 0.25;
-        PlainSample.NoiseQuality = NoiseUtil.NoiseQuality.QUALITY_FAST;
+        NoiseSample.BiomePerlin.Seed = seed;
+        NoiseSample.BiomePerlin.Frequency = 0.1;
+        NoiseSample.BiomePerlin.Persistence = 0.25;
+        NoiseSample.BiomePerlin.Lacunarity = 2;
+        NoiseSample.BiomePerlin.NoiseQuality = NoiseUtil.NoiseQuality.QUALITY_FAST;
+
+        NoiseSample.PlainsPerlin.Seed = seed + 1;
+        NoiseSample.PlainsPerlin.Frequency = 0.25;
+        NoiseSample.PlainsPerlin.Persistence = 0.25;
+        NoiseSample.PlainsPerlin.Lacunarity = 2;
+        NoiseSample.PlainsPerlin.NoiseQuality = NoiseUtil.NoiseQuality.QUALITY_FAST;
+
+        NoiseSample.RockyPerlin.Seed = seed + 2;
+        NoiseSample.RockyPerlin.Frequency = 0.25;
+        NoiseSample.RockyPerlin.Persistence = 0.4;
+        NoiseSample.RockyPerlin.Lacunarity = 2;
+        NoiseSample.RockyPerlin.NoiseQuality = NoiseUtil.NoiseQuality.QUALITY_FAST;
     }
-    static SamplePlainsBlock(sampleX, sampleY, sampleZ, worldY) {
-        var block = null;
-        // PLAINS BIOME
-        // Height bias reducse noise values at higher altitudes.
-        // Higher intensity = Less hills
-        const HEIGHT_BIAS_INTENSITY = 10;
-        var heightBias = worldY / Chunk.worldHeight * HEIGHT_BIAS_INTENSITY;
-        // Noise values > Threshold result in blocks. Roughly range -1 to 1.
-        // Lower Threshold = More noise influence
-        const STONE_THRESHOLD = -0.55;
-        const GRASS_THRESHOLD = -0.75;
-        var value = this.PlainSample.GetValue(sampleX, sampleY, sampleZ);
-        value -= heightBias;
-        if (value > STONE_THRESHOLD) block = Blocks.Stone;
-        else if (value > GRASS_THRESHOLD) block = Blocks.Grass;
-        else {
-            if (worldY == NoiseSample.FLOOR) {
-                block = Blocks.Grass;
-            } else if (worldY < NoiseSample.FLOOR) {
-                block = Blocks.Stone;
-            }
-        }
-        return block;
+    static SampleBiome(sampleX, sampleY, sampleZ) {
+        var value = NoiseSample.BiomePerlin.GetValue(sampleX, sampleY, sampleZ);
+        return value;
     }
     static SamplePlains(sampleX, sampleY, sampleZ, worldY) {
-        var block = null;
-        // PLAINS BIOME
-        // Height bias reducse noise values at higher altitudes.
-        // Higher intensity = Less hills
         const HEIGHT_BIAS_INTENSITY = 10;
         var heightBias = worldY / Chunk.worldHeight * HEIGHT_BIAS_INTENSITY;
-        // Noise values > Threshold result in blocks. Roughly range -1 to 1.
-        // Lower Threshold = More noise influence
-        const STONE_THRESHOLD = -0.55;
-        const GRASS_THRESHOLD = -0.75;
-        var value = this.PlainSample.GetValue(sampleX, sampleY, sampleZ);
+        var value = NoiseSample.PlainsPerlin.GetValue(sampleX, sampleY, sampleZ);
         value -= heightBias;
-        // if (value > STONE_THRESHOLD) block = Blocks.Stone;
-        // else if (value > GRASS_THRESHOLD) block = Blocks.Grass;
-        // else {
-        //     if (worldY == NoiseSample.FLOOR) {
-        //         block = Blocks.Grass;
-        //     } else if (worldY < NoiseSample.FLOOR) {
-        //         block = Blocks.Stone;
-        //     }
-        // }
         return value;
     }
     static SampleRocky(sampleX, sampleY, sampleZ, worldY) {
-
-        const HEIGHT_BIAS_INTENSITY = 1;
+        const HEIGHT_BIAS_INTENSITY = 2;
         const VALLEY_BIAS_INTENSITY = 2;
         var heightBias = worldY / Chunk.worldHeight * HEIGHT_BIAS_INTENSITY;
         var valleyBias = (1 - (worldY / Chunk.worldHeight)) * VALLEY_BIAS_INTENSITY;
-        // Noise values > a threshold result in blocks. Roughly range -1 to 1.
-        // Lower Threshold = More noise influence
-        const STONE_THRESHOLD = 0.5;
-        const GRASS_THRESHOLD = 0;
         var value = NoiseSample.RockyPerlin.GetValue(sampleX, sampleY, sampleZ);
         value -= heightBias;
         value += valleyBias;
         return value;
-        // if (value > STONE_THRESHOLD) this.setBlock(x, y, z, Blocks.Stone);
-        // else if (value > GRASS_THRESHOLD) this.setBlock(x, y, z, Blocks.Grass);
-        // else {
-        //     if (worldY == floor) {
-        //         this.setBlock(x, y, z, Blocks.Grass);
-        //     } else if (worldY < floor) {
-        //         this.setBlock(x, y, z, Blocks.Stone);
-        //     }
-        // }
-    }
-    static CheckPlainSample(value, worldY) {
-        var block = null;
-        const STONE_THRESHOLD = -0.55;
-        const GRASS_THRESHOLD = -0.75;
-        if (value > STONE_THRESHOLD) block = Blocks.Stone;
-        else if (value > GRASS_THRESHOLD) block = Blocks.Grass;
-        else {
-            if (worldY == NoiseSample.FLOOR) {
-                block = Blocks.Grass;
-            } else if (worldY < NoiseSample.FLOOR) {
-                block = Blocks.Stone;
-            }
-        }
-        return block;
-    }
-    static CheckRockySample(value) {
-        const STONE_THRESHOLD = -0.55;
-        const GRASS_THRESHOLD = -0.75;
-        if (value > STONE_THRESHOLD) block = Blocks.Stone;
-        else if (value > GRASS_THRESHOLD) block = Blocks.Grass;
-        else {
-            if (worldY == NoiseSample.FLOOR) {
-                block = Blocks.Grass;
-            } else if (worldY < NoiseSample.FLOOR) {
-                block = Blocks.Stone;
-            }
-        }
     }
     static checkBlock(value, worldY) {
         var block = null;
