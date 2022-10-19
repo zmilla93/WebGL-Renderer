@@ -33,6 +33,26 @@ const Direction = Object.freeze({
     Unknown: Symbol("Unknown"),
 });
 
+function invertDirection(direction){
+    switch (direction) {
+        case Direction.Up:
+            return Direction.Down;
+        case Direction.Down:
+            return Direction.Up;
+        case Direction.Forward:
+            return Direction.Back;
+        case Direction.Right:
+            return Direction.Left;
+        case Direction.Back:
+            return Direction.Forward;
+        case Direction.Left:
+            return Direction.Right;
+        default:
+            console.error("Bad direction: " + direction);
+            return VECTOR3_ZERO;
+    }
+}
+
 function directionToVector(direction) {
     switch (direction) {
         case Direction.Up:
@@ -48,7 +68,7 @@ function directionToVector(direction) {
         case Direction.Left:
             return VECTOR3_LEFT;
         default:
-            console.error("Bad direction!");
+            console.error("Bad direction: " + direction);
             return VECTOR3_ZERO;
     }
 }

@@ -2,13 +2,14 @@
 ===
 === Ideas
 ===
+    - Send data between chunks - Optimize meshing!
+    - Ambient Occlusion
     - Transparency
     - More Biomes
     - Better Camera
     - Infinite Terrain
     - Fog
     - Shaders?
-    - Ambient Occlusion
     - Ambient Light
     - Better Biome Map System
     - Skybox

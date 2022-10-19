@@ -1,9 +1,9 @@
 class SimpleCameraController extends Component {
+    walkSpeed = 5;
+    runSpeed = 10;
     update = function () {
         var cam = Camera.main;
-        const walkSpeed = 5;
-        const runSpeed = 10;
-        const speed = Input.isKeyPressed('ShiftLeft') || Input.isKeyPressed('ShiftRight') ? runSpeed : walkSpeed;
+        const speed = Input.isKeyPressed('ShiftLeft') || Input.isKeyPressed('ShiftRight') ? this.runSpeed : this.walkSpeed;
         if (Input.isKeyPressed('KeyW')) {
             var scaled = vec3.clone(cam.forward);
             vec3.scale(scaled, scaled, Time.deltaTime * speed);

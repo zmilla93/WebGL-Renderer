@@ -59,7 +59,10 @@ class Chunk {
     gameObject = null;
     mesh = new Mesh();
     data = []
-    static CHUNK_SIZE = 20;
+    neighborChunks = {};
+    hasGeneratedMesh = false;
+    static CHUNK_SIZE = 16;
+    static CHUNK_COUNT_Y = 0;;
     static sizeX = Chunk.CHUNK_SIZE;
     static sizeY = Chunk.CHUNK_SIZE;
     static sizeZ = Chunk.CHUNK_SIZE;
@@ -68,6 +71,9 @@ class Chunk {
         Stone: [117 / 255, 127 / 255, 143 / 255],
         Dirt: [79 / 255, 58 / 255, 11 / 255],
         Sand: [199 / 255, 193 / 255, 74 / 255],
+        Wood: [222 / 255, 170 / 255, 80 / 255],
+        Log: [54 / 255, 38 / 255, 11 / 255],
+        Water: [83 / 255, 152 / 255, 237 / 255],
     };
     // NOTE: World height currently needs to be set manually!
     static worldHeight = Chunk.sizeY;
@@ -81,16 +87,77 @@ class Chunk {
         // this.mesh = new Mesh();
         // this.mesh.createBuffer();
     }
+    localChunkPosToWorldPos(localPosX, localPosY, localPosZ) {
+        var pos = vec3.fromValues(localPosX, localPosY, localPosZ);
+        pos[0] += this.chunkX * Chunk.sizeX;
+        pos[1] += this.chunkY * Chunk.sizeY;
+        pos[2] += this.chunkZ * Chunk.sizeZ;
+        return pos;
+    }
     createGameObject(material) {
         this.gameObject = new GameObject();
         this.gameObject.position = [this.chunkX * Chunk.sizeX, this.chunkY * Chunk.sizeY, this.chunkZ * Chunk.sizeZ];
         this.mesh = new Mesh();
         this.gameObject.add(new MeshRenderer(this.mesh, material));
         this.mesh.createBuffer();
+        this.isReadyForMeshing();
     }
     destroyGameObject() {
         // TODO
     }
+    isReadyForMeshing() {
+        return Object.keys(this.neighborChunks).length == 6;
+    }
+    findNeighbors() {
+        if (this.chunkY == 0) {
+            // console.log("LOWER");
+            this.neighborChunks[symbolToString(Direction.Down)] = { dummy: true };
+        }
+        if (this.chunkY == Chunk.CHUNK_COUNT_Y) {
+            // console.log("upper");
+            this.neighborChunks[symbolToString(Direction.Up)] = { dummy: true };
+        }
+        for (var direction of Object.values(Direction)) {
+            if (direction == Direction.Unknown || direction == null) continue;
+            var offset = directionToVector(direction);
+            var chunkIndex = vec3.fromValues(this.chunkX, this.chunkY, this.chunkZ);
+            var neighborIndex = vec3.create();
+            vec3.add(neighborIndex, chunkIndex, offset);
+            // console.log("CHUNKDATA");
+            // console.log(chunkIndex);
+            // console.log(neighborIndex);
+            var neighborChunk = ChunkManager.getChunkByIndex(neighborIndex[0], neighborIndex[1], neighborIndex[2]);
+            if (neighborChunk != null) {
+                this.neighborChunks[symbolToString(direction)] = neighborChunk;
+                // console.log(this.neighborChunks);
+            }
+        }
+    }
+    informNeighbors() {
+        for (var direction of Object.values(Direction)) {
+            if (direction == Direction.Unknown || direction == null) continue;
+            // console.log(direction);
+            var offset = directionToVector(direction);
+            var chunkIndex = vec3.fromValues(this.chunkX, this.chunkY, this.chunkZ);
+            var neighborIndex = vec3.create();
+            vec3.add(neighborIndex, chunkIndex, offset);
+            var neighborChunk = ChunkManager.getChunkByIndex(neighborIndex[0], neighborIndex[1], neighborIndex[2]);
+            if (neighborChunk != null) {
+                // console.log("INFORMED!!");
+                // console.log("invert:");
+                // console.log(direction);
+                // console.log(invertDirection(direction));
+                // console.log(symbolToString(invertDirection(direction)));
+                neighborChunk.neighborChunks[symbolToString(invertDirection(direction))] = this;
+                // neighborChunk.neighborChunks[symbolToString(direction)] = this;
+                // console.log(this.neighborChunks);
+                neighborChunk.tryGenerateMesh();
+            }
+        }
+    }
+    // get worldHeight(){
+    //     return Chunk.CHUNK_COUNT_Y * Chunk.sizeY;
+    // }
     getBlock(x, y, z) {
         if (x < 0 || x >= Chunk.sizeX ||
             y < 0 || y >= Chunk.sizeY ||
@@ -136,7 +203,9 @@ class Chunk {
         for (var y = 0; y < Chunk.sizeY; y++) {
             for (var z = 0; z < Chunk.sizeZ; z++) {
                 for (var x = 0; x < Chunk.sizeX; x++) {
+                    const worldX = this.chunkX * Chunk.sizeX + x;
                     const worldY = this.chunkY * Chunk.sizeY + y;
+                    const worldZ = this.chunkZ * Chunk.sizeZ + z;
                     // FIXME : Currently the chunk size influnces the noise.
                     // Could make noise size independent, but needs some extra math.
                     var sampleX = this.chunkX + x / Chunk.sizeX;
@@ -179,7 +248,29 @@ class Chunk {
             }
         }
     }
+    generatePhase2() {
+        for (var y = 0; y < Chunk.sizeY; y++) {
+            for (var z = 0; z < Chunk.sizeZ; z++) {
+                for (var x = 0; x < Chunk.sizeX; x++) {
+                    const worldX = this.chunkX * Chunk.sizeX + x;
+                    const worldY = this.chunkY * Chunk.sizeY + y;
+                    const worldZ = this.chunkZ * Chunk.sizeZ + z;
 
+                    // if(ChunkManager.getBlock(worldX, worldY, worldZ) == Blocks.Stone){
+                    //     this.setBlock(x,y,z, Blocks.Sand);
+                    // }
+
+                    if (this.getBlock(x, y, z) == Blocks.Grass) {
+
+                        // if (this.getBlock(x, y + 1, z) == null) {
+                        // if (ChunkManager.getBlock(worldX, worldY + 1, worldZ) == null) {
+                        //     this.setBlock(x, y, z, Blocks.Water);
+                        // }
+                    }
+                }
+            }
+        }
+    }
     generateMesh() {
         var vertexCount = 0;
         var triCount = 0;
@@ -198,13 +289,27 @@ class Chunk {
             }
         }
         this.mesh.useColors = true;
-        this.mesh.vertexCount = vertexCount;
+        this.mesh.vertexCount = triCount;
+        // this.mesh.vertexCount = vertexCount;
+        // this.mesh.vertexCount = this.mesh.vertices.length;
         this.mesh.buffer();
+        this.hasGeneratedMesh = true;
+    }
+
+    tryGenerateMesh() {
+        // console.log("L:" + Object.keys(this.neighborChunks).length);
+        if (Object.keys(this.neighborChunks).length >= 0 && !this.hasGeneratedMesh) {
+            // console.log("ChunkIndex:" + this.chunkX + ", " + this.chunkY + ", " + this.chunkZ);
+            // console.log(Object.keys(this.neighborChunks).length);
+            // console.log(Object.keys(this.neighborChunks));
+            // console.log(this.neighborChunks);
+            this.generateMesh();
+        }
     }
 
     addVoxelToMesh(triCount, x, y, z, block) {
         for (var faceEntry of Object.entries(VoxelMesh.Cube.faces)) {
-            const s = 10;
+            const s = 20;
             var p = Math.random() / s;
             for (let face of faceEntry[1]) {
                 // Check if the neighbor to this face is a solid block.
@@ -215,6 +320,12 @@ class Chunk {
                 var pos = vec3.fromValues(x, y, z);
                 vec3.add(pos, pos, offset);
                 var neighbor = this.getBlock(pos[0], pos[1], pos[2]);
+                // TEMP -- OCCLUDE BOTTOM CROSS CHUNK
+                if (pos[1] < 0) {
+                    var worldPos = this.localChunkPosToWorldPos(pos[0], pos[1], pos[2]);
+                    worldPos[1] -= 1;
+                    neighbor = ChunkManager.getBlock(worldPos[0], worldPos[1], worldPos[2]);
+                }
                 if (neighbor != null) continue;
 
                 // Add the face to the chunk mesh.
@@ -235,9 +346,9 @@ class Chunk {
                     var p1 = Math.random() / s;
                     var p2 = Math.random() / s;
                     var p3 = Math.random() / s;
-                    color[0] += p1;
-                    color[1] += p2;
-                    color[2] += p3;
+                    // color[0] += p1;
+                    // color[1] += p2;
+                    // color[2] += p3;
                     color[0] += p;
                     color[1] += p;
                     color[2] += p;
@@ -273,6 +384,40 @@ class Chunk {
             }
         }
         return triCount;
+    }
+}
+
+class ChunkManager {
+    static chunkMap = new Map();
+    static worldPosToChunkIndex(worldX, worldY, worldZ) {
+        var indexX = Math.floor(worldX / Chunk.sizeX);
+        var indexY = Math.floor(worldY / Chunk.sizeY);
+        var indexZ = Math.floor(worldZ / Chunk.sizeZ);
+        return vec3.fromValues(indexX, indexY, indexZ);
+    }
+    static worldPosToLocalChunkCoords(worldX, worldY, worldZ) {
+        var offsetX = Math.floor(worldX / Chunk.sizeX) * Chunk.sizeX;
+        var offsetY = Math.floor(worldY / Chunk.sizeY) * Chunk.sizeY;
+        var offsetZ = Math.floor(worldZ / Chunk.sizeZ) * Chunk.sizeZ;
+        // console.log(worldX);
+        // console.log(offsetX);
+        var localX = worldX - offsetX;
+        var localY = worldY - offsetY;
+        var localZ = worldZ - offsetZ;
+        return vec3.fromValues(localX, localY, localZ);
+    }
+    static getChunkByIndex(indexX, indexY, indexZ) {
+        return ChunkManager.chunkMap.get(indexX + "," + indexY + "," + indexZ);
+    }
+    static getChunk(worldX, worldY, worldZ) {
+        const chunkIndex = this.worldPosToChunkIndex(worldX, worldY, worldZ);
+        return ChunkManager.getChunkByIndex(chunkIndex[0], chunkIndex[1], chunkIndex[2]);
+    }
+    static getBlock(x, y, z) {
+        const chunk = ChunkManager.getChunk(x, y, z);
+        if (chunk == null) return null;
+        const localPos = this.worldPosToLocalChunkCoords(x, y, z);
+        return chunk.getBlock(localPos[0], localPos[1], localPos[2]);
     }
 }
 
