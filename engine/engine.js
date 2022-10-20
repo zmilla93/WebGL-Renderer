@@ -33,7 +33,7 @@ const Direction = Object.freeze({
     Unknown: Symbol("Unknown"),
 });
 
-function invertDirection(direction){
+function invertDirection(direction) {
     switch (direction) {
         case Direction.Up:
             return Direction.Down;
@@ -72,6 +72,21 @@ function directionToVector(direction) {
             return VECTOR3_ZERO;
     }
 }
+
+// function vectorToDirection(vector) {
+//     if (vector[1] == 0 && vector[2] == 0) {
+//         if (vector[0] == 1) return Direction.Right;
+//         else if (vector[0] == -1) return Direction.Left;
+//     }
+//     else if (vector[0] == 0 && vector[2] == 0) {
+//         if (vector[1] == 1) return Direction.Up;
+//         else if (vector[1] == -1) return Direction.Dowwn;
+//     }
+//     else if (vector[0] == 0 && vector[1] == 0) {
+//         if (vector[2] == 1) return Direction.Back;
+//         else if (vector[2] == -1) return Direction.Forward;
+//     }
+// }
 
 class Engine {
     shaders = {};

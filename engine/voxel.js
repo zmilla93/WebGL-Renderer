@@ -132,27 +132,18 @@ class Chunk {
         }
     }
     findNeighbors() {
-        if (this.chunkY == 0) {
-            // console.log("LOWER");
-            this.neighborChunks[symbolToString(Direction.Down)] = { dummy: true };
-        }
-        if (this.chunkY == Chunk.CHUNK_COUNT_Y) {
-            // console.log("upper");
-            this.neighborChunks[symbolToString(Direction.Up)] = { dummy: true };
-        }
+        if (this.chunkY == 0) this.neighborChunks[symbolToString(Direction.Down)] = { dummy: true };
+
+        if (this.chunkY == Chunk.CHUNK_COUNT_Y) this.neighborChunks[symbolToString(Direction.Up)] = { dummy: true };
         for (var direction of Object.values(Direction)) {
             if (direction == Direction.Unknown || direction == null) continue;
             var offset = directionToVector(direction);
             var chunkIndex = vec3.fromValues(this.chunkX, this.chunkY, this.chunkZ);
             var neighborIndex = vec3.create();
             vec3.add(neighborIndex, chunkIndex, offset);
-            // console.log("CHUNKDATA");
-            // console.log(chunkIndex);
-            // console.log(neighborIndex);
             var neighborChunk = ChunkManager.getChunkByIndex(neighborIndex[0], neighborIndex[1], neighborIndex[2]);
             if (neighborChunk != null) {
                 this.neighborChunks[symbolToString(direction)] = neighborChunk;
-                // console.log(this.neighborChunks);
             }
         }
     }
@@ -166,14 +157,7 @@ class Chunk {
             vec3.add(neighborIndex, chunkIndex, offset);
             var neighborChunk = ChunkManager.getChunkByIndex(neighborIndex[0], neighborIndex[1], neighborIndex[2]);
             if (neighborChunk != null) {
-                // console.log("INFORMED!!");
-                // console.log("invert:");
-                // console.log(direction);
-                // console.log(invertDirection(direction));
-                // console.log(symbolToString(invertDirection(direction)));
                 neighborChunk.neighborChunks[symbolToString(invertDirection(direction))] = this;
-                // neighborChunk.neighborChunks[symbolToString(direction)] = this;
-                // console.log(this.neighborChunks);
                 neighborChunk.tryGenerateMesh();
             }
         }
@@ -221,7 +205,6 @@ class Chunk {
         const PLAINS_UPPER_THRESHOLD = 0.0;
         const MOUNTAIN_LOWER_THRESHOLD = 0.25;
         const MOUNTAIN_UPPER_THRESHOLD = 0.25;
-
 
         for (var y = 0; y < Chunk.sizeY; y++) {
             for (var z = 0; z < Chunk.sizeZ; z++) {
@@ -317,8 +300,9 @@ class Chunk {
     }
 
     tryGenerateMesh() {
-        if (this.isReadyForMeshing()) {
+        if (this.isReadyForMeshing() && !this.hasGeneratedMesh) {
             this.generateMesh();
+            this.mesh.freeData();
         }
         // console.log("L:" + Object.keys(this.neighborChunks).length);
         // if (Object.keys(this.neighborChunks).length >= 3 && !this.hasGeneratedMesh) {
@@ -330,27 +314,38 @@ class Chunk {
         // }
     }
 
+
     addVoxelToMesh(triCount, x, y, z, block) {
         for (var faceEntry of Object.entries(VoxelMesh.Cube.faces)) {
             const s = 20;
             var p = Math.random() / s;
             for (let face of faceEntry[1]) {
-                // Check if the neighbor to this face is a solid block.
-                // If so, don't render this face.
-                // FIXME : This calculation is done per face but really only needs to be done once per face entry due to the shared normal.
-                // Could be moved out one loop. Only complex models will benefit from this optimization anyway.
-                var offset = directionToVector(Direction[faceEntry[0]]);
-                var pos = vec3.fromValues(x, y, z);
-                vec3.add(pos, pos, offset);
-                var neighbor = this.getBlock(pos[0], pos[1], pos[2]);
-                // TEMP -- OCCLUDE BOTTOM CROSS CHUNK
-                if (pos[1] < 0) {
-                    var worldPos = this.localChunkPosToWorldPos(pos[0], pos[1], pos[2]);
-                    worldPos[1] -= 1;
-                    neighbor = ChunkManager.getBlock(worldPos[0], worldPos[1], worldPos[2]);
+                // Check if the neighbor to this face is a solid block. If so, don't render this face.
+                // FIXME : This calculation is done per face but really only needs to be done once per face entry due to the shared normal. Could be moved out one loop. 
+                // Only complex models will benefit from this optimization anyway, since the cube model only has one face per entry anyway.
+                var direction = Direction[faceEntry[0]];
+                var offset = directionToVector(direction);
+                var neighborBlockPos = vec3.fromValues(x, y, z);
+                vec3.add(neighborBlockPos, neighborBlockPos, offset);
+                var neighborBlock = null;
+                // Check if the neighboring block is in another chunk.
+                var checkPos = vec3.clone(neighborBlockPos);
+                if (neighborBlockPos[0] < 0) neighborBlockPos[0] += Chunk.sizeX;
+                else if (neighborBlockPos[0] >= Chunk.sizeX) neighborBlockPos[0] -= Chunk.sizeX;
+                if (neighborBlockPos[1] < 0) neighborBlockPos[1] += Chunk.sizeY;
+                else if (neighborBlockPos[1] >= Chunk.sizeY) neighborBlockPos[1] -= Chunk.sizeY;
+                if (neighborBlockPos[2] < 0) neighborBlockPos[2] += Chunk.sizeZ;
+                else if (neighborBlockPos[2] >= Chunk.sizeZ) neighborBlockPos[2] -= Chunk.sizeZ;
+                // Get the neighboring block.
+                if (checkPos[0] != neighborBlockPos[0] || checkPos[1] != neighborBlockPos[1] || checkPos[2] != neighborBlockPos[2]) {
+                    var neighborChunk = this.neighborChunks[symbolToString(direction)];
+                    if (neighborChunk.dummy == true) continue; // FIXME : Dummy check
+                    neighborBlock = neighborChunk.getBlock(neighborBlockPos[0], neighborBlockPos[1], neighborBlockPos[2]);
+                } else {
+                    neighborBlock = this.getBlock(neighborBlockPos[0], neighborBlockPos[1], neighborBlockPos[2]);
                 }
-                if (neighbor != null) continue;
-
+                // If there is a block neighboring this face, skip adding it to the mesh.
+                if (neighborBlock != null) continue;
                 // Add the face to the chunk mesh.
                 for (var i = 0; i < face.vertexCount; i++) {
                     var offsetPos = vec3.create();
@@ -408,6 +403,9 @@ class Chunk {
         }
         return triCount;
     }
+    // static positionWithinChunkBounds(position){
+    //     if(position[])
+    // }
 }
 
 class ChunkManager {

@@ -17,13 +17,13 @@ function run() {
     // litMat.uniforms.sunlightColor = vec3.fromValues(1, 0.5, 0.5);
 
     // Create Chunks
-    const chunkCountXZ = 10;
+    const chunkCountXZ = 12;
     // const chunkCountY = 4;
-    Chunk.CHUNK_COUNT_Y = 4;
-    const halfCountXZ = Math.round(chunkCountXZ / 2);
+    Chunk.CHUNK_COUNT_Y = 6;
+    const halfCountXZ = Math.round((chunkCountXZ + 2) / 2);
 
     Chunk.seed = 798472;
-    // Chunk.seed = Math.floor(Math.random() * 50000);
+    Chunk.seed = Math.floor(Math.random() * 50000);
     Chunk.worldHeight = Chunk.sizeY * Chunk.CHUNK_COUNT_Y;
 
     NoiseSample.init(Chunk.seed);
@@ -44,20 +44,11 @@ function run() {
                     var key = finalX + "," + finalY + "," + finalZ;
                     ChunkManager.chunkMap.set(key, chunk);
                     chunk.createGameObject(litMat);
-                    // chunk.mesh.setWireframe(true);
+                    chunk.mesh.setWireframe(true);
                     chunk.generateChunk();
                     chunk.generatePhase2();
-                    
-                    
-                    
-                    
-                    chunk.tryGenerateMesh();
-                    chunk.checkNeighbors();
-                    // chunk.findNeighbors();
-                    // chunk.informNeighbors();
-                    // chunk.generateMesh();
-                    
-                    // chunk.mesh.freeData();
+                    chunk.findNeighbors();
+                    chunk.informNeighbors();
                 });
             }
         }
@@ -72,7 +63,7 @@ function run() {
     //             Engine.queueAction(function () {
     //                 var key = finalX + "," + finalY + "," + finalZ;
     //                 var chunk = ChunkManager.chunkMap.get(key);
-                    
+
     //                 // chunk.generateMesh();
     //                 // chunk.mesh.freeData();
     //             });
