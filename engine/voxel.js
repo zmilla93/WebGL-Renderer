@@ -106,7 +106,30 @@ class Chunk {
         // TODO
     }
     isReadyForMeshing() {
-        return Object.keys(this.neighborChunks).length == 6;
+        var neighborCount = 0;
+        if (this.chunkY == 0) neighborCount++;
+        if (this.chunkY == Chunk.CHUNK_COUNT_Y) neighborCount++;
+        for (var direction of Object.values(Direction)) {
+            if (direction == Direction.Unknown) continue;
+            var offset = directionToVector(direction);
+            var neighborPos = vec3.fromValues(this.chunkX, this.chunkY, this.chunkZ);
+            vec3.add(neighborPos, neighborPos, offset);
+            var neighborChunk = ChunkManager.getChunkByIndex(neighborPos[0], neighborPos[1], neighborPos[2]);
+            if (neighborChunk != null) neighborCount++;
+        }
+        return neighborCount >= 6;
+    }
+    checkNeighbors() {
+        for (var direction of Object.values(Direction)) {
+            if (direction == Direction.Unknown) continue;
+            var offset = directionToVector(direction);
+            var neighborPos = vec3.fromValues(this.chunkX, this.chunkY, this.chunkZ);
+            vec3.add(neighborPos, neighborPos, offset);
+            var neighborChunk = ChunkManager.getChunkByIndex(neighborPos[0], neighborPos[1], neighborPos[2]);
+            if (neighborChunk != null) {
+                neighborChunk.tryGenerateMesh();
+            }
+        }
     }
     findNeighbors() {
         if (this.chunkY == 0) {
@@ -274,10 +297,7 @@ class Chunk {
     generateMesh() {
         var vertexCount = 0;
         var triCount = 0;
-        this.mesh.vertices = [];
-        this.mesh.uvs = [];
-        this.mesh.colors = [];
-        this.mesh.triangles = [];
+        this.mesh.freeData();
         for (var y = 0; y < Chunk.sizeY; y++) {
             for (var z = 0; z < Chunk.sizeZ; z++) {
                 for (var x = 0; x < Chunk.sizeX; x++) {
@@ -289,7 +309,7 @@ class Chunk {
             }
         }
         this.mesh.useColors = true;
-        this.mesh.vertexCount = triCount;
+        this.mesh.vertexCount = 0;
         // this.mesh.vertexCount = vertexCount;
         // this.mesh.vertexCount = this.mesh.vertices.length;
         this.mesh.buffer();
@@ -297,14 +317,17 @@ class Chunk {
     }
 
     tryGenerateMesh() {
-        // console.log("L:" + Object.keys(this.neighborChunks).length);
-        if (Object.keys(this.neighborChunks).length >= 0 && !this.hasGeneratedMesh) {
-            // console.log("ChunkIndex:" + this.chunkX + ", " + this.chunkY + ", " + this.chunkZ);
-            // console.log(Object.keys(this.neighborChunks).length);
-            // console.log(Object.keys(this.neighborChunks));
-            // console.log(this.neighborChunks);
+        if (this.isReadyForMeshing()) {
             this.generateMesh();
         }
+        // console.log("L:" + Object.keys(this.neighborChunks).length);
+        // if (Object.keys(this.neighborChunks).length >= 3 && !this.hasGeneratedMesh) {
+        //     // console.log("ChunkIndex:" + this.chunkX + ", " + this.chunkY + ", " + this.chunkZ);
+        //     // console.log(Object.keys(this.neighborChunks).length);
+        //     // console.log(Object.keys(this.neighborChunks));
+        //     // console.log(this.neighborChunks);
+        //     this.generateMesh();
+        // }
     }
 
     addVoxelToMesh(triCount, x, y, z, block) {

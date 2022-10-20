@@ -47,15 +47,38 @@ function run() {
                     // chunk.mesh.setWireframe(true);
                     chunk.generateChunk();
                     chunk.generatePhase2();
-                    // chunk.findNeighbors();
-                    chunk.informNeighbors();
-                    // chunk.generateMesh();
+                    
+                    
+                    
+                    
                     chunk.tryGenerateMesh();
+                    chunk.checkNeighbors();
+                    // chunk.findNeighbors();
+                    // chunk.informNeighbors();
+                    // chunk.generateMesh();
+                    
                     // chunk.mesh.freeData();
                 });
             }
         }
     }
+
+    // for (var x = -halfCountXZ; x < halfCountXZ; x++) {
+    //     for (var z = -halfCountXZ; z < halfCountXZ; z++) {
+    //         for (var y = 0; y < Chunk.CHUNK_COUNT_Y; y++) {
+    //             const finalX = x;
+    //             const finalY = y;
+    //             const finalZ = z;
+    //             Engine.queueAction(function () {
+    //                 var key = finalX + "," + finalY + "," + finalZ;
+    //                 var chunk = ChunkManager.chunkMap.get(key);
+                    
+    //                 // chunk.generateMesh();
+    //                 // chunk.mesh.freeData();
+    //             });
+    //         }
+    //     }
+    // }
 
     Engine.queueAction(function () {
         console.log("DATA:::::");

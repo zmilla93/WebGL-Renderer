@@ -256,6 +256,7 @@ class Mesh {
         if (this.vertices.length > 65535) {
             console.error("Mesh has more than WebGL limit of 65535 vertices!\nThe object will still be rendered, but will appear incorrectly.");
         }
+        gl.bindVertexArray(this.vao);
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, this.data, gl.STATIC_DRAW);
@@ -301,6 +302,7 @@ class Mesh {
         this.hasBuffer = false;
     }
     createData() {
+        // this.data = [];
         const values = 3;
         const stride = 11;
         // this.triCount = this.wireframe ? this.trianglesWireframe.length : this.triangles.length;
@@ -331,7 +333,7 @@ class Mesh {
             }
         }
     }
-    setWireframe(state){
+    setWireframe(state) {
         this.wireframe = state;
         const gl = Engine.gl;
         gl.bindVertexArray(this.vao);
@@ -350,7 +352,7 @@ class Mesh {
         this.trianglesWireframe = [];
     }
     // Frees most mesh data from RAM, but keeps triangle data to be able to toggle wireframe.
-    freeVertexData(){
+    freeVertexData() {
         this.vertices = [];
         this.normals = []
         this.uvs = [];
