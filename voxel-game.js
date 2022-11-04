@@ -28,7 +28,7 @@ function run() {
 
     NoiseSample.init(Chunk.seed);
 
-    Engine.maxActionsPerFrame = 1;
+    Engine.maxActionsPerFrame = 2;
 
 
     console.log(ChunkManager.worldPosToLocalChunkCoords(22, 5, 0));
@@ -36,9 +36,11 @@ function run() {
     for (var x = -halfCountXZ; x < halfCountXZ; x++) {
         for (var z = -halfCountXZ; z < halfCountXZ; z++) {
             for (var y = 0; y < Chunk.CHUNK_COUNT_Y; y++) {
+                // Need constant versions of variables for saving into the map.
                 const finalX = x;
                 const finalY = y;
                 const finalZ = z;
+                // The action queue will run one queued function per frame.
                 Engine.queueAction(function () {
                     var chunk = new Chunk(finalX, finalY, finalZ);
                     var key = finalX + "," + finalY + "," + finalZ;
@@ -71,10 +73,10 @@ function run() {
     //     }
     // }
 
-    Engine.queueAction(function () {
-        console.log("DATA:::::");
-        console.log(ChunkManager.chunkMap);
-    });
+    // Engine.queueAction(function () {
+    //     console.log("DATA:::::");
+    //     console.log(ChunkManager.chunkMap);
+    // });
 
     // Create a camera controller
     var controller = new GameObject();
@@ -85,11 +87,10 @@ function run() {
     var orthoToggle = new Component();
     controller.add(orthoToggle);
     orthoToggle.update = function () {
-        if (Time.deltaTime > 0.1)
-            console.log(Time.deltaTime);
+        // if (Time.deltaTime > 0.1)
+        //     console.log(Time.deltaTime);
         if (Input.wasPressedThisFrame("KeyT")) {
             Camera.main.ortho = !Camera.main.ortho;
-
         }
     }
 

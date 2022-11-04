@@ -319,16 +319,17 @@ class Chunk {
         for (var faceEntry of Object.entries(VoxelMesh.Cube.faces)) {
             const s = 20;
             var p = Math.random() / s;
+            // A face entry is an array of faces that shade the same normal.
             for (let face of faceEntry[1]) {
                 // Check if the neighbor to this face is a solid block. If so, don't render this face.
-                // FIXME : This calculation is done per face but really only needs to be done once per face entry due to the shared normal. Could be moved out one loop. 
-                // Only complex models will benefit from this optimization anyway, since the cube model only has one face per entry anyway.
+                // FIXME : This calculation is done per face but really only needs to be done once per faceEntry due to the shared normal. Could be moved out one loop. 
+                // Only complex models will benefit from this optimization anyway, since the cube model only has one face per faceEntry anyway.
                 var direction = Direction[faceEntry[0]];
                 var offset = directionToVector(direction);
                 var neighborBlockPos = vec3.fromValues(x, y, z);
                 vec3.add(neighborBlockPos, neighborBlockPos, offset);
                 var neighborBlock = null;
-                // Check if the neighboring block is in another chunk.
+                // Check if the neighboring block is in another chunk. If so, offset neighborBlockPos by the chunk size.
                 var checkPos = vec3.clone(neighborBlockPos);
                 if (neighborBlockPos[0] < 0) neighborBlockPos[0] += Chunk.sizeX;
                 else if (neighborBlockPos[0] >= Chunk.sizeX) neighborBlockPos[0] -= Chunk.sizeX;
@@ -370,23 +371,29 @@ class Chunk {
                     color[0] += p;
                     color[1] += p;
                     color[2] += p;
-                    this.mesh.colors.push(color);
+                    if(x == 15) {
+                        this.mesh.colors.push([Math.random(),Math.random(),Math.random()]);
+                    }else{
+                        this.mesh.colors.push(color);
+                    }
+     
+
                 }
                 // Add the triangle data to the chunk mesh
                 // FIXME : Add support for 3 point faces!
                 if (face.vertexCount == 4) {
                     if (this.mesh.wireframe) {
-                        this.mesh.trianglesWireframe.push(triCount);
+                        this.mesh.trianglesWireframe.push(triCount + 0);
                         this.mesh.trianglesWireframe.push(triCount + 1);
                         this.mesh.trianglesWireframe.push(triCount + 1);
                         this.mesh.trianglesWireframe.push(triCount + 2);
                         this.mesh.trianglesWireframe.push(triCount + 2);
                         this.mesh.trianglesWireframe.push(triCount + 0);
-                        this.mesh.trianglesWireframe.push(triCount + 1);
+                        this.mesh.trianglesWireframe.push(triCount + 2);
                         this.mesh.trianglesWireframe.push(triCount + 3);
                         this.mesh.trianglesWireframe.push(triCount + 3);
-                        this.mesh.trianglesWireframe.push(triCount);
-                        this.mesh.trianglesWireframe.push(triCount);
+                        this.mesh.trianglesWireframe.push(triCount + 0);
+                        this.mesh.trianglesWireframe.push(triCount + 0);
                         this.mesh.trianglesWireframe.push(triCount + 2);
                         this.mesh.lineCount += 12;
                     } else {

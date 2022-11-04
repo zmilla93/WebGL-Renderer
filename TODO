@@ -2,7 +2,7 @@
 ===
 === Ideas
 ===
-    - Send data between chunks - Optimize meshing!
+    + Send data between chunks - Optimize meshing!
     - Ambient Occlusion
     - Transparency
     - More Biomes
@@ -10,7 +10,7 @@
     - Infinite Terrain
     - Fog
     - Shaders?
-    - Ambient Light
+    + Ambient Light
     - Better Biome Map System
     - Skybox
     - Day/Night
