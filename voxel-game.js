@@ -11,6 +11,10 @@ function run() {
     Camera.main.farPlane = 500;
     Camera.main.calculateProjectionMatrix();
 
+    Block.initBlocks();
+    console.log(Block.list);
+    console.log(Block.list.Stone);
+
     // Create a material using the default lit shader.
     var litMat = new Material(Shader.simpleLit);
 

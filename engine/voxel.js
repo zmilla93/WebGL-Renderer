@@ -54,6 +54,43 @@ const Blocks = Object.freeze({
     Glass: Symbol("Glass"),
 });
 
+class Block {
+    name = "";
+    transparent = false;
+    color = [0, 1, 0];
+    static list = {};
+    constructor(name, color, transparent = false) {
+        this.name = name;
+        this.color = color;
+        this.transparent = transparent;
+    }
+    static createBlock(name, color, transparent = false) {
+        Block.list[name] = new Block(name, color, transparent);
+    }
+    static initBlocks() {
+        // Grass: [68 / 255, 130 / 255, 33 / 255],
+        // Stone: [117 / 255, 127 / 255, 143 / 255],
+        // Dirt: [79 / 255, 58 / 255, 11 / 255],
+        // Sand: [199 / 255, 193 / 255, 74 / 255],
+        // Wood: [222 / 255, 170 / 255, 80 / 255],
+        // Log: [54 / 255, 38 / 255, 11 / 255],
+        // Water: [83 / 255, 152 / 255, 237 / 255],
+        this.createBlock("Stone", [117 / 255, 127 / 255, 143 / 255]);
+        this.createBlock("Grass", [68 / 255, 130 / 255, 33 / 255]);
+        this.createBlock("Dirt", [79 / 255, 58 / 255, 11 / 255]);
+        this.createBlock("Sand", [199 / 255, 193 / 255, 74 / 255]);
+        this.createBlock("Wood", [222 / 255, 170 / 255, 80 / 255]);
+        this.createBlock("Log", [54 / 255, 38 / 255, 11 / 255]);
+        this.createBlock("Air", [1,1,1], true);
+        // this.createBlock("Water", [83 / 255, 152 / 255, 237 / 255]);
+
+    }
+}
+
+class Voxel {
+
+}
+
 class Chunk {
     static seed;
     gameObject = null;
