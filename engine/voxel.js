@@ -117,7 +117,7 @@ class Chunk {
             var neighborChunk = ChunkManager.getChunkByIndex(neighborPos[0], neighborPos[1], neighborPos[2]);
             if (neighborChunk != null) neighborCount++;
         }
-        return neighborCount >= 6;
+        return neighborCount == 6;
     }
     checkNeighbors() {
         for (var direction of Object.values(Direction)) {
@@ -300,7 +300,7 @@ class Chunk {
     }
 
     tryGenerateMesh() {
-        if (this.isReadyForMeshing() && !this.hasGeneratedMesh) {
+        if (this.isReadyForMeshing()) {
             this.generateMesh();
             this.mesh.freeData();
         }
@@ -340,13 +340,16 @@ class Chunk {
                 // Get the neighboring block.
                 if (checkPos[0] != neighborBlockPos[0] || checkPos[1] != neighborBlockPos[1] || checkPos[2] != neighborBlockPos[2]) {
                     var neighborChunk = this.neighborChunks[symbolToString(direction)];
-                    if (neighborChunk.dummy == true) continue; // FIXME : Dummy check
+                    if (neighborChunk == null || neighborChunk.dummy == true) continue; // FIXME : Dummy check
                     neighborBlock = neighborChunk.getBlock(neighborBlockPos[0], neighborBlockPos[1], neighborBlockPos[2]);
                 } else {
                     neighborBlock = this.getBlock(neighborBlockPos[0], neighborBlockPos[1], neighborBlockPos[2]);
                 }
                 // If there is a block neighboring this face, skip adding it to the mesh.
-                if (neighborBlock != null) continue;
+                const isHeightLimit = this.chunkY == Chunk.CHUNK_COUNT_Y;
+                if (isHeightLimit) console.log("HHH");
+                // console.log(this.chunkY);
+                if (neighborBlock != null && !isHeightLimit) continue;
                 // Add the face to the chunk mesh.
                 for (var i = 0; i < face.vertexCount; i++) {
                     var offsetPos = vec3.create();
@@ -371,13 +374,7 @@ class Chunk {
                     color[0] += p;
                     color[1] += p;
                     color[2] += p;
-                    if(x == 15) {
-                        this.mesh.colors.push([Math.random(),Math.random(),Math.random()]);
-                    }else{
-                        this.mesh.colors.push(color);
-                    }
-     
-
+                    this.mesh.colors.push(color);
                 }
                 // Add the triangle data to the chunk mesh
                 // FIXME : Add support for 3 point faces!
