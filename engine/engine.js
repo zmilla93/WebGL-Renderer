@@ -1,4 +1,4 @@
-// This code depends on glmatrix, a js library for Vector3 and matrix math;
+// This code depends on glmatrix, a js library for linear algebra.
 // https://glmatrix.net/
 // Some aliases, for ease of use.
 const vec2 = glMatrix.vec2;
@@ -48,7 +48,7 @@ function invertDirection(direction) {
         case Direction.Left:
             return Direction.Right;
         default:
-            console.error("Bad direction: " + direction);
+            console.error("Bad direction (invert): " + direction);
             return VECTOR3_ZERO;
     }
 }
@@ -72,21 +72,6 @@ function directionToVector(direction) {
             return VECTOR3_ZERO;
     }
 }
-
-// function vectorToDirection(vector) {
-//     if (vector[1] == 0 && vector[2] == 0) {
-//         if (vector[0] == 1) return Direction.Right;
-//         else if (vector[0] == -1) return Direction.Left;
-//     }
-//     else if (vector[0] == 0 && vector[2] == 0) {
-//         if (vector[1] == 1) return Direction.Up;
-//         else if (vector[1] == -1) return Direction.Dowwn;
-//     }
-//     else if (vector[0] == 0 && vector[1] == 0) {
-//         if (vector[2] == 1) return Direction.Back;
-//         else if (vector[2] == -1) return Direction.Forward;
-//     }
-// }
 
 class Engine {
     shaders = {};
@@ -143,6 +128,7 @@ class Engine {
         // Function name must match the uniform name!
 
         // Uniform Converters
+        Shader.simpleLit.uniformConverter.viewDistance = Rendering.floatConverter;
         Shader.simpleLit.uniformConverter.sunlightIntensity = Rendering.floatConverter;
         Shader.simpleLit.uniformConverter.sunlightColor = Rendering.vector3Converter;
         Shader.simpleLit.uniformConverter.sunlightAngle = Rendering.vector3Converter;
@@ -335,10 +321,6 @@ class Component {
         return this.gameObject;
     }
 }
-
-// function lerp(n0, n1, a) {
-//     return ((1.0 - a) * n0) + (a * n1);
-// }
 
 function lerp(a, b, t) {
     // return (1 - t) * a + t * b;

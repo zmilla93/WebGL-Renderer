@@ -8,16 +8,20 @@ function run() {
 
     // Move the main camera
     Camera.main.position = [0, 60, 30];
+    Camera.main.farPlane = 500;
+    Camera.main.calculateProjectionMatrix();
 
     // Create a material using the default lit shader.
     var litMat = new Material(Shader.simpleLit);
 
     // Set lighting values
+    litMat.uniforms.viewDistance = 100;
     litMat.uniforms.ambientLight = [0.75, 0.75, 0.75];
     litMat.uniforms.sunlightIntensity = 0.5;
     litMat.uniforms.sunlightAngle = vec3.fromValues(0.25, 1, 0.5);
     litMat.uniforms.sunlightColor = vec3.fromValues(1, 1, 1);
     litMat.uniforms.skyColor = vec3.fromValues(1, 0, 0);
+    litMat.uniforms.skyColor = vec3.fromValues(106 / 255, 204 / 255, 181 / 255, 1);
 
     // Initialize world settings
     const chunkCountXZ = 12;
@@ -30,6 +34,7 @@ function run() {
 
     // The action queue allows functions to be run over many frames.
     // This will be used for chunk generation.
+    // Increase for faster generation at the cost of fps.
     Engine.maxActionsPerFrame = 2;
 
     // Create Chunks
@@ -74,6 +79,33 @@ function run() {
         }
     }
     controller.add(orthoToggle);
+
+    const fogController = new Component();
+    fogController.update = function () {
+        if (Input.wasPressedThisFrame("KeyF")) {
+            
+            switch (Camera.main.viewDistance) {
+                case 50:                    
+                    Camera.main.viewDistance = 100;
+                    break;
+                case 100:
+                    Camera.main.viewDistance = 200;
+                    break;
+                case 200:
+                    Camera.main.viewDistance = 300;
+                    break;
+                case 300:
+                    Camera.main.viewDistance = 400;
+                    break;
+                default:
+                    Camera.main.viewDistance = 50;
+                    break;
+            }
+            litMat.uniforms.viewDistance = Camera.main.viewDistance;
+            console.log(Camera.main.viewDistance);
+        }
+    }    
+    controller.add(fogController);
 }
 
 window.addEventListener('load', run);
