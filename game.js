@@ -4,6 +4,7 @@ function run() {
     createGrid();
 
     Camera.main.position = [0, 2, 10];
+    
     // Camera.main.rotation = [1, 0, 0];
 
     var litMat = new Material(Shader.simpleLit);
@@ -13,6 +14,8 @@ function run() {
 
     var monster = new GameObject();
     monster.add(new MeshRenderer(Mesh.monster, litMat));
+    monster.rotation = [0, -45, 0];
+    monster.setRotation(0, -45, 0);
 
     var wireMonster = new GameObject();
     wireMonster.add(new MeshRenderer(Mesh.cubeWire, litMat));
@@ -24,7 +27,10 @@ function run() {
     litMat.uniforms.sunlightColor = [245 / 255, 215 / 255, 66 / 255];
     Camera.main.viewDistance = 400;
     litMat.uniforms.viewDistance = Camera.main.viewDistance;
-    litMat.uniforms.skyColor = vec3.fromValues(1, 0, 0);
+    // litMat.uniforms.skyColor = vec3.fromValues(1, 0, 0);
+    const skyColor = [184 / 255, 131 / 255, 222 / 255];
+    Camera.main.color = skyColor;
+    // litMat.uniforms.skyColor = skyColor;
 
     var cube = new GameObject();
     cube.add(new MeshRenderer(Mesh.cube, unlitMaterial));
@@ -39,6 +45,7 @@ function run() {
 
     var monkey = new GameObject();
     monkey.add(new MeshRenderer(Mesh.monkey, litMat));
+    monkey.rotation = [45, 0, 0];
     monkey.position = [-3, 5, 0];
 
     var cone = new GameObject();

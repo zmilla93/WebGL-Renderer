@@ -25,7 +25,7 @@ function run() {
     litMat.uniforms.sunlightColor = vec3.fromValues(1, 1, 1);
 
     const skyColor = [121 / 255, 220 / 255, 237 / 255];
-    Camera.main.color = skyColor;
+    Camera.main.color = [skyColor];
     litMat.uniforms.skyColor = skyColor;
 
     // Initialize world settings

@@ -288,22 +288,17 @@ class GameObject {
     setRotation(x, y, z) {
         quat.fromEuler(this._rotationQuaternion, x, y, z);
     }
-    getRotation() {
-
+    getRotationMatrix() {
+        var rotationMatrix = mat4.create();
+        mat4.fromQuat(rotationMatrix, this._rotationQuaternion);
+        return rotationMatrix;
     }
-
     get matrix() {
         // Create Translation Matrix
         const translationMatrix = mat4.create();
         mat4.translate(translationMatrix, translationMatrix, [this.position[0], this.position[1], this.position[2]]);
-
         // Create Rotation Matrix
-        // FIXME : This would probably be better as a quaternion.
-        const rotationMatrix = mat4.create();
-        mat4.rotateX(rotationMatrix, rotationMatrix, this.rotation[0] * DEG2RAD);
-        mat4.rotateY(rotationMatrix, rotationMatrix, this.rotation[1] * DEG2RAD);
-        mat4.rotateZ(rotationMatrix, rotationMatrix, this.rotation[2] * DEG2RAD);
-
+        const rotationMatrix = this.getRotationMatrix();
         // Create a transform matrix that holds all matrices combined.
         const transformMatrix = mat4.create();
         mat4.mul(transformMatrix, Camera.main.getProjectionMatrix(), Camera.main.getWorldtoViewMatrix());
