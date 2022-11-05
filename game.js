@@ -4,8 +4,6 @@ function run() {
     createGrid();
 
     Camera.main.position = [0, 2, 10];
-    
-    // Camera.main.rotation = [1, 0, 0];
 
     var litMat = new Material(Shader.simpleLit);
     var unlitMaterial = new Material(Shader.unlitShader);
@@ -14,7 +12,6 @@ function run() {
 
     var monster = new GameObject();
     monster.add(new MeshRenderer(Mesh.monster, litMat));
-    monster.rotation = [0, -45, 0];
     monster.setRotation(0, -45, 0);
 
     var wireMonster = new GameObject();
@@ -55,8 +52,6 @@ function run() {
     var quad = new GameObject();
     quad.add(new MeshRenderer(Mesh.quad, litMat));
     quad.position = [2, 0.25, 4];
-
-
 
     const count = 10;
     const halfCount = count / 2;
