@@ -5,7 +5,11 @@ function run() {
 
     Camera.main.position = [0, 2, 10];
 
+    // var textureLitShader = new Shader();
+
     var litMat = new Material(Shader.simpleLit);
+
+    // var textureLitMat = new Material(Shader.textureLit);
     var unlitMaterial = new Material(Shader.unlitShader);
 
     unlitMaterial.uniforms.dominatingColor = vec3.fromValues(1, 0, 0);
@@ -20,7 +24,7 @@ function run() {
 
     litMat.uniforms.ambientLight = [0.2, 0.2, 0.2];
     litMat.uniforms.sunlightIntensity = 1;
-    litMat.uniforms.sunlightAngle = [0, 1, 0];
+    litMat.uniforms.sunlightAngle = [0, 1, 0.5];
     litMat.uniforms.sunlightColor = [245 / 255, 215 / 255, 66 / 255];
     Camera.main.viewDistance = 400;
     litMat.uniforms.viewDistance = Camera.main.viewDistance;
@@ -81,15 +85,11 @@ function run() {
 
     var angle = quat.getAngle(QUATERNION_IDENTITY, target._rotationQuaternion);
 
-
-
     // console.log(quat.getAngle());
     console.log(180 * DEG2RAD);
     console.log(3.14 * RAD2DEG);
     console.log(angle);
     console.log(angle * RAD2DEG);
-
-
 
     var g = new GameObject();
     console.log(this);
@@ -110,6 +110,17 @@ function run() {
             // Mesh.monkey.wireframe = !Mesh.monkey.wireframe;
         }
     }
+
+
+    drawImages();
+    const textureCanvas = document.getElementById("textureCanvas");
+    var img = new Image();
+    img.src = textureCanvas.toDataURL();
+
+    const images = document.getElementsByClassName("texture");
+    const texture = new Texture(images[0]);
+    const texture2 = new Texture(textureCanvas);
+
 }
 
 window.addEventListener('load', run);

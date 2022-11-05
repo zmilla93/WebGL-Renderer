@@ -2,7 +2,7 @@ body{
     background-color: #353535;
 }
 
-#glCanvas {
+canvas {
     border: black;
     border-width: 1px;
     border-style: solid;

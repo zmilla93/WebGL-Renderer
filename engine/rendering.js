@@ -153,7 +153,7 @@ class Shader {
     // vertexShaderSource, fragmentShaderSource - (string) GLSL shader code
     // Attributes - Array of ShaderAttributes
     constructor(gl, name, vertexShaderSource, fragmentShaderSource, attributes) {
-        this.gl = gl;
+        this.gl = Engine.gl;
         this.name = name;
         this.program = createShaderProgram(gl, vertexShaderSource, fragmentShaderSource);
         gl.useProgram(this.program);
@@ -213,6 +213,30 @@ class Material {
     static registerRenderer(material, renderer) {
         const mat = Material.getMaterial(material);
         mat.renderers.push(renderer);
+    }
+}
+
+class Texture {
+    texture; // WebGL Texture
+    constructor(image) {
+        const gl = Engine.gl;
+
+        this.texture = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, this.texture);
+
+        const levelOfDetail = 0;
+        const internalFormat = gl.RGBA;
+        const srcFormat = gl.RGBA;
+        const border = 0;
+        const type = gl.UNSIGNED_BYTE;
+        gl.texImage2D(gl.TEXTURE_2D, levelOfDetail, internalFormat, image.width, image.height, border, srcFormat, type, image);
+        gl.generateMipmap(gl.TEXTURE_2D);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST_MIPMAP_LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
     }
 }
 
