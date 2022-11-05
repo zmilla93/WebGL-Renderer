@@ -22,6 +22,9 @@ function run() {
     litMat.uniforms.sunlightIntensity = 1;
     litMat.uniforms.sunlightAngle = [0, 1, 0];
     litMat.uniforms.sunlightColor = [245 / 255, 215 / 255, 66 / 255];
+    Camera.main.viewDistance = 400;
+    litMat.uniforms.viewDistance = Camera.main.viewDistance;
+    litMat.uniforms.skyColor = vec3.fromValues(1, 0, 0);
 
     var cube = new GameObject();
     cube.add(new MeshRenderer(Mesh.cube, unlitMaterial));

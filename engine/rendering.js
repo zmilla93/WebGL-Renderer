@@ -12,6 +12,7 @@ class Camera {
     viewDirection;
     forward;
     worldToViewMatrix;
+    color = [1, 1, 1];
     // Mutual Settings
     nearPlane = 0.01;
     farPlane = 1000;
@@ -235,15 +236,15 @@ class Mesh {
     static monster;
 
     static initMeshes() {
-        Mesh.icoSphere = objToMesh(icoSphere2Model, true);
-        Mesh.sphere = objToMesh(sphereModel, true);
+        Mesh.icoSphere = objToMesh(icoSphere2Model);
+        Mesh.sphere = objToMesh(sphereModel);
         Mesh.smoothSphere = objToMesh(smoothSphereModel);
-        Mesh.cube = objToMesh(cubeModel, true);
+        Mesh.cube = objToMesh(cubeModel);
         Mesh.cubeWire = objToMesh(cubeModel, true);
-        Mesh.monster = objToMesh(monsterModel, true);
-        Mesh.monkey = objToMesh(monkeyModel, true);
-        Mesh.cone = objToMesh(coneTModel, false);
-        Mesh.quad = objToMesh(quadTModel, true);
+        Mesh.monster = objToMesh(monsterModel);
+        Mesh.monkey = objToMesh(monkeyModel);
+        Mesh.cone = objToMesh(coneTModel);
+        Mesh.quad = objToMesh(quadTModel);
     }
     // Sends data to WebGL.
     // This should be called any time the mesh data changes.

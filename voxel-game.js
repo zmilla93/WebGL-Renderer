@@ -25,8 +25,15 @@ function run() {
     litMat.uniforms.sunlightIntensity = 0.5;
     litMat.uniforms.sunlightAngle = vec3.fromValues(0.25, 1, 0.5);
     litMat.uniforms.sunlightColor = vec3.fromValues(1, 1, 1);
-    litMat.uniforms.skyColor = vec3.fromValues(1, 0, 0);
-    litMat.uniforms.skyColor = vec3.fromValues(106 / 255, 204 / 255, 181 / 255, 1);
+    // litMat.uniforms.skyColor = vec3.fromValues(1, 0, 0);
+
+    // const skyColor = [47 / 255, 237 / 255, 206 / 255];
+    const skyColor = [121 / 255, 220 / 255, 237 / 255];
+    Camera.main.color = skyColor;
+    Engine.updateCamera();
+    litMat.uniforms.skyColor = skyColor;
+    // litMat.uniforms.skyColor = vec3.fromValues(106 / 255, 204 / 255, 181 / 255, 1);
+
 
     // Initialize world settings
     const chunkCountXZ = 10;
@@ -88,9 +95,9 @@ function run() {
     const fogController = new Component();
     fogController.update = function () {
         if (Input.wasPressedThisFrame("KeyF")) {
-            
+
             switch (Camera.main.viewDistance) {
-                case 50:                    
+                case 50:
                     Camera.main.viewDistance = 75;
                     break;
                 case 75:
@@ -109,7 +116,7 @@ function run() {
             litMat.uniforms.viewDistance = Camera.main.viewDistance;
             console.log(Camera.main.viewDistance);
         }
-    }    
+    }
     controller.add(fogController);
 }
 

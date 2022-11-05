@@ -87,6 +87,10 @@ class Engine {
         gl.enable(gl.CULL_FACE)
         gl.cullFace(gl.BACK);
         gl.enable(gl.DEPTH_TEST);
+        // gl.depthFunc(gl.LEQUAL);
+        // gl.depthMask(gl.BLEND);
+        // gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+        // gl.enable(gl.BLEND);
         // gl.clearColor(144 / 255, 212 / 255, 133 / 255, 1);
         gl.clearColor(106 / 255, 204 / 255, 181 / 255, 1);
         Engine.setupDefaultShaders();
@@ -96,6 +100,10 @@ class Engine {
         Input.addKeyboardListeners();
         Input.addMouseListeners(canvas);
         window.requestAnimationFrame(Engine.internal_update);
+    }
+    static updateCamera() {
+        const color = Camera.main.color;
+        Engine.gl.clearColor(color[0], color[1], color[2], 1);
     }
     static setupDefaultShaders() {
         const gl = Engine.gl;
@@ -129,6 +137,7 @@ class Engine {
 
         // Uniform Converters
         Shader.simpleLit.uniformConverter.viewDistance = Rendering.floatConverter;
+        // Shader.simpleLit.uniformDefault.viewDistance = 400;
         Shader.simpleLit.uniformConverter.sunlightIntensity = Rendering.floatConverter;
         Shader.simpleLit.uniformConverter.sunlightColor = Rendering.vector3Converter;
         Shader.simpleLit.uniformConverter.sunlightAngle = Rendering.vector3Converter;

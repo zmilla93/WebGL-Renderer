@@ -13,6 +13,7 @@ uniform mediump vec3 ambientLight;
 uniform mediump vec3 sunlightColor;
 uniform mediump vec3 sunlightAngle;
 uniform mediump float sunlightIntensity;
+uniform mediump vec3 skyColor;
 
 uniform float viewDistance;
 
@@ -36,9 +37,9 @@ void main(void) {
 
     // Use the clip depth to lerp between the texture color and the sky color.
     // This creates a nice fog effect.
-    float mixX = mix(color.x, vSkyColor.x, clipDepth);
-    float mixY = mix(color.y, vSkyColor.y, clipDepth);
-    float mixZ = mix(color.z, vSkyColor.z, clipDepth);
+    float mixX = mix(color.x, skyColor.x, clipDepth);
+    float mixY = mix(color.y, skyColor.y, clipDepth);
+    float mixZ = mix(color.z, skyColor.z, clipDepth);
     vec3 foggedColor = vec3(mixX, mixY, mixZ);
 
     gl_FragColor = vec4(foggedColor.xyz, 1);

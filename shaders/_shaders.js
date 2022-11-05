@@ -202,6 +202,7 @@ uniform mediump vec3 ambientLight;
 uniform mediump vec3 sunlightColor;
 uniform mediump vec3 sunlightAngle;
 uniform mediump float sunlightIntensity;
+uniform mediump vec3 skyColor;
 
 uniform float viewDistance;
 
@@ -220,14 +221,14 @@ void main(void) {
     // Get the depth of the fragment in clip space.
     float depth = (2.0 * gl_FragCoord.z - gl_DepthRange.near - gl_DepthRange.far) / (gl_DepthRange.far - gl_DepthRange.near);
     float clipDepth = depth / gl_FragCoord.w / viewDistance;
-    clipDepth -= 0.5;
+    // clipDepth -= 0.5;
     clipDepth = clamp(clipDepth, 0.0, 1.0);
 
     // Use the clip depth to lerp between the texture color and the sky color.
     // This creates a nice fog effect.
-    float mixX = mix(color.x, vSkyColor.x, clipDepth);
-    float mixY = mix(color.y, vSkyColor.y, clipDepth);
-    float mixZ = mix(color.z, vSkyColor.z, clipDepth);
+    float mixX = mix(color.x, skyColor.x, clipDepth);
+    float mixY = mix(color.y, skyColor.y, clipDepth);
+    float mixZ = mix(color.z, skyColor.z, clipDepth);
     vec3 foggedColor = vec3(mixX, mixY, mixZ);
 
     gl_FragColor = vec4(foggedColor.xyz, 1);
@@ -246,7 +247,7 @@ uniform mat4 modelViewMatrix;
 // uniform mat4 projectionMatrix;
 uniform mat4 transformMatrix;
 uniform vec4 dominatingColor;
-uniform mediump vec3 skyColor;
+
 // uniform vec3 ambientLight;
 // uniform vec3 sunlightAngle;
 // uniform float sunlightIntensity;
@@ -254,7 +255,7 @@ uniform mediump vec3 skyColor;
 varying mediump vec4 vPosition;
 varying mediump vec3 vColor;
 varying mediump vec3 vNormal;
-varying mediump vec3 vSkyColor;
+// varying mediump vec3 vSkyColor;
 varying mediump vec2 vUV1;
 
 void main() {
@@ -262,7 +263,7 @@ void main() {
     vColor = vertexColor;
     vUV1 = vertexUV1;
     vNormal = vertexNormal;
-    vSkyColor = skyColor;
+    // vSkyColor = skyColor;
     gl_Position = transformMatrix * vertexPosition;
 }
 `
