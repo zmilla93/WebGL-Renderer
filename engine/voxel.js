@@ -382,7 +382,9 @@ class Chunk {
                 if (checkPos[0] != neighborBlockPos[0] || checkPos[1] != neighborBlockPos[1] || checkPos[2] != neighborBlockPos[2]) {
                     var neighborChunk = this.neighborChunks[symbolToString(direction)];
                     // FIXME : Dummy check
-                    if (neighborChunk == null || neighborChunk.dummy == true) neighborBlock = Block.list.Air;
+                    // FIXME : Neighbor check when neighbor chunk is unloaded
+                    // if (neighborChunk == null || neighborChunk.dummy == true) neighborBlock = Block.list.Air;
+                    if (neighborChunk == null || neighborChunk.dummy == true) continue;
                     else neighborBlock = neighborChunk.getBlock(neighborBlockPos[0], neighborBlockPos[1], neighborBlockPos[2]);
                 } else {
                     neighborBlock = this.getBlock(neighborBlockPos[0], neighborBlockPos[1], neighborBlockPos[2]);
