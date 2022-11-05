@@ -19,7 +19,8 @@ function run() {
     var litMat = new Material(Shader.simpleLit);
 
     // Set lighting values
-    litMat.uniforms.viewDistance = 100;
+    Camera.main.viewDistance = 400;
+    litMat.uniforms.viewDistance = Camera.main.viewDistance;
     litMat.uniforms.ambientLight = [0.75, 0.75, 0.75];
     litMat.uniforms.sunlightIntensity = 0.5;
     litMat.uniforms.sunlightAngle = vec3.fromValues(0.25, 1, 0.5);
@@ -28,8 +29,8 @@ function run() {
     litMat.uniforms.skyColor = vec3.fromValues(106 / 255, 204 / 255, 181 / 255, 1);
 
     // Initialize world settings
-    const chunkCountXZ = 12;
-    Chunk.CHUNK_COUNT_Y = 6;
+    const chunkCountXZ = 10;
+    Chunk.CHUNK_COUNT_Y = 8;
     Chunk.worldHeight = Chunk.sizeY * Chunk.CHUNK_COUNT_Y;
     const halfCountXZ = Math.round((chunkCountXZ + 2) / 2);
     Chunk.seed = 798472;
@@ -90,16 +91,16 @@ function run() {
             
             switch (Camera.main.viewDistance) {
                 case 50:                    
+                    Camera.main.viewDistance = 75;
+                    break;
+                case 75:
                     Camera.main.viewDistance = 100;
                     break;
                 case 100:
+                    Camera.main.viewDistance = 150;
+                    break;
+                case 150:
                     Camera.main.viewDistance = 200;
-                    break;
-                case 200:
-                    Camera.main.viewDistance = 300;
-                    break;
-                case 300:
-                    Camera.main.viewDistance = 400;
                     break;
                 default:
                     Camera.main.viewDistance = 50;

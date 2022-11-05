@@ -21,6 +21,8 @@ class Camera {
     projectionMatrix = mat4.create();
     // Orthographic Settings
     _ortho = false;
+    width = 20;
+    height = 20;
     // Camera.main is used to render the scene
     static main;
     constructor() {
@@ -47,7 +49,7 @@ class Camera {
         // const projectionMatrix = mat4.create();
         // this.perspectiveMatrix = mat4.create();
         if (this._ortho) {
-            mat4.ortho(this.projectionMatrix, -5, 5, -5, 5, this.nearPlane, this.farPlane);
+            mat4.ortho(this.projectionMatrix, -this.width, this.width, -this.height, this.height, this.nearPlane, this.farPlane);
         } else {
             mat4.perspective(this.projectionMatrix, this.fieldOfView, this.aspectRatio, this.nearPlane, this.farPlane);
         }

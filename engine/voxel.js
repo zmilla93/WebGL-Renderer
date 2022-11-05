@@ -65,6 +65,10 @@ class Block {
         this.transparent = transparent;
     }
     static createBlock(name, color, transparent = false) {
+        if (Block.list[name] != null) {
+            console.error("A block with the name '" + name + "' already exists!");
+            return;
+        }
         Block.list[name] = new Block(name, color, transparent);
     }
     static initBlocks() {
@@ -81,7 +85,7 @@ class Block {
         this.createBlock("Sand", [199 / 255, 193 / 255, 74 / 255]);
         this.createBlock("Wood", [222 / 255, 170 / 255, 80 / 255]);
         this.createBlock("Log", [54 / 255, 38 / 255, 11 / 255]);
-        this.createBlock("Air", [1,1,1], true);
+        this.createBlock("Air", [1, 1, 1], true);
         // this.createBlock("Water", [83 / 255, 152 / 255, 237 / 255]);
 
     }
@@ -277,9 +281,9 @@ class Chunk {
                         var value = lerp(plainSample, rockySample, normalSample);
                         // var value = plainSample < rockySample ? lerp(plainSample, rockySample, normalSample) :  lerp(rockySample, plainSample, normalSample);
                         var block = NoiseSample.checkBlock(value, worldY);
-                        if (block != null) {
-                            block = Blocks.Dirt;
-                            if (normalSample <= 0) block = Blocks.Sand;
+                        if (block != null && block != Block.list.Air) {
+                            block = Block.list.Dirt;
+                            if (normalSample <= 0) block = Block.list.Sand;
                         }
                         this.setBlock(x, y, z, block);
                     } else {
@@ -303,7 +307,7 @@ class Chunk {
                     //     this.setBlock(x,y,z, Blocks.Sand);
                     // }
 
-                    if (this.getBlock(x, y, z) == Blocks.Grass) {
+                    if (this.getBlock(x, y, z) == Block.list.Grass) {
 
                         // if (this.getBlock(x, y + 1, z) == null) {
                         // if (ChunkManager.getBlock(worldX, worldY + 1, worldZ) == null) {
@@ -322,7 +326,7 @@ class Chunk {
             for (var z = 0; z < Chunk.sizeZ; z++) {
                 for (var x = 0; x < Chunk.sizeX; x++) {
                     var block = this.getBlock(x, y, z);
-                    if (block != null && block != Blocks.Air) {
+                    if (block != null && block != Block.list.Air) {
                         triCount = this.addVoxelToMesh(triCount, x, y, z, block);
                     }
                 }
@@ -377,8 +381,9 @@ class Chunk {
                 // Get the neighboring block.
                 if (checkPos[0] != neighborBlockPos[0] || checkPos[1] != neighborBlockPos[1] || checkPos[2] != neighborBlockPos[2]) {
                     var neighborChunk = this.neighborChunks[symbolToString(direction)];
-                    if (neighborChunk == null || neighborChunk.dummy == true) continue; // FIXME : Dummy check
-                    neighborBlock = neighborChunk.getBlock(neighborBlockPos[0], neighborBlockPos[1], neighborBlockPos[2]);
+                    // FIXME : Dummy check
+                    if (neighborChunk == null || neighborChunk.dummy == true) neighborBlock = Block.list.Air;
+                    else neighborBlock = neighborChunk.getBlock(neighborBlockPos[0], neighborBlockPos[1], neighborBlockPos[2]);
                 } else {
                     neighborBlock = this.getBlock(neighborBlockPos[0], neighborBlockPos[1], neighborBlockPos[2]);
                 }
@@ -386,7 +391,7 @@ class Chunk {
                 const isHeightLimit = this.chunkY == Chunk.CHUNK_COUNT_Y;
                 if (isHeightLimit) console.log("HHH");
                 // console.log(this.chunkY);
-                if (neighborBlock != null && !isHeightLimit) continue;
+                if (neighborBlock != null && !neighborBlock.transparent) continue;
                 // Add the face to the chunk mesh.
                 for (var i = 0; i < face.vertexCount; i++) {
                     var offsetPos = vec3.create();
@@ -397,7 +402,9 @@ class Chunk {
                     var rngColor = vec3.fromValues(Math.random(), Math.random(), Math.random());
                     // var c = Chunk.blockColors[symbolToString(block)];
 
-                    var c = Chunk.blockColors[symbolToString(block)];
+                    // var c = Chunk.blockColors[symbolToString(block)];
+                    var c = block.color;
+
                     var color = vec3.create();
                     vec3.copy(color, c);
                     // if (this.chunkZ >= 4) color[2] = 1;
@@ -537,16 +544,16 @@ class NoiseSample {
         return value;
     }
     static checkBlock(value, worldY) {
-        var block = null;
+        var block = Block.list.Air;
         const STONE_THRESHOLD = -0.55;
         const GRASS_THRESHOLD = -0.75;
-        if (value > STONE_THRESHOLD) block = Blocks.Stone;
-        else if (value > GRASS_THRESHOLD) block = Blocks.Grass;
+        if (value > STONE_THRESHOLD) block = Block.list.Stone;
+        else if (value > GRASS_THRESHOLD) block = Block.list.Grass;
         else {
             if (worldY == NoiseSample.FLOOR) {
-                block = Blocks.Grass;
+                block = Block.list.Grass;
             } else if (worldY < NoiseSample.FLOOR) {
-                block = Blocks.Stone;
+                block = Block.list.Stone;
             }
         }
         return block;

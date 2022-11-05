@@ -220,8 +220,9 @@ void main(void) {
     // Get the depth of the fragment in clip space.
     float depth = (2.0 * gl_FragCoord.z - gl_DepthRange.near - gl_DepthRange.far) / (gl_DepthRange.far - gl_DepthRange.near);
     float clipDepth = depth / gl_FragCoord.w / viewDistance;
+    clipDepth -= 0.5;
     clipDepth = clamp(clipDepth, 0.0, 1.0);
-    
+
     // Use the clip depth to lerp between the texture color and the sky color.
     // This creates a nice fog effect.
     float mixX = mix(color.x, vSkyColor.x, clipDepth);
