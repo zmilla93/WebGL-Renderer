@@ -19,12 +19,14 @@ class Editor {
 
 
 function main() {
-    const controlDiv = document.getElementById("controls");
-    const objectList = document.getElementById("gameObjectList");
+    // const controlDiv = document.getElementById("controls");
+    // const objectList = document.getElementById("gameObjectList");
 
-    controlDiv.innerHTML = "Hello, World!";
-    controlDiv.innerHTML = "Neat";
-    objectList.innerHTML = "<option value='item1'>Test1</option>";
+    // controlDiv.innerHTML = "Hello, World!";
+    // controlDiv.innerHTML = "Neat";
+    // objectList.innerHTML = "<option value='item1'>Test1</option>";
+
+
 }
 
 // function bindEditorHTML() {
@@ -56,5 +58,5 @@ GameObject.getEditorHTML = function (gameObject) {
     </p>`
 }
 
-// window.addEventListener("load", main);
+window.addEventListener("load", main);
 

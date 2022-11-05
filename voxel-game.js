@@ -42,6 +42,22 @@ function run() {
     // Increase for faster generation at the cost of fps.
     Engine.maxActionsPerFrame = 2;
 
+    const slider = document.getElementById("sunAngle");
+    const sliderX = document.getElementById("sunAngleX");
+    const sliderY = document.getElementById("sunAngleY");
+    const sliderZ = document.getElementById("sunAngleZ");
+    slider.oninput = function(){
+        var vector = vec3.fromValues(0, 1, 0);
+        var value = vec3.create();
+        var angleX = slideXr.value;
+        var angleY = sliderY.value;
+        var angleZ = sliderZ.value;
+        vec3.rotateX(value, vector, VECTOR3_ZERO, angle * DEG2RAD);
+        // litMat.uniforms.sunlightAngle = vec3.fromValues(0.25, 1, 0.5);
+        litMat.uniforms.sunlightAngle = value;
+        // console.log(slider.value);
+    }
+
     // Create Chunks
     for (var x = -halfCountXZ; x < halfCountXZ; x++) {
         for (var z = -halfCountXZ; z < halfCountXZ; z++) {

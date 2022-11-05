@@ -1,4 +1,3 @@
-
 // Stores the faces of a mesh based on where they align to a block boundry to allow for easy face culling.
 // A VoxelMesh is meant to be used to build a Mesh dynamically.
 class VoxelMesh {
@@ -307,12 +306,13 @@ class Chunk {
                     //     this.setBlock(x,y,z, Blocks.Sand);
                     // }
 
-                    if (this.getBlock(x, y, z) == Block.list.Grass) {
-
-                        // if (this.getBlock(x, y + 1, z) == null) {
-                        // if (ChunkManager.getBlock(worldX, worldY + 1, worldZ) == null) {
-                        //     this.setBlock(x, y, z, Blocks.Water);
-                        // }
+                    if (this.getBlock(x, y, z) == Block.list.Air && this.getBlock(x, y - 1, z) == Block.list.Grass) {
+                        let rng = Math.floor(Math.random() * 1000);
+                        // if(rng <= 5) 
+                        // console.log(rng);
+                        if (rng <= 2) {
+                            this.setBlock(x, y, z, Block.list.Sand);
+                        }
                     }
                 }
             }
@@ -345,14 +345,6 @@ class Chunk {
             this.generateMesh();
             this.mesh.freeData();
         }
-        // console.log("L:" + Object.keys(this.neighborChunks).length);
-        // if (Object.keys(this.neighborChunks).length >= 3 && !this.hasGeneratedMesh) {
-        //     // console.log("ChunkIndex:" + this.chunkX + ", " + this.chunkY + ", " + this.chunkZ);
-        //     // console.log(Object.keys(this.neighborChunks).length);
-        //     // console.log(Object.keys(this.neighborChunks));
-        //     // console.log(this.neighborChunks);
-        //     this.generateMesh();
-        // }
     }
 
 
