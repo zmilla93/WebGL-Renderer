@@ -19,25 +19,18 @@ function run() {
     var litMat = new Material(Shader.simpleLit);
 
     // Set lighting values
-    Camera.main.viewDistance = 400;
-    litMat.uniforms.viewDistance = Camera.main.viewDistance;
     litMat.uniforms.ambientLight = [0.75, 0.75, 0.75];
     litMat.uniforms.sunlightIntensity = 0.5;
     litMat.uniforms.sunlightAngle = vec3.fromValues(0.25, 1, 0.5);
     litMat.uniforms.sunlightColor = vec3.fromValues(1, 1, 1);
-    // litMat.uniforms.skyColor = vec3.fromValues(1, 0, 0);
 
-    // const skyColor = [47 / 255, 237 / 255, 206 / 255];
     const skyColor = [121 / 255, 220 / 255, 237 / 255];
     Camera.main.color = skyColor;
-    Engine.updateCamera();
     litMat.uniforms.skyColor = skyColor;
-    // litMat.uniforms.skyColor = vec3.fromValues(106 / 255, 204 / 255, 181 / 255, 1);
-
 
     // Initialize world settings
     const chunkCountXZ = 10;
-    Chunk.CHUNK_COUNT_Y = 8;
+    Chunk.CHUNK_COUNT_Y = 4;
     Chunk.worldHeight = Chunk.sizeY * Chunk.CHUNK_COUNT_Y;
     const halfCountXZ = Math.round((chunkCountXZ + 2) / 2);
     Chunk.seed = 798472;
@@ -92,29 +85,16 @@ function run() {
     }
     controller.add(orthoToggle);
 
+    // Fog Controller
+    const fogLevels = [100, 150, 200, 250, 300];
+    var curFogLevel = fogLevels.length - 1;
     const fogController = new Component();
+    litMat.uniforms.viewDistance = fogLevels[curFogLevel];
     fogController.update = function () {
         if (Input.wasPressedThisFrame("KeyF")) {
-
-            switch (Camera.main.viewDistance) {
-                case 50:
-                    Camera.main.viewDistance = 75;
-                    break;
-                case 75:
-                    Camera.main.viewDistance = 100;
-                    break;
-                case 100:
-                    Camera.main.viewDistance = 150;
-                    break;
-                case 150:
-                    Camera.main.viewDistance = 200;
-                    break;
-                default:
-                    Camera.main.viewDistance = 50;
-                    break;
-            }
-            litMat.uniforms.viewDistance = Camera.main.viewDistance;
-            console.log(Camera.main.viewDistance);
+            curFogLevel++;
+            if (curFogLevel >= fogLevels.length) curFogLevel = 0;
+            litMat.uniforms.viewDistance = fogLevels[curFogLevel];
         }
     }
     controller.add(fogController);

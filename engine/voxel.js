@@ -149,7 +149,7 @@ class Chunk {
     isReadyForMeshing() {
         var neighborCount = 0;
         if (this.chunkY == 0) neighborCount++;
-        if (this.chunkY == Chunk.CHUNK_COUNT_Y) neighborCount++;
+        if (this.chunkY == Chunk.CHUNK_COUNT_Y - 1) neighborCount++;
         for (var direction of Object.values(Direction)) {
             if (direction == Direction.Unknown) continue;
             var offset = directionToVector(direction);

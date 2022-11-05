@@ -12,7 +12,7 @@ class Camera {
     viewDirection;
     forward;
     worldToViewMatrix;
-    color = [1, 1, 1];
+    _color = [1, 1, 1];
     // Mutual Settings
     nearPlane = 0.01;
     farPlane = 1000;
@@ -25,13 +25,23 @@ class Camera {
     width = 20;
     height = 20;
     // Camera.main is used to render the scene
-    static main;
+    static _main;
+    static get main() {
+        return Camera._main;
+    };
+    static set main(camera) {
+        Camera._main = camera;
+        Camera._main.updateMainCamera();
+    }
     constructor() {
         this.position = vec3.create();
         this.rotation = vec3.create();
         this.viewDirection = vec3.clone(VECTOR3_FORWARD);
         this.forward = vec3.clone(VECTOR3_FORWARD);
         this.calculateProjectionMatrix();
+    }
+    isMainCamera() {
+        return this == Camera._main;
     }
     // Getters/Setters
     set ortho(state) {
@@ -40,6 +50,14 @@ class Camera {
     }
     get ortho() {
         return this._ortho;
+    }
+    set color(color) {
+        console.log("COLOR");
+        this._color = color;
+        this.updateMainCamera();
+    }
+    get color() {
+        return this._color;
     }
     getWorldtoViewMatrix() {
         // FIXME : Lazy calculation
@@ -58,14 +76,11 @@ class Camera {
     getProjectionMatrix() {
         return this.projectionMatrix;
     }
-
-    // OLD_calculateWorldtoViewMatrix() {
-    //     this.worldToViewMatrix = mat4.create();
-    //     const lookVector = vec3.create();
-    //     vec3.add(lookVector, this.position, this.viewDirection);
-    //     mat4.lookAt(this.worldToViewMatrix, this.position, lookVector, VECTOR3_UP);
-    //     // return worldToViewMatrix;
-    // }
+    updateMainCamera() {
+        if (this.isMainCamera()) {
+            Engine.gl.clearColor(this.color[0], this.color[1], this.color[2], 1);
+        }
+    }
     calculateWorldToViewMatrix() {
         this.worldToViewMatrix = mat4.create();
         var localViewDirection = vec3.clone(VECTOR3_FORWARD);
