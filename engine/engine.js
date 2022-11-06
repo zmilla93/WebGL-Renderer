@@ -126,11 +126,11 @@ class Engine {
 
         // Default Shaders
         var attrib = Engine.defaultVertexAttributes;
-        Shader.defaultShader = new Shader(gl, "Default Shader", litVertexSource, litFragmentSource, attrib);
-        Shader.simpleLit = new Shader(gl, "Simple Lit", simpleLitVertexSource, simpleLitFragmentSource, attrib);
-        Shader.lit = new Shader(gl, "Lit Shader", litVertexSource, litFragmentSource, attrib);
-        Shader.unlitShader = new Shader(gl, "Unlit Shader", unlitVertexSource, unlitFragmentSource, attrib);
-        Shader.lineShader = new Shader(gl, "Line Shader", lineVertexSource, lineFragmentSource, lineAttributes);
+        Shader.defaultShader = new Shader("Default Shader", litVertexSource, litFragmentSource, attrib);
+        Shader.simpleLit = new Shader("Simple Lit", simpleLitVertexSource, simpleLitFragmentSource, attrib);
+        Shader.lit = new Shader("Lit Shader", litVertexSource, litFragmentSource, attrib);
+        Shader.unlitShader = new Shader("Unlit Shader", unlitVertexSource, unlitFragmentSource, attrib);
+        Shader.lineShader = new Shader("Line Shader", lineVertexSource, lineFragmentSource, lineAttributes);
 
         // Functions that map uniform values to their respective glUniform calls
         // Function name must match the uniform name!

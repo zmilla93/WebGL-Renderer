@@ -136,30 +136,23 @@ class ShaderAttribute {
 
 // Wrapper for a gl shader program
 class Shader {
-    gl;
     name;
     program;
     attributes;
     uniformConverter = {};
     uniformMap = new Map();
-    // Default Shaders
-    // static defaultShader;
-    // static litShader;
-    // static unlitShader;
 
-    // static materialMap = new Map();
-    // gl - weblGL Context
     // name - (string) ID
     // vertexShaderSource, fragmentShaderSource - (string) GLSL shader code
     // Attributes - Array of ShaderAttributes
-    constructor(gl, name, vertexShaderSource, fragmentShaderSource, attributes) {
-        this.gl = Engine.gl;
+    constructor(name, vertexShaderSource, fragmentShaderSource, attributes) {
         this.name = name;
-        this.program = createShaderProgram(gl, vertexShaderSource, fragmentShaderSource);
-        gl.useProgram(this.program);
+        this.program = createShaderProgram(vertexShaderSource, fragmentShaderSource);
+        Engine.gl.useProgram(this.program);
+        console.log(this.program);
         this.attributes = attributes;
         for (let attribute of attributes) {
-            let location = gl.getAttribLocation(this.program, attribute.name);
+            let location = Engine.gl.getAttribLocation(this.program, attribute.name);
             if (location < 0) {
                 console.warn("Attribute location '" + attribute.name + "' not found when creating shader '" + this.name + "'.");
                 continue;
@@ -171,7 +164,7 @@ class Shader {
     uniform(uniformName) {
         if (this.uniformMap.has(uniformName))
             return this.uniformMap.get(uniformName);
-        const uniformLocation = this.gl.getUniformLocation(this.program, uniformName);
+        const uniformLocation = Engine.gl.getUniformLocation(this.program, uniformName);
         if (uniformLocation != null) {
             this.uniformMap.set(uniformName, uniformLocation);
             return uniformLocation;
@@ -490,7 +483,8 @@ class Line {
 }
 
 // Creates a shader program from a given vertex and fragment shader.
-function createShaderProgram(gl, vertexShaderSource, fragmentShaderSource) {
+function createShaderProgram(vertexShaderSource, fragmentShaderSource) {
+    const gl = Engine.gl;
     // Compile Shaders
     const vertexShader = compileShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
     const fragmentShader = compileShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
