@@ -210,12 +210,12 @@ class Material {
 }
 
 class Texture {
-    texture; // WebGL Texture
+    _texture; // WebGL Texture
     constructor(image) {
         const gl = Engine.gl;
 
-        this.texture = gl.createTexture();
-        gl.bindTexture(gl.TEXTURE_2D, this.texture);
+        this._texture = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, this._texture);
 
         const levelOfDetail = 0;
         const internalFormat = gl.RGBA;

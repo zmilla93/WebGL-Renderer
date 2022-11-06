@@ -19,8 +19,6 @@ function run() {
     const monsterImage = document.getElementById("monsterTexture");
     const monsterTexture = new Texture(monsterImage);
 
-    
-    console.log("my:");
     console.log(textureLitShader);
 
     var litMat = new Material(Shader.simpleLit);

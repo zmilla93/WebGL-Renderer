@@ -219,14 +219,10 @@ class Engine {
                     gl.useProgram(material.shader.program);
                     shaderChanged = true;
                 }
-
+                // If the material uses a texture, bind it.
+                if (material.texture != null) Engine.gl.bindTexture(gl.TEXTURE_2D, material.texture._texture);
                 // Apply per material uniforms
-                if (material.texture != null) {
-                    // FIXME : Texture.texture is really bad!! LOL
-                    Engine.gl.bindTexture(gl.TEXTURE_2D, material.texture.texture);
-                } else {
-                    Engine.gl.bindTexture(gl.TEXTURE_2D, null);
-                }
+                // FIXME : This could be optimized to only apply uniforms when the values actually change.
                 for (let converter of Object.entries(material.shader.uniformConverter)) {
                     if (typeof converter[1] === 'function') {
                         converter[1](material, converter[0]);
@@ -237,6 +233,8 @@ class Engine {
                     renderer.applyPerObjectUniforms();
                     renderer.render(gl);
                 });
+                // If a texture was used, unbind it.
+                if (material.texture != null) Engine.gl.bindTexture(gl.TEXTURE_2D, null);
             });
         });
     }
