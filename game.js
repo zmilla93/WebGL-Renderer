@@ -5,9 +5,13 @@ function run() {
 
     Camera.main.position = [0, 2, 10];
 
-    // var textureLitShader = new Shader();
+    var textureLitShader = new Shader("Texture Lit Shader", textureLitVertexSource, textureLitFragmentSource);
+
+    console.log("my:");
+    console.log(textureLitShader);
 
     var litMat = new Material(Shader.simpleLit);
+    var textureMat = new Material(textureLitShader);
 
     // var textureLitMat = new Material(Shader.textureLit);
     var unlitMaterial = new Material(Shader.unlitShader);
@@ -15,7 +19,7 @@ function run() {
     unlitMaterial.uniforms.dominatingColor = vec3.fromValues(1, 0, 0);
 
     var monster = new GameObject();
-    monster.add(new MeshRenderer(Mesh.monster, litMat));
+    monster.add(new MeshRenderer(Mesh.monster, textureMat));
     monster.setRotation(0, -45, 0);
 
     var wireMonster = new GameObject();
@@ -34,7 +38,7 @@ function run() {
     // litMat.uniforms.skyColor = skyColor;
 
     var cube = new GameObject();
-    cube.add(new MeshRenderer(Mesh.cube, unlitMaterial));
+    cube.add(new MeshRenderer(Mesh.cube, textureMat));
 
     var sphere = new GameObject();
     sphere.add(new MeshRenderer(Mesh.sphere, litMat));
@@ -54,7 +58,7 @@ function run() {
     cone.position = [0, 0, 4];
 
     var quad = new GameObject();
-    quad.add(new MeshRenderer(Mesh.quad, litMat));
+    quad.add(new MeshRenderer(Mesh.quad, textureMat));
     quad.position = [2, 0.25, 4];
 
     const count = 10;
@@ -120,6 +124,9 @@ function run() {
     const images = document.getElementsByClassName("texture");
     const texture = new Texture(images[0]);
     const texture2 = new Texture(textureCanvas);
+
+    const monsterImage = document.getElementById("monsterTexture");
+    const monsterTexture = new Texture(monsterImage);
 
 }
 

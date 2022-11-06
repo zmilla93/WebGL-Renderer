@@ -145,7 +145,7 @@ class Shader {
     // name - (string) ID
     // vertexShaderSource, fragmentShaderSource - (string) GLSL shader code
     // Attributes - Array of ShaderAttributes
-    constructor(name, vertexShaderSource, fragmentShaderSource, attributes) {
+    constructor(name, vertexShaderSource, fragmentShaderSource, attributes = Engine.defaultVertexAttributes) {
         this.name = name;
         this.program = createShaderProgram(vertexShaderSource, fragmentShaderSource);
         Engine.gl.useProgram(this.program);
@@ -222,6 +222,7 @@ class Texture {
         const srcFormat = gl.RGBA;
         const border = 0;
         const type = gl.UNSIGNED_BYTE;
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
         gl.texImage2D(gl.TEXTURE_2D, levelOfDetail, internalFormat, image.width, image.height, border, srcFormat, type, image);
         gl.generateMipmap(gl.TEXTURE_2D);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
