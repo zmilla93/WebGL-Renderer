@@ -221,7 +221,12 @@ class Engine {
                 }
 
                 // Apply per material uniforms
-                // if (typeof material.applyPerMaterialUniforms === 'function') material.applyPerMaterialUniforms();
+                if (material.texture != null) {
+                    // FIXME : Texture.texture is really bad!! LOL
+                    Engine.gl.bindTexture(gl.TEXTURE_2D, material.texture.texture);
+                } else {
+                    Engine.gl.bindTexture(gl.TEXTURE_2D, null);
+                }
                 for (let converter of Object.entries(material.shader.uniformConverter)) {
                     if (typeof converter[1] === 'function') {
                         converter[1](material, converter[0]);

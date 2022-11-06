@@ -7,11 +7,29 @@ function run() {
 
     var textureLitShader = new Shader("Texture Lit Shader", textureLitVertexSource, textureLitFragmentSource);
 
+    drawImages();
+    const textureCanvas = document.getElementById("textureCanvas");
+    var img = new Image();
+    img.src = textureCanvas.toDataURL();
+
+    const images = document.getElementsByClassName("texture");
+    const texture = new Texture(images[0]);
+    const texture2 = new Texture(textureCanvas);
+
+    const monsterImage = document.getElementById("monsterTexture");
+    const monsterTexture = new Texture(monsterImage);
+
+    
     console.log("my:");
     console.log(textureLitShader);
 
     var litMat = new Material(Shader.simpleLit);
     var textureMat = new Material(textureLitShader);
+    textureMat.texture = texture;
+
+
+    var monsterMat = new Material(textureLitShader);
+    monsterMat.texture = monsterTexture;
 
     // var textureLitMat = new Material(Shader.textureLit);
     var unlitMaterial = new Material(Shader.unlitShader);
@@ -19,7 +37,7 @@ function run() {
     unlitMaterial.uniforms.dominatingColor = vec3.fromValues(1, 0, 0);
 
     var monster = new GameObject();
-    monster.add(new MeshRenderer(Mesh.monster, textureMat));
+    monster.add(new MeshRenderer(Mesh.monster, monsterMat));
     monster.setRotation(0, -45, 0);
 
     var wireMonster = new GameObject();
@@ -116,17 +134,7 @@ function run() {
     }
 
 
-    drawImages();
-    const textureCanvas = document.getElementById("textureCanvas");
-    var img = new Image();
-    img.src = textureCanvas.toDataURL();
 
-    const images = document.getElementsByClassName("texture");
-    const texture = new Texture(images[0]);
-    const texture2 = new Texture(textureCanvas);
-
-    const monsterImage = document.getElementById("monsterTexture");
-    const monsterTexture = new Texture(monsterImage);
 
 }
 
