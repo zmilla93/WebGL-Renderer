@@ -12,9 +12,7 @@ function run() {
     Camera.main.calculateProjectionMatrix();
 
     Block.initBlocks();
-    console.log(Block.list);
-    console.log(Block.list.Stone);
-
+    
     // Create a material using the default lit shader.
     var litMat = new Material(Shader.simpleLit);
 
@@ -25,7 +23,7 @@ function run() {
     litMat.uniforms.sunlightColor = vec3.fromValues(1, 1, 1);
 
     const skyColor = [121 / 255, 220 / 255, 237 / 255];
-    Camera.main.color = [skyColor];
+    Camera.main.color = skyColor;
     litMat.uniforms.skyColor = skyColor;
 
     // Initialize world settings
@@ -40,7 +38,7 @@ function run() {
     // The action queue allows functions to be run over many frames.
     // This will be used for chunk generation.
     // Increase for faster generation at the cost of fps.
-    Engine.maxActionsPerFrame = 2;
+    Engine.maxActionsPerFrame = 1;
 
     const slider = document.getElementById("sunAngle");
     const sliderX = document.getElementById("sunAngleX");

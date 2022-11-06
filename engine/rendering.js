@@ -52,7 +52,6 @@ class Camera {
         return this._ortho;
     }
     set color(color) {
-        console.log("COLOR");
         this._color = color;
         this.updateMainCamera();
     }
@@ -149,7 +148,6 @@ class Shader {
         this.name = name;
         this.program = createShaderProgram(vertexShaderSource, fragmentShaderSource);
         Engine.gl.useProgram(this.program);
-        console.log(this.program);
         this.attributes = attributes;
         for (let attribute of attributes) {
             let location = Engine.gl.getAttribLocation(this.program, attribute.name);
@@ -209,9 +207,19 @@ class Material {
     }
 }
 
+const TextureWrap = Object.freeze({
+    Clamp: Symbol("Clamp"),
+    Wrap: Symbol("Wrap"),
+});
+
+const TextureFilter = Object.freeze({
+    Nearest: Symbol("Nearest"),
+    Linear: Symbol("Linear"),
+});
+
 class Texture {
     _texture; // WebGL Texture
-    constructor(image) {
+    constructor(image, textureFilter = TextureFilter.Linear, textureWrap = TextureWrap.Wrap) {
         const gl = Engine.gl;
 
         this._texture = gl.createTexture();
@@ -225,12 +233,27 @@ class Texture {
         gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
         gl.texImage2D(gl.TEXTURE_2D, levelOfDetail, internalFormat, image.width, image.height, border, srcFormat, type, image);
         gl.generateMipmap(gl.TEXTURE_2D);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST_MIPMAP_LINEAR);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+
+        switch (textureWrap) {
+            case TextureWrap.Clamp:
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+                break;
+            case TextureWrap.Wrap:
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+                break;
+        }
+        switch (textureFilter) {
+            case TextureFilter.Nearest:
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST_MIPMAP_LINEAR);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+                break;
+            case TextureFilter.Linear:
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST_MIPMAP_LINEAR);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+                break;
+        }
     }
 }
 

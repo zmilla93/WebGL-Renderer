@@ -9,17 +9,17 @@ function run() {
 
     drawImages();
     const textureCanvas = document.getElementById("textureCanvas");
-    var img = new Image();
-    img.src = textureCanvas.toDataURL();
+    // var img = new Image();
+    // img.src = textureCanvas.toDataURL();
 
     const images = document.getElementsByClassName("texture");
-    const texture = new Texture(images[0]);
-    const texture2 = new Texture(textureCanvas);
+    const texture = new Texture(images[0], TextureFilter.Nearest);
+    // const texture = new Texture(images[0]);
+    const texture2 = new Texture(textureCanvas, TextureFilter.Nearest);
 
     const monsterImage = document.getElementById("monsterTexture");
+    // const monsterTexture = new Texture(monsterImage, TextureFilter.Linear);
     const monsterTexture = new Texture(monsterImage);
-
-    console.log(textureLitShader);
 
     var litMat = new Material(Shader.simpleLit);
     var textureMat = new Material(textureLitShader);
@@ -57,15 +57,15 @@ function run() {
     cube.add(new MeshRenderer(Mesh.cube, textureMat));
 
     var sphere = new GameObject();
-    sphere.add(new MeshRenderer(Mesh.sphere, litMat));
+    sphere.add(new MeshRenderer(Mesh.smoothSphere, textureMat));
     sphere.position = [5, 0, 0];
 
     var icoSphere = new GameObject();
-    icoSphere.add(new MeshRenderer(Mesh.icoSphere, litMat));
+    icoSphere.add(new MeshRenderer(Mesh.icoSphere, textureMat));
     icoSphere.position = [-5, 0, 0];
 
     var monkey = new GameObject();
-    monkey.add(new MeshRenderer(Mesh.monkey, litMat));
+    monkey.add(new MeshRenderer(Mesh.monkey, textureMat));
     monkey.rotation = [45, 0, 0];
     monkey.position = [-3, 5, 0];
 
@@ -96,25 +96,7 @@ function run() {
 
 
     target.setRotation(45, 0, 0);
-
-
-    var rot = vec3.create();
-    quat.getAxisAngle(rot, target._rotationQuaternion);
-    console.log("rot:");
-    console.log(rot);
-
-    var angle = quat.getAngle(QUATERNION_IDENTITY, target._rotationQuaternion);
-
-    // console.log(quat.getAngle());
-    console.log(180 * DEG2RAD);
-    console.log(3.14 * RAD2DEG);
-    console.log(angle);
-    console.log(angle * RAD2DEG);
-
-    var g = new GameObject();
-    console.log(this);
-    console.log(noise);
-
+    
     // Create a game object to hold controller scripts
     var controller = new GameObject();
     var orthoToggle = new Component();
@@ -130,10 +112,6 @@ function run() {
             // Mesh.monkey.wireframe = !Mesh.monkey.wireframe;
         }
     }
-
-
-
-
 }
 
 window.addEventListener('load', run);

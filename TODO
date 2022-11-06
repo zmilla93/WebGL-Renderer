@@ -3,13 +3,14 @@
 === Ideas
 ===
     + Send data between chunks - Optimize meshing!
-    - Add Air Blocks
+    + Add Air Blocks
+    + Textures
     - Ambient Occlusion
-    - Transparency
+    ~ Transparency
     - More Biomes
     - Better Camera
     - Infinite Terrain
-    - Fog
+    + Fog
     - Shaders?
     + Ambient Light
     - Better Biome Map System

@@ -30,7 +30,6 @@ class Input {
             // FIXME : Only prevent default if canvas is focused
             // e.preventDefault();
             if (document.activeElement === Engine.canvas) {
-                // console.log(e.code);
                 if (e.code != "F5") {
                     e.preventDefault();
                 }
@@ -45,24 +44,17 @@ class Input {
 
     static addMouseListeners(canvas) {
         canvas.addEventListener("mousedown", function (e) {
-            // console.log("CANVAS:");
-            // console.log(e.offsetX);
-            // console.log(e.offsetY);
-            // if (canvas == document.activeElement)
-            // console.log("mouse");
+
         });
         document.addEventListener("mouseup", function (e) {
 
-            // if (canvas == document.activeElement)
-            // console.log("mouse");
+
         });
         document.addEventListener("mousemove", function (e) {
-            // if (canvas == document.activeElement)
-            // console.log("mouse");
+ 
         });
     }
     static updateKey(e, state) {
-        // console.log("key")
         if (state) {
             Input.pressedKeys.add(e.code);
             Input.pressedThisFrame.add(e.code);

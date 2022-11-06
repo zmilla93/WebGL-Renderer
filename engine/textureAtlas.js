@@ -25,20 +25,6 @@ function drawImages() {
             column++;
         }
     }
-    console.log(uvLookup);
-
-    // for (y = 0; y < texturesPerRow; y++) {
-    //     for (x = 0; x < texturesPerRow; x++) {
-    //         ctx.drawImage(images[imagesProcessed], 10, 10);
-    //         imagesProcessed++;
-    //         if (imagesProcessed >= images.length) break;
-    //     }
-    // }
-
-
-    // ctx.drawImage(bedrock, 10, 10);
-    console.log("IMAGES!??");
-
 }
 
 

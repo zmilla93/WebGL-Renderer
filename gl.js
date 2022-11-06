@@ -166,48 +166,6 @@ function main() {
 }
 
 
-// function drawScene() {
-//     var cam = Camera.main;
-//     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-//     // var uniformLocation = gl.getUniformLocation(shaderProgram, "dominatingColor");
-//     // gl.uniform4f(uniformLocation, 0.0, 1.0, 1.0, 1.0);
-
-//     // DRAW LINES
-//     gl.useProgram(Shader.lineShader.program);
-//     const fullTransform = mat4.create();
-//     mat4.mul(fullTransform, cam.getProjectionMatrix(), cam.getWorldtoViewMatrix());
-//     gl.uniformMatrix4fv(Shader.lineShader.uniform("projectionMatrix"), false, fullTransform);
-//     gl.bindVertexArray(Line.vao);
-//     gl.bindBuffer(gl.ARRAY_BUFFER, Line.vertexBuffer);
-//     var lineData = Line.data;
-//     gl.bufferData(gl.ARRAY_BUFFER, lineData, gl.DYNAMIC_DRAW);
-//     gl.drawArrays(gl.LINES, 0, Line.lineList.length * 2);
-
-//     // Loop through the material map.
-//     // This is a map where shaderName = [Array of materials using that shader]
-//     Material.materialMap.forEach((materialGroup) => {
-//         var shaderChanged = false;
-//         materialGroup.forEach((material) => {
-//             // Set the shader using the first element in the array,
-//             // since by design all elements in the array must use the same shader.
-//             if (!shaderChanged) {
-//                 // console.log("CHANGE SHADER:");
-//                 // console.log(material.shader);
-//                 gl.useProgram(material.shader.program);
-//                 shaderChanged = true;
-//             }
-//             if (typeof material.applyPerMaterialUniforms === 'function')
-//                 material.applyPerMaterialUniforms();
-//             // Loop through all renderers that use this material and render them.
-//             material.renderers.forEach((renderer) => {
-//                 renderer.applyPerObjectUniforms();
-//                 renderer.render(gl);
-//             });
-//         });
-//     });
-// }
-
 function isPowerOf2(value) {
     return value & (value - 1) === 0;
 }

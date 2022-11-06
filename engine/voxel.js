@@ -382,7 +382,7 @@ class Chunk {
                     neighborBlock = this.getBlock(neighborBlockPos[0], neighborBlockPos[1], neighborBlockPos[2]);
                 }
                 // If there is a block neighboring this face, skip adding it to the mesh.
-                const isHeightLimit = this.chunkY == Chunk.CHUNK_COUNT_Y;
+                const isHeightLimit = this.chunkY == Chunk.CHUNK_COUNT_Y - 1;
                 if (isHeightLimit) console.log("HHH");
                 // console.log(this.chunkY);
                 if (neighborBlock != null && !neighborBlock.transparent) continue;
