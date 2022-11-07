@@ -222,7 +222,7 @@ class Engine {
                     shaderChanged = true;
                 }
                 // If the material uses a texture, bind it.
-                if (material.texture != null) Engine.gl.bindTexture(gl.TEXTURE_2D, material.texture._texture);
+                if (material.texture != null && material.texture._texture != null) Engine.gl.bindTexture(gl.TEXTURE_2D, material.texture._texture);
                 // Apply per material uniforms
                 // FIXME : This could be optimized to only apply uniforms when the values actually change.
                 for (let converter of Object.entries(material.shader.uniformConverter)) {

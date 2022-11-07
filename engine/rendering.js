@@ -219,7 +219,8 @@ const TextureFilter = Object.freeze({
 
 class Texture {
     _texture; // WebGL Texture
-    static placeholderTexture; // Magenta texture that displays when target texture is missing.
+    static placeholderColor = [255, 5, 150];
+    static placeholderTexture; // 1x1 pixel Magenta texture that displays when target texture is missing.
     constructor(image, textureFilter = TextureFilter.Linear, textureWrap = TextureWrap.Wrap) {
         if (image == null) return;
         // Create a gl texture and bind it
@@ -239,7 +240,6 @@ class Texture {
         } catch (error) {
             // If creating the texture fails, delete the glTexture and return.
             console.error("Failed to create glTexture using '" + image.id + "' " + image + ". Textures cannot be used in an offline enviroment. See github repo for info to locally host using python.");
-            console.error(image);
             gl.deleteTexture(this._texture);
             this._texture = null;
             return;
@@ -267,9 +267,10 @@ class Texture {
                 break;
         }
     }
+    // Creates a 1x1 texture to be used when a texture is missing.
     static createPlaceholderTexture() {
         const gl = Engine.gl;
-        const pixel = new Uint8Array([242, 46, 160, 255]);
+        const pixel = new Uint8Array([Texture.placeholderColor[0], Texture.placeholderColor[1], Texture.placeholderColor[2], 255]);
         const format = gl.RGBA;
         const size = 1;
         const texture = gl.createTexture();
