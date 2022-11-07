@@ -17,9 +17,15 @@ function run() {
     var textureLitShader = new Shader("Texture Lit Shader", textureLitVertexSource, textureLitFragmentSource);
     // drawImages();
     var atlas = createTextureAtlas();
+    console.log(atlas);
+
+    Block.bindTextures(atlas.uvLookup);
+
     const textureCanvas = document.getElementById("textureCanvas");
     const images = document.getElementsByClassName("texture");
     const texture = new Texture(textureCanvas, TextureFilter.Nearest);
+
+    console.log(Block.list);
 
     var textureMat = new Material(textureLitShader);
     textureMat.texture = texture;
@@ -78,7 +84,7 @@ function run() {
                     var chunk = new Chunk(finalX, finalY, finalZ);
                     var key = finalX + "," + finalY + "," + finalZ;
                     ChunkManager.chunkMap.set(key, chunk);
-                    chunk.createGameObject(litMat);
+                    chunk.createGameObject(textureMat);
                     // chunk.mesh.setWireframe(true);
                     chunk.generateChunk();
                     chunk.generatePhase2();

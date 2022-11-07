@@ -79,6 +79,11 @@ class Block {
         // Log: [54 / 255, 38 / 255, 11 / 255],
         // Water: [83 / 255, 152 / 255, 237 / 255],
         this.createBlock("Stone", [117 / 255, 127 / 255, 143 / 255]);
+        this.createBlock("TNT", [117 / 255, 127 / 255, 143 / 255]);
+        this.createBlock("Obsidian", [117 / 255, 127 / 255, 143 / 255]);
+        this.createBlock("Gold", [117 / 255, 127 / 255, 143 / 255]);
+        this.createBlock("Cobble", [117 / 255, 127 / 255, 143 / 255]);
+        this.createBlock("Bedrock", [117 / 255, 127 / 255, 143 / 255]);
         this.createBlock("Grass", [68 / 255, 130 / 255, 33 / 255]);
         this.createBlock("Dirt", [79 / 255, 58 / 255, 11 / 255]);
         this.createBlock("Sand", [199 / 255, 193 / 255, 74 / 255]);
@@ -87,6 +92,19 @@ class Block {
         this.createBlock("Air", [1, 1, 1], true);
         // this.createBlock("Water", [83 / 255, 152 / 255, 237 / 255]);
 
+    }
+    static bindTextures(uvLookup) {
+        for (let entry of Object.entries(Block.list)) {
+            var key = entry[0];
+            var block = entry[1];
+            // console.log(key);
+            // console.log(block);
+            // console.log(uvLookup[key]);
+            const uvs = uvLookup[key];
+            if (uvs != null) {
+                Block.list[key].uvs = uvs;
+            }
+        }
     }
 }
 
@@ -106,15 +124,15 @@ class Chunk {
     static sizeX = Chunk.CHUNK_SIZE;
     static sizeY = Chunk.CHUNK_SIZE;
     static sizeZ = Chunk.CHUNK_SIZE;
-    static blockColors = {
-        Grass: [68 / 255, 130 / 255, 33 / 255],
-        Stone: [117 / 255, 127 / 255, 143 / 255],
-        Dirt: [79 / 255, 58 / 255, 11 / 255],
-        Sand: [199 / 255, 193 / 255, 74 / 255],
-        Wood: [222 / 255, 170 / 255, 80 / 255],
-        Log: [54 / 255, 38 / 255, 11 / 255],
-        Water: [83 / 255, 152 / 255, 237 / 255],
-    };
+    // static blockColors = {
+    //     Grass: [68 / 255, 130 / 255, 33 / 255],
+    //     Stone: [117 / 255, 127 / 255, 143 / 255],
+    //     Dirt: [79 / 255, 58 / 255, 11 / 255],
+    //     Sand: [199 / 255, 193 / 255, 74 / 255],
+    //     Wood: [222 / 255, 170 / 255, 80 / 255],
+    //     Log: [54 / 255, 38 / 255, 11 / 255],
+    //     Water: [83 / 255, 152 / 255, 237 / 255],
+    // };
     // NOTE: World height currently needs to be set manually!
     static worldHeight = Chunk.sizeY;
     chunkX;
@@ -281,8 +299,8 @@ class Chunk {
                         // var value = plainSample < rockySample ? lerp(plainSample, rockySample, normalSample) :  lerp(rockySample, plainSample, normalSample);
                         var block = NoiseSample.checkBlock(value, worldY);
                         if (block != null && block != Block.list.Air) {
-                            block = Block.list.Dirt;
-                            if (normalSample <= 0) block = Block.list.Sand;
+                            block = Block.list.TNT;
+                            // if (normalSample <= 0) block = Block.list.Sand;
                         }
                         this.setBlock(x, y, z, block);
                     } else {
@@ -382,16 +400,21 @@ class Chunk {
                     neighborBlock = this.getBlock(neighborBlockPos[0], neighborBlockPos[1], neighborBlockPos[2]);
                 }
                 // If there is a block neighboring this face, skip adding it to the mesh.
-                const isHeightLimit = this.chunkY == Chunk.CHUNK_COUNT_Y - 1;
-                if (isHeightLimit) console.log("HHH");
-                // console.log(this.chunkY);
                 if (neighborBlock != null && !neighborBlock.transparent) continue;
                 // Add the face to the chunk mesh.
+                var uvs = block.uvs;
                 for (var i = 0; i < face.vertexCount; i++) {
                     var offsetPos = vec3.create();
                     vec3.add(offsetPos, face.vertices[i], vec3.fromValues(x, y, z));
                     this.mesh.vertices.push(offsetPos);
-                    this.mesh.uvs.push(face.uvs[i]);
+                    // FIXME : Face uvs should be normalized to the block uv range.
+                    // Current solution only works for cubes.
+                    if (block.uvs != null) {
+                        this.mesh.uvs.push(block.uvs[i]);
+                    } else {
+                        this.mesh.uvs.push(face.uvs[i]);
+                    }
+
                     this.mesh.normals.push(face.normals[i]);
                     var rngColor = vec3.fromValues(Math.random(), Math.random(), Math.random());
                     // var c = Chunk.blockColors[symbolToString(block)];
