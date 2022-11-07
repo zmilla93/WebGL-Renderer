@@ -5,17 +5,21 @@ function run() {
 
     Camera.main.position = [0, 2, 10];
 
+    // Texture.createPlaceholderTexture();
+
     var textureLitShader = new Shader("Texture Lit Shader", textureLitVertexSource, textureLitFragmentSource);
 
-    drawImages();
+    var atlas = createTextureAtlas();
+    console.log(atlas);
+    // drawImages();
     const textureCanvas = document.getElementById("textureCanvas");
     // var img = new Image();
     // img.src = textureCanvas.toDataURL();
 
-    const images = document.getElementsByClassName("texture");
-    const texture = new Texture(images[0], TextureFilter.Nearest);
+    const images = document.getElementsByClassName("voxelTexture");
+    const texture = new Texture(atlas.image, TextureFilter.Nearest);
     // const texture = new Texture(images[0]);
-    const texture2 = new Texture(textureCanvas, TextureFilter.Nearest);
+    const texture2 = new Texture(atlas.image, TextureFilter.Nearest);
 
     const monsterImage = document.getElementById("monsterTexture");
     // const monsterTexture = new Texture(monsterImage, TextureFilter.Linear);
@@ -24,6 +28,7 @@ function run() {
     var litMat = new Material(Shader.simpleLit);
     var textureMat = new Material(textureLitShader);
     textureMat.texture = texture;
+    // textureMat.texture = Texture.placeholderTexture;
 
 
     var monsterMat = new Material(textureLitShader);

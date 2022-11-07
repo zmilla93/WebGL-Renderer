@@ -12,8 +12,17 @@ function run() {
     Camera.main.calculateProjectionMatrix();
 
     Block.initBlocks();
-    
+
     // Create a material using the default lit shader.
+    var textureLitShader = new Shader("Texture Lit Shader", textureLitVertexSource, textureLitFragmentSource);
+    // drawImages();
+    var atlas = createTextureAtlas();
+    const textureCanvas = document.getElementById("textureCanvas");
+    const images = document.getElementsByClassName("texture");
+    const texture = new Texture(textureCanvas, TextureFilter.Nearest);
+
+    var textureMat = new Material(textureLitShader);
+    textureMat.texture = texture;
     var litMat = new Material(Shader.simpleLit);
 
     // Set lighting values

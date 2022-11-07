@@ -219,21 +219,32 @@ const TextureFilter = Object.freeze({
 
 class Texture {
     _texture; // WebGL Texture
+    static placeholderTexture; // Magenta texture that displays when target texture is missing.
     constructor(image, textureFilter = TextureFilter.Linear, textureWrap = TextureWrap.Wrap) {
+        if (image == null) return;
+        // Create a gl texture and bind it
         const gl = Engine.gl;
-
         this._texture = gl.createTexture();
         gl.bindTexture(gl.TEXTURE_2D, this._texture);
-
-        const levelOfDetail = 0;
-        const internalFormat = gl.RGBA;
-        const srcFormat = gl.RGBA;
-        const border = 0;
-        const type = gl.UNSIGNED_BYTE;
-        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-        gl.texImage2D(gl.TEXTURE_2D, levelOfDetail, internalFormat, image.width, image.height, border, srcFormat, type, image);
-        gl.generateMipmap(gl.TEXTURE_2D);
-
+        // Attempt to send the texture to webGL.
+        try {
+            const levelOfDetail = 0; // Should always be 0
+            const internalFormat = gl.RGBA;
+            const srcFormat = gl.RGBA;
+            const border = 0; // Should always be 0
+            const type = gl.UNSIGNED_BYTE;
+            gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true); // Flips the texture vertically.
+            gl.texImage2D(gl.TEXTURE_2D, levelOfDetail, internalFormat, image.width, image.height, border, srcFormat, type, image);
+            gl.generateMipmap(gl.TEXTURE_2D);
+        } catch (error) {
+            // If creating the texture fails, delete the glTexture and return.
+            console.error("Failed to create glTexture using '" + image.id + "' " + image + ". Textures cannot be used in an offline enviroment. See github repo for info to locally host using python.");
+            console.error(image);
+            gl.deleteTexture(this._texture);
+            this._texture = null;
+            return;
+        }
+        // Set texture wrap mode
         switch (textureWrap) {
             case TextureWrap.Clamp:
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
@@ -244,6 +255,7 @@ class Texture {
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
                 break;
         }
+        // Set texture fitler mode
         switch (textureFilter) {
             case TextureFilter.Nearest:
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST_MIPMAP_LINEAR);
@@ -254,6 +266,20 @@ class Texture {
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
                 break;
         }
+    }
+    static createPlaceholderTexture() {
+        const gl = Engine.gl;
+        const pixel = new Uint8Array([242, 46, 160, 255]);
+        const format = gl.RGBA;
+        const size = 1;
+        const texture = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, format, size, size, 0, format, gl.UNSIGNED_BYTE, pixel);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+        gl.generateMipmap(gl.TEXTURE_2D);
+        Texture.placeholderTexture = new Texture();
+        Texture.placeholderTexture._texture = texture;
     }
 }
 

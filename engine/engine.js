@@ -99,6 +99,8 @@ class Engine {
         VoxelMesh.initMeshes();
         Input.addKeyboardListeners();
         Input.addMouseListeners(canvas);
+        Texture.createPlaceholderTexture();
+        Engine.gl.bindTexture(gl.TEXTURE_2D, Texture.placeholderTexture._texture);
         window.requestAnimationFrame(Engine.internal_update);
     }
     static updateCamera() {
@@ -234,7 +236,7 @@ class Engine {
                     renderer.render(gl);
                 });
                 // If a texture was used, unbind it.
-                if (material.texture != null) Engine.gl.bindTexture(gl.TEXTURE_2D, null);
+                if (material.texture != null) Engine.gl.bindTexture(gl.TEXTURE_2D, Texture.placeholderTexture._texture);
             });
         });
     }
