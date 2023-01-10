@@ -16,7 +16,6 @@ function createTextureAtlas() {
 
     const textureWidth = textureSize * texturesPerRow;
     const textureHeight = textureSize * columnCount;
-
     var uvLookup = {};
     for (var i = 0; i < textures.length; i++) {
         ctx.drawImage(textures[i], textureSize * row, textureSize * column);
@@ -37,6 +36,3 @@ function createTextureAtlas() {
     }
     return atlas;
 }
-
-
-// window.addEventListener('load', drawImages);

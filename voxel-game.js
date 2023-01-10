@@ -15,7 +15,6 @@ function run() {
 
     // Create a material using the default lit shader.
     var textureLitShader = new Shader("Texture Lit Shader", textureLitVertexSource, textureLitFragmentSource);
-    // drawImages();
     var atlas = createTextureAtlas();
     console.log(atlas);
 
@@ -36,6 +35,16 @@ function run() {
     litMat.uniforms.sunlightIntensity = 0.5;
     litMat.uniforms.sunlightAngle = vec3.fromValues(0.25, 1, 0.5);
     litMat.uniforms.sunlightColor = vec3.fromValues(1, 1, 1);
+
+    textureLitShader.uniformConverter.ambientLight = Rendering.vector3Converter;
+    textureLitShader.uniformConverter.sunlightAngle = Rendering.vector3Converter;
+    textureLitShader.uniformConverter.sunlightColor = Rendering.vector3Converter;
+    textureLitShader.uniformConverter.sunlightIntensity = Rendering.floatConverter;
+
+    textureMat.uniforms.ambientLight = [0.75, 0.75, 0.75];
+    textureMat.uniforms.sunlightIntensity = 1.5;
+    textureMat.uniforms.sunlightAngle = vec3.fromValues(0.25, 1, 0.5);
+    textureMat.uniforms.sunlightColor = vec3.fromValues(1, 1, 1);
 
     const skyColor = [121 / 255, 220 / 255, 237 / 255];
     Camera.main.color = skyColor;
@@ -59,7 +68,7 @@ function run() {
     const sliderX = document.getElementById("sunAngleX");
     const sliderY = document.getElementById("sunAngleY");
     const sliderZ = document.getElementById("sunAngleZ");
-    slider.oninput = function(){
+    slider.oninput = function () {
         var vector = vec3.fromValues(0, 1, 0);
         var value = vec3.create();
         var angleX = slideXr.value;
@@ -82,15 +91,14 @@ function run() {
                 // Queue a chunk to be generated.
                 Engine.queueAction(function () {
                     var chunk = new Chunk(finalX, finalY, finalZ);
-                    var key = finalX + "," + finalY + "," + finalZ;
-                    ChunkManager.chunkMap.set(key, chunk);
-                    chunk.createGameObject(textureMat);
+                    ChunkManager.chunkMap.set(chunk.getKey(), chunk);
+                    chunk.createGameObject(litMat);
                     // chunk.mesh.setWireframe(true);
                     chunk.generateChunk();
                     chunk.generatePhase2();
                     chunk.findNeighbors();
                     chunk.informNeighbors();
-                    chunk.generateMesh();
+                    // chunk.generateMesh();
                 });
             }
         }
@@ -105,6 +113,8 @@ function run() {
     cameraController.runSpeed = 40;
     controller.add(cameraController);
 
+    console.log(VoxelMesh.Cube);
+
     // Othographic toggle
     var orthoToggle = new Component();
     orthoToggle.update = function () {
@@ -114,6 +124,7 @@ function run() {
     }
     controller.add(orthoToggle);
 
+    var useTexture = false;
     // Fog Controller
     const fogLevels = [100, 150, 200, 250, 300];
     var curFogLevel = fogLevels.length - 1;
@@ -124,6 +135,10 @@ function run() {
             curFogLevel++;
             if (curFogLevel >= fogLevels.length) curFogLevel = 0;
             litMat.uniforms.viewDistance = fogLevels[curFogLevel];
+        }
+        if (Input.wasPressedThisFrame("KeyM")) {
+            // useTexture = !useTexture;
+            // if(useTexture)
         }
     }
     controller.add(fogController);

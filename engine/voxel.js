@@ -365,7 +365,6 @@ class Chunk {
         }
     }
 
-
     addVoxelToMesh(triCount, x, y, z, block) {
         for (var faceEntry of Object.entries(VoxelMesh.Cube.faces)) {
             const s = 20;
@@ -402,11 +401,26 @@ class Chunk {
                 // If there is a block neighboring this face, skip adding it to the mesh.
                 if (neighborBlock != null && !neighborBlock.transparent) continue;
                 // Add the face to the chunk mesh.
-                var uvs = block.uvs;
                 for (var i = 0; i < face.vertexCount; i++) {
                     var offsetPos = vec3.create();
                     vec3.add(offsetPos, face.vertices[i], vec3.fromValues(x, y, z));
                     this.mesh.vertices.push(offsetPos);
+                    // Cube vertices are offset by +-0.5, so multiplying by two normalized them to +-1.
+                    // 
+                    var normalizedVertexPos = face.vertices[i];
+                    var normalizedVertexPos = [face.vertices[i][0], face.vertices[i][1], face.vertices[i][2]];
+                    normalizedVertexPos[0] *= 2;
+                    normalizedVertexPos[1] *= 2;
+                    normalizedVertexPos[2] *= 2;
+                    var boundryCheck = 0;
+                    if (normalizedVertexPos[0] == 1 || normalizedVertexPos[0] == -1) boundryCheck++;
+                    if (normalizedVertexPos[1] == 1 || normalizedVertexPos[1] == -1) boundryCheck++;
+                    if (normalizedVertexPos[2] == 1 || normalizedVertexPos[2] == -1) boundryCheck++;
+                    if (boundryCheck == 3) {
+                        // DO AO STUFF
+
+                    }
+
                     // FIXME : Face uvs should be normalized to the block uv range.
                     // Current solution only works for cubes.
                     if (block.uvs != null) {
@@ -468,9 +482,16 @@ class Chunk {
         }
         return triCount;
     }
-    // static positionWithinChunkBounds(position){
-    //     if(position[])
-    // }
+    getNeighborBlock() {
+
+    }
+
+    static toKey(chunkX, chunkY, chunkZ) {
+        return chunkX + "," + chunkY + "," + chunkZ;
+    }
+    getKey() {
+        return Chunk.toKey(this.chunkX, this.chunkY, this.chunkZ);
+    }
 }
 
 class ChunkManager {

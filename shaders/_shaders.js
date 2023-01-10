@@ -313,7 +313,7 @@ void main(void) {
     float mixZ = mix(color.z, skyColor.z, clipDepth);
     vec3 foggedColor = vec3(mixX, mixY, mixZ);
 
-    gl_FragColor = vec4(textureSample.xyz, 1);
+    gl_FragColor = vec4(litTexture.xyz, 1);
 
 }
 `
