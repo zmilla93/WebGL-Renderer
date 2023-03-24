@@ -200,6 +200,7 @@ class Engine {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         // Render Lines
+        // FIXME: This is very crude. Should be changed to only buffer data when lines are changed.
         gl.useProgram(Shader.lineShader.program);
         const fullTransform = mat4.create();
         mat4.mul(fullTransform, Camera.main.getProjectionMatrix(), Camera.main.getWorldtoViewMatrix());
@@ -210,6 +211,7 @@ class Engine {
         gl.bufferData(gl.ARRAY_BUFFER, lineData, gl.DYNAMIC_DRAW);
         gl.drawArrays(gl.LINES, 0, Line.lineList.length * 2);
 
+        // Render Game Objects
         // Loop through the material map.
         // This is a map where shaderName = [Array of materials using that shader]
         Material.materialMap.forEach((materialGroup) => {

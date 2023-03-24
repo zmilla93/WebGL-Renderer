@@ -47,8 +47,7 @@ class Input {
 
         });
         document.addEventListener("mouseup", function (e) {
-
-
+            
         });
         document.addEventListener("mousemove", function (e) {
  

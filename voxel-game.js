@@ -62,7 +62,7 @@ function run() {
     // The action queue allows functions to be run over many frames.
     // This will be used for chunk generation.
     // Increase for faster generation at the cost of fps.
-    Engine.maxActionsPerFrame = 1;
+    Engine.maxActionsPerFrame = 2;
 
     const slider = document.getElementById("sunAngle");
     const sliderX = document.getElementById("sunAngleX");
@@ -71,7 +71,7 @@ function run() {
     slider.oninput = function () {
         var vector = vec3.fromValues(0, 1, 0);
         var value = vec3.create();
-        var angleX = slideXr.value;
+        var angleX = sliderX.value;
         var angleY = sliderY.value;
         var angleZ = sliderZ.value;
         vec3.rotateX(value, vector, VECTOR3_ZERO, angle * DEG2RAD);

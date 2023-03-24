@@ -502,17 +502,21 @@ class Light extends Component {
 // Handles basic line rendering
 class Line {
     static lineList = [];
+    static dataChanged = false;
     constructor(v1, v2, color1, color2) {
         this.v1 = v1;
         this.v2 = v2;
         this.color1 = color1;
         this.color2 = color2 == null ? color1 : color2;
         Line.lineList.push(this);
+        Line.dataChanged = true;
     }
     destroy() {
         Line.lineList.splice(Line.lineList.indexOf(this), 1);
+        Line.dataChanged = true;
     }
     static get data() {
+        // FIXME : This gets called every frame. Result should be cached and only regenerated when data actually changes.
         const stride = 12;
         const data = new Float32Array(stride * Line.lineList.length);
         for (let i = 0; i < Line.lineList.length; i++) {

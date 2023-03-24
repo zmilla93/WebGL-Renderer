@@ -9,6 +9,11 @@ function run() {
 
     var textureLitShader = new Shader("Texture Lit Shader", textureLitVertexSource, textureLitFragmentSource);
 
+    textureLitShader.uniformConverter.ambientLight = Rendering.vector3Converter;
+    textureLitShader.uniformConverter.sunlightAngle = Rendering.vector3Converter;
+    textureLitShader.uniformConverter.sunlightColor = Rendering.vector3Converter;
+    textureLitShader.uniformConverter.sunlightIntensity = Rendering.floatConverter;
+
     var atlas = createTextureAtlas();
     console.log(atlas);
     // drawImages();
@@ -51,6 +56,12 @@ function run() {
     litMat.uniforms.sunlightIntensity = 1;
     litMat.uniforms.sunlightAngle = [0, 1, 0.5];
     litMat.uniforms.sunlightColor = [245 / 255, 215 / 255, 66 / 255];
+
+    textureMat.uniforms.ambientLight = [0.2, 0.2, 0.2];
+    textureMat.uniforms.sunlightIntensity = 1;
+    textureMat.uniforms.sunlightAngle = [0, 1, 0.5];
+    textureMat.uniforms.sunlightColor = [245 / 255, 215 / 255, 66 / 255];
+    
     Camera.main.viewDistance = 400;
     litMat.uniforms.viewDistance = Camera.main.viewDistance;
     // litMat.uniforms.skyColor = vec3.fromValues(1, 0, 0);
