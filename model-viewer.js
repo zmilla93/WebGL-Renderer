@@ -34,11 +34,43 @@ function run() {
     var monster = new GameObject();
     monster.add(new MeshRenderer(Mesh.monster, monsterMaterial));
 
-    monster.position = [5, 0, -10];
-    monster.setRotation(0, 180, 0);
-    monster.scale = [2, 2, 2];
+    var monster2 = new GameObject();
+    monster2.add(new MeshRenderer(Mesh.monster2, monsterMaterial));
+
+    monster.position = [-1, 0, -10];
+    monster2.position = [1, 0, -10];
+    // monster.setRotation(0, 180, 45);
+    // monster.scale = [2, 2, 2];
+    // console.log(monster.rotation);
 
     monsterMaterial.modelMatrix = monster.getModelMatrix();
+
+    // SPHERE
+    var sphere = new GameObject();
+    sphere.add(new MeshRenderer(Mesh.icoSphere, monsterMaterial));
+    sphere.position = [-2, 0, 0];
+
+    var sphere2 = new GameObject();
+    sphere2.add(new MeshRenderer(Mesh.icoSmooth, monsterMaterial));
+    sphere2.position = [2, 0, 0];
+
+    // BOX
+    // var box = new GameObject();
+    // box.add(new MeshRenderer(Mesh.cube, monsterMaterial));
+    // box.scale = [10, 1, 1];
+    // box.setRotation(0, 45, 0);
+
+    // var box2 = new GameObject();
+    // box2.add(new MeshRenderer(Mesh.cube, monsterMaterial));
+    // box2.position = [0, 1, 0];
+    // box2.scale = [1, 1, 1];
+    // box2.setRotation(0, 45, 0);
+
+    // var box3 = new GameObject();
+    // box3.add(new MeshRenderer(Mesh.cube, monsterMaterial));
+    // box3.position = [0, -1, 0];
+    // box3.scale = [20, 1, 1];
+    // box3.setRotation(0, 45, 0);
 
 
     // Point Light Material
@@ -46,8 +78,8 @@ function run() {
 
     // Point Light Object
     var light = new GameObject();
-    light.add(new MeshRenderer(Mesh.icoSphere, light1Material));
-    light.position = [-3, 3, 3];
+    light.add(new MeshRenderer(Mesh.smoothSphere, light1Material));
+    light.position = [0, 3, -4];
     let s = 0.2;
     light.scale = [s, s, s];
 
@@ -55,6 +87,9 @@ function run() {
 
     Camera.main.position = [0, 2, 5];
 
+    // console.log(Object.getOwnPropertyNames(Mesh));
+    console.log(Mesh.list());
+    console.log(Shader.list());
 
     // Controls
     // FIXME : Controls need to be set to default shader values or vice versa!
@@ -68,11 +103,6 @@ function run() {
         let value = e.target.value;
         monsterMaterial.ambientIntensity = value;
     });
-    monster.update = function () {
-        let t = Time.elapsedTime * 90;
-        monster.setRotation(0, t, 0);
-        monsterMaterial.modelMatrix = monster.getModelMatrix();
-    }
 
 }
 

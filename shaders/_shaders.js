@@ -242,13 +242,12 @@ void main(void) {
     // gl_FragColor = vec4(litTexture.xyz, 1);
     // gl_FragColor = vec4(ambientColor.xyz, 1);
     // gl_FragColor = vec4(0, 0, 0, 1);
-    vec3 mixedColor = combinedAmbient * objectColor; 
+    vec3 mixedColor = combinedAmbient * objectColor;
 
     vec3 lightDir = normalize(lightPos - vFragPos);
 
     float diff = max(dot(vNormal, lightDir), 0.0);
     vec3 diffuse = diff * lightColor;
-
 
     vec3 result = (combinedAmbient + diffuse) * objectColor;
 
@@ -291,6 +290,8 @@ void main() {
     vUV1 = vertexUV1;
     // vNormal = vertexNormal;
     vNormal = normalize(vec3(modelMatrix * vec4(vertexNormal, 0)));
+    // vec4 fixedVertex = vec4(vertexPosition.xyz, 1);
+    // vNormal = normalize(vec3(modelMatrix * normalize(fixedVertex)));
     // vec4 t = ;
     // vec3 p = 
     vFragPos = vec3(modelMatrix * vec4(vertexPosition.xyz, 1));

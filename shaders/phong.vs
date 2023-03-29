@@ -30,8 +30,6 @@ void main() {
     vUV1 = vertexUV1;
     // vNormal = vertexNormal;
     vNormal = normalize(vec3(modelMatrix * vec4(vertexNormal, 0)));
-    // vec4 t = ;
-    // vec3 p = 
     vFragPos = vec3(modelMatrix * vec4(vertexPosition.xyz, 1));
     // vSkyColor = skyColor;
     // normalMatrix4 = transpose(modelMatrix);

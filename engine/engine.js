@@ -292,6 +292,7 @@ class GameObject {
         component.onRemove(this);
     }
     setRotation(x, y, z) {
+        this.rotation = [x, y, z];
         quat.fromEuler(this._rotationQuaternion, x, y, z);
     }
     getRotationMatrix() {

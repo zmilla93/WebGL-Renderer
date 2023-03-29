@@ -53,13 +53,12 @@ void main(void) {
     // gl_FragColor = vec4(litTexture.xyz, 1);
     // gl_FragColor = vec4(ambientColor.xyz, 1);
     // gl_FragColor = vec4(0, 0, 0, 1);
-    vec3 mixedColor = combinedAmbient * objectColor; 
+    vec3 mixedColor = combinedAmbient * objectColor;
 
     vec3 lightDir = normalize(lightPos - vFragPos);
 
     float diff = max(dot(vNormal, lightDir), 0.0);
     vec3 diffuse = diff * lightColor;
-
 
     vec3 result = (combinedAmbient + diffuse) * objectColor;
 

@@ -158,6 +158,16 @@ class Shader {
             attribute.location = location;
         }
     }
+    static list() {
+        let results = [];
+        let ignore = ["length", "name", "prototype"];
+        for (let o of Object.getOwnPropertyNames(Shader)) {
+            if (typeof Shader[o] === 'function') continue;
+            if (ignore.includes(o)) continue;
+            results.push(o);
+        }
+        return results;
+    }
     // A chacheing version of gl.getUniformLocation().
     uniform(uniformName) {
         if (this.uniformMap.has(uniformName))
@@ -314,17 +324,29 @@ class Mesh {
     // Default Meshes
     static cube;
     static monster;
-
     static initMeshes() {
-        Mesh.icoSphere = objToMesh(icoSphere2Model);
+        Mesh.icoSphere = objToMesh(icoSphereModel);
+        Mesh.icoSphere2 = objToMesh(icoSphere2Model);
+        Mesh.icoSmooth = objToMesh(icoSmoothModel);
         Mesh.sphere = objToMesh(sphereModel);
         Mesh.smoothSphere = objToMesh(smoothSphereModel);
         Mesh.cube = objToMesh(cubeModel);
         Mesh.cubeWire = objToMesh(cubeModel, true);
         Mesh.monster = objToMesh(monsterModel);
+        Mesh.monster2 = objToMesh(monsterSmoothModel);
         Mesh.monkey = objToMesh(monkeyModel);
         Mesh.cone = objToMesh(coneTModel);
         Mesh.quad = objToMesh(quadTModel);
+    }
+    static list() {
+        let results = [];
+        let ignore = ["length", "name", "prototype"];
+        for (let o of Object.getOwnPropertyNames(Mesh)) {
+            if (typeof Mesh[o] === 'function') continue;
+            if (ignore.includes(o)) continue;
+            results.push(o);
+        }
+        return results;
     }
     // Sends data to WebGL.
     // This should be called any time the mesh data changes.
@@ -461,6 +483,7 @@ class MeshRenderer extends Component {
     applyPerObjectUniforms = function () {
         if (this.gameObject == null) return;
         Engine.gl.uniformMatrix4fv(this.material._shader.uniform("transformMatrix"), false, this.gameObject.matrix);
+        Engine.gl.uniformMatrix4fv(this.material._shader.uniform("modelMatrix"), false, this.gameObject.getModelMatrix());
     };
     render(gl) {
         if (this.gameObject == null) return;
