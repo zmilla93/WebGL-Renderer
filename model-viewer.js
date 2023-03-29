@@ -25,7 +25,7 @@ function run() {
     var monster = new GameObject();
     monster.add(new MeshRenderer(Mesh.monster, monsterMaterial));
 
-    monsterMaterial.uniforms.ambientColor = [1, 0, 0];
+    monsterMaterial.uniform.ambientColor = [1, 0, 0];
 
     Camera.main.position = [0, 2, 5];
     // Camera.main.rotation = [0, 3.14 / 2, 0];

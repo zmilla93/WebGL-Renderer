@@ -31,24 +31,24 @@ function run() {
     var litMat = new Material(Shader.simpleLit);
 
     // Set lighting values
-    litMat.uniforms.ambientLight = [0.75, 0.75, 0.75];
-    litMat.uniforms.sunlightIntensity = 0.5;
-    litMat.uniforms.sunlightAngle = vec3.fromValues(0.25, 1, 0.5);
-    litMat.uniforms.sunlightColor = vec3.fromValues(1, 1, 1);
+    litMat.uniform.ambientLight = [0.75, 0.75, 0.75];
+    litMat.uniform.sunlightIntensity = 0.5;
+    litMat.uniform.sunlightAngle = vec3.fromValues(0.25, 1, 0.5);
+    litMat.uniform.sunlightColor = vec3.fromValues(1, 1, 1);
 
     textureLitShader.uniformConverter.ambientLight = Rendering.vector3Converter;
     textureLitShader.uniformConverter.sunlightAngle = Rendering.vector3Converter;
     textureLitShader.uniformConverter.sunlightColor = Rendering.vector3Converter;
     textureLitShader.uniformConverter.sunlightIntensity = Rendering.floatConverter;
 
-    textureMat.uniforms.ambientLight = [0.75, 0.75, 0.75];
-    textureMat.uniforms.sunlightIntensity = 1.5;
-    textureMat.uniforms.sunlightAngle = vec3.fromValues(0.25, 1, 0.5);
-    textureMat.uniforms.sunlightColor = vec3.fromValues(1, 1, 1);
+    textureMat.uniform.ambientLight = [0.75, 0.75, 0.75];
+    textureMat.uniform.sunlightIntensity = 1.5;
+    textureMat.uniform.sunlightAngle = vec3.fromValues(0.25, 1, 0.5);
+    textureMat.uniform.sunlightColor = vec3.fromValues(1, 1, 1);
 
     const skyColor = [121 / 255, 220 / 255, 237 / 255];
     Camera.main.color = skyColor;
-    litMat.uniforms.skyColor = skyColor;
+    litMat.uniform.skyColor = skyColor;
 
     // Initialize world settings
     const chunkCountXZ = 10;
@@ -75,8 +75,8 @@ function run() {
         var angleY = sliderY.value;
         var angleZ = sliderZ.value;
         vec3.rotateX(value, vector, VECTOR3_ZERO, angle * DEG2RAD);
-        // litMat.uniforms.sunlightAngle = vec3.fromValues(0.25, 1, 0.5);
-        litMat.uniforms.sunlightAngle = value;
+        // litMat.uniform.sunlightAngle = vec3.fromValues(0.25, 1, 0.5);
+        litMat.uniform.sunlightAngle = value;
         // console.log(slider.value);
     }
 
@@ -129,12 +129,12 @@ function run() {
     const fogLevels = [100, 150, 200, 250, 300];
     var curFogLevel = fogLevels.length - 1;
     const fogController = new Component();
-    litMat.uniforms.viewDistance = fogLevels[curFogLevel];
+    litMat.uniform.viewDistance = fogLevels[curFogLevel];
     fogController.update = function () {
         if (Input.wasPressedThisFrame("KeyF")) {
             curFogLevel++;
             if (curFogLevel >= fogLevels.length) curFogLevel = 0;
-            litMat.uniforms.viewDistance = fogLevels[curFogLevel];
+            litMat.uniform.viewDistance = fogLevels[curFogLevel];
         }
         if (Input.wasPressedThisFrame("KeyM")) {
             // useTexture = !useTexture;

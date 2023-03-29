@@ -42,7 +42,7 @@ function run() {
     // var textureLitMat = new Material(Shader.textureLit);
     var unlitMaterial = new Material(Shader.unlitShader);
 
-    unlitMaterial.uniforms.dominatingColor = vec3.fromValues(1, 0, 0);
+    unlitMaterial.uniform.dominatingColor = vec3.fromValues(1, 0, 0);
 
     var monster = new GameObject();
     monster.add(new MeshRenderer(Mesh.monster, monsterMat));
@@ -52,22 +52,22 @@ function run() {
     wireMonster.add(new MeshRenderer(Mesh.cubeWire, litMat));
     wireMonster.position = [3, 0, 0];
 
-    litMat.uniforms.ambientLight = [0.2, 0.2, 0.2];
-    litMat.uniforms.sunlightIntensity = 1;
-    litMat.uniforms.sunlightAngle = [0, 1, 0.5];
-    litMat.uniforms.sunlightColor = [245 / 255, 215 / 255, 66 / 255];
+    litMat.uniform.ambientLight = [0.2, 0.2, 0.2];
+    litMat.uniform.sunlightIntensity = 1;
+    litMat.uniform.sunlightAngle = [0, 1, 0.5];
+    litMat.uniform.sunlightColor = [245 / 255, 215 / 255, 66 / 255];
 
-    textureMat.uniforms.ambientLight = [0.2, 0.2, 0.2];
-    textureMat.uniforms.sunlightIntensity = 1;
-    textureMat.uniforms.sunlightAngle = [0, 1, 0.5];
-    textureMat.uniforms.sunlightColor = [245 / 255, 215 / 255, 66 / 255];
+    textureMat.uniform.ambientLight = [0.2, 0.2, 0.2];
+    textureMat.uniform.sunlightIntensity = 1;
+    textureMat.uniform.sunlightAngle = [0, 1, 0.5];
+    textureMat.uniform.sunlightColor = [245 / 255, 215 / 255, 66 / 255];
     
     Camera.main.viewDistance = 400;
-    litMat.uniforms.viewDistance = Camera.main.viewDistance;
-    // litMat.uniforms.skyColor = vec3.fromValues(1, 0, 0);
+    litMat.uniform.viewDistance = Camera.main.viewDistance;
+    // litMat.uniform.skyColor = vec3.fromValues(1, 0, 0);
     const skyColor = [184 / 255, 131 / 255, 222 / 255];
     Camera.main.color = skyColor;
-    // litMat.uniforms.skyColor = skyColor;
+    // litMat.uniform.skyColor = skyColor;
 
     var cube = new GameObject();
     cube.add(new MeshRenderer(Mesh.cube, textureMat));

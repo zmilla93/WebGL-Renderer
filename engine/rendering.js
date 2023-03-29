@@ -173,7 +173,7 @@ class Shader {
 
 class Material {
     shader;
-    uniforms = {};
+    uniform = {};
     // renderers = [];
     static materialMap = new Map();
     // Shader - Shader Class
@@ -581,11 +581,11 @@ function compileShader(gl, type, shaderSource) {
 // WebGL will already be using the material's shader when these are called.
 
 Rendering.floatConverter = function (material, uniformName) {
-    const value = material.uniforms[uniformName] == null ? 1 : material.uniforms[uniformName];
+    const value = material.uniform[uniformName] == null ? 1 : material.uniform[uniformName];
     Engine.gl.uniform1f(material.shader.uniform(uniformName), value);
 }
 
 Rendering.vector3Converter = function (material, uniformName) {
-    const vector = material.uniforms[uniformName] == null ? [1, 1, 1] : material.uniforms[uniformName];
+    const vector = material.uniform[uniformName] == null ? [1, 1, 1] : material.uniform[uniformName];
     Engine.gl.uniform3f(material.shader.uniform(uniformName), vector[0], vector[1], vector[2]);
 }
