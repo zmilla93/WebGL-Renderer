@@ -246,9 +246,9 @@ void main(void) {
 
     vec3 lightDir = normalize(lightPos - vFragPos);
 
-    float diff = dot(vNormal, lightDir);
-    // float p = max(1, 0);
+    float diff = max(dot(vNormal, lightDir), 0.0);
     vec3 diffuse = diff * lightColor;
+
 
     vec3 result = (combinedAmbient + diffuse) * objectColor;
 

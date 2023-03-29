@@ -57,11 +57,9 @@ void main(void) {
 
     vec3 lightDir = normalize(lightPos - vFragPos);
 
-    // FIXME : This dot product can be come negative.
-    // It should take the max of result and 0, but the max function doesn't seem to be defined for webgl!
-    float diff = dot(vNormal, lightDir);
-    // float p = max(1, 0);
+    float diff = max(dot(vNormal, lightDir), 0.0);
     vec3 diffuse = diff * lightColor;
+
 
     vec3 result = (combinedAmbient + diffuse) * objectColor;
 
