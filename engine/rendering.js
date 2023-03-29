@@ -172,35 +172,34 @@ class Shader {
 }
 
 class Material {
-    shader;
+    _shader;
+    _renderers = [];
     uniform = {};
-    // renderers = [];
     static materialMap = new Map();
     // Shader - Shader Class
     constructor(shader) {
-        this.shader = shader;
-        this.renderers = [];
+        this._shader = shader;
         this.registerMaterial(this);
     }
     registerMaterial(material) {
         var shaderEntry;
-        if (Material.materialMap.has(material.shader.name)) {
-            shaderEntry = Material.materialMap.get(material.shader.name);
+        if (Material.materialMap.has(material._shader.name)) {
+            shaderEntry = Material.materialMap.get(material._shader.name);
         } else {
             shaderEntry = [];
         }
         shaderEntry.push(material);
-        Material.materialMap.set(material.shader.name, shaderEntry);
+        Material.materialMap.set(material._shader.name, shaderEntry);
     }
     // FIXME : get material seems unnessecary??
     static getMaterial(material) {
-        const shaderGroup = Material.materialMap.get(material.shader.name);
+        const shaderGroup = Material.materialMap.get(material._shader.name);
         const mat = shaderGroup[shaderGroup.indexOf(material)];
         return mat;
     }
     static registerRenderer(material, renderer) {
         const mat = Material.getMaterial(material);
-        mat.renderers.push(renderer);
+        mat._renderers.push(renderer);
     }
 }
 
@@ -461,7 +460,7 @@ class MeshRenderer extends Component {
     }
     applyPerObjectUniforms = function () {
         if (this.gameObject == null) return;
-        Engine.gl.uniformMatrix4fv(this.material.shader.uniform("transformMatrix"), false, this.gameObject.matrix);
+        Engine.gl.uniformMatrix4fv(this.material._shader.uniform("transformMatrix"), false, this.gameObject.matrix);
     };
     render(gl) {
         if (this.gameObject == null) return;
@@ -581,11 +580,11 @@ function compileShader(gl, type, shaderSource) {
 // WebGL will already be using the material's shader when these are called.
 
 Rendering.floatConverter = function (material, uniformName) {
-    const value = material.uniform[uniformName] == null ? 1 : material.uniform[uniformName];
-    Engine.gl.uniform1f(material.shader.uniform(uniformName), value);
+    const value = material[uniformName] == null ? 1 : material[uniformName];
+    Engine.gl.uniform1f(material._shader.uniform(uniformName), value);
 }
 
 Rendering.vector3Converter = function (material, uniformName) {
-    const vector = material.uniform[uniformName] == null ? [1, 1, 1] : material.uniform[uniformName];
-    Engine.gl.uniform3f(material.shader.uniform(uniformName), vector[0], vector[1], vector[2]);
+    const vector = material[uniformName] == null ? [1, 1, 1] : material[uniformName];
+    Engine.gl.uniform3f(material._shader.uniform(uniformName), vector[0], vector[1], vector[2]);
 }

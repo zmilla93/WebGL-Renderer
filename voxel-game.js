@@ -31,24 +31,24 @@ function run() {
     var litMat = new Material(Shader.simpleLit);
 
     // Set lighting values
-    litMat.uniform.ambientLight = [0.75, 0.75, 0.75];
-    litMat.uniform.sunlightIntensity = 0.5;
-    litMat.uniform.sunlightAngle = vec3.fromValues(0.25, 1, 0.5);
-    litMat.uniform.sunlightColor = vec3.fromValues(1, 1, 1);
+    litMat.ambientLight = [0.75, 0.75, 0.75];
+    litMat.sunlightIntensity = 0.5;
+    litMat.sunlightAngle = vec3.fromValues(0.25, 1, 0.5);
+    litMat.sunlightColor = vec3.fromValues(1, 1, 1);
 
     textureLitShader.uniformConverter.ambientLight = Rendering.vector3Converter;
     textureLitShader.uniformConverter.sunlightAngle = Rendering.vector3Converter;
     textureLitShader.uniformConverter.sunlightColor = Rendering.vector3Converter;
     textureLitShader.uniformConverter.sunlightIntensity = Rendering.floatConverter;
 
-    textureMat.uniform.ambientLight = [0.75, 0.75, 0.75];
-    textureMat.uniform.sunlightIntensity = 1.5;
-    textureMat.uniform.sunlightAngle = vec3.fromValues(0.25, 1, 0.5);
-    textureMat.uniform.sunlightColor = vec3.fromValues(1, 1, 1);
+    textureMat.ambientLight = [0.75, 0.75, 0.75];
+    textureMat.sunlightIntensity = 1.5;
+    textureMat.sunlightAngle = vec3.fromValues(0.25, 1, 0.5);
+    textureMat.sunlightColor = vec3.fromValues(1, 1, 1);
 
     const skyColor = [121 / 255, 220 / 255, 237 / 255];
     Camera.main.color = skyColor;
-    litMat.uniform.skyColor = skyColor;
+    litMat.skyColor = skyColor;
 
     // Initialize world settings
     const chunkCountXZ = 10;
@@ -75,8 +75,8 @@ function run() {
         var angleY = sliderY.value;
         var angleZ = sliderZ.value;
         vec3.rotateX(value, vector, VECTOR3_ZERO, angle * DEG2RAD);
-        // litMat.uniform.sunlightAngle = vec3.fromValues(0.25, 1, 0.5);
-        litMat.uniform.sunlightAngle = value;
+        // litMat.sunlightAngle = vec3.fromValues(0.25, 1, 0.5);
+        litMat.sunlightAngle = value;
         // console.log(slider.value);
     }
 
@@ -129,12 +129,12 @@ function run() {
     const fogLevels = [100, 150, 200, 250, 300];
     var curFogLevel = fogLevels.length - 1;
     const fogController = new Component();
-    litMat.uniform.viewDistance = fogLevels[curFogLevel];
+    litMat.viewDistance = fogLevels[curFogLevel];
     fogController.update = function () {
         if (Input.wasPressedThisFrame("KeyF")) {
             curFogLevel++;
             if (curFogLevel >= fogLevels.length) curFogLevel = 0;
-            litMat.uniform.viewDistance = fogLevels[curFogLevel];
+            litMat.viewDistance = fogLevels[curFogLevel];
         }
         if (Input.wasPressedThisFrame("KeyM")) {
             // useTexture = !useTexture;

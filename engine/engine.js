@@ -220,20 +220,20 @@ class Engine {
                 // Set the shader using the first element in the array,
                 // since by design all elements in the array must use the same shader.
                 if (!shaderChanged) {
-                    gl.useProgram(material.shader.program);
+                    gl.useProgram(material._shader.program);
                     shaderChanged = true;
                 }
                 // If the material uses a texture, bind it.
                 if (material.texture != null && material.texture._texture != null) Engine.gl.bindTexture(gl.TEXTURE_2D, material.texture._texture);
                 // Apply per material uniforms
                 // FIXME : This could be optimized to only apply uniforms when the values actually change.
-                for (let converter of Object.entries(material.shader.uniformConverter)) {
+                for (let converter of Object.entries(material._shader.uniformConverter)) {
                     if (typeof converter[1] === 'function') {
                         converter[1](material, converter[0]);
                     }
                 }
                 // Loop through all renderers that use this material and render them.
-                material.renderers.forEach((renderer) => {
+                material._renderers.forEach((renderer) => {
                     renderer.applyPerObjectUniforms();
                     renderer.render(gl);
                 });
