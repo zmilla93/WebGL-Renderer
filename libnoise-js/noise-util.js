@@ -465,9 +465,12 @@ class NoiseUtil {
         return 1.0 - (IntValueNoise3D(x, y, z, seed) / 1073741824.0);
     }
 
-    //          static  LatLonToXYZ(double lat, double lon, ref double x, ref double y, ref double z)
+    // FIXME : Not currently used.
+    // If this gets used in the future, calling functions would need to be changed since this uses refs.
+
+    // static  LatLonToXYZ(double lat, double lon, ref double x, ref double y, ref double z)
     // {
-    //             double r = Math.Cos(MathConst.DEG_TO_RAD * lat);
+    //     double r = Math.Cos(MathConst.DEG_TO_RAD * lat);
     //     x = r * Math.Cos(MathConst.DEG_TO_RAD * lon);
     //     y = Math.Sin(MathConst.DEG_TO_RAD * lat);
     //     z = r * Math.Sin(MathConst.DEG_TO_RAD * lon);

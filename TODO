@@ -1,19 +1,28 @@
 
 ===
-=== Ideas
+=== Engine
 ===
-    + Send data between chunks - Optimize meshing!
-    + Add Air Blocks
     + Textures
-    - Ambient Occlusion
     ~ Transparency
-    - More Biomes
+    - Phong Lighting
+    - Add mouse delta
     - Better Camera
-    - Infinite Terrain
     + Fog
     - Shaders?
     + Ambient Light
-    - Better Biome Map System
     - Skybox
     - Day/Night
     - Weather
+    - Normal texture
+    - Optimize line rendering
+    - Improve grid function
+
+===
+=== Voxel
+====
+    + Send data between chunks - Optimize meshing!
+    + Add Air Blocks
+    - Ambient Occlusion
+    - More Biomes
+    - Infinite Terrain
+    - Better Biome Map System

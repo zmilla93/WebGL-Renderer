@@ -34,7 +34,7 @@ class Camera {
         Camera._main.updateMainCamera();
     }
     constructor() {
-        this.position = vec3.create();
+        this.position = vec3.fromValues(0, 5, 20);
         this.rotation = vec3.create();
         this.viewDirection = vec3.clone(VECTOR3_FORWARD);
         this.forward = vec3.clone(VECTOR3_FORWARD);
