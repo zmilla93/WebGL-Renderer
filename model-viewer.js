@@ -14,10 +14,7 @@ function run() {
 
     const phongShader = new Shader("Phong shader", phongVertexSource, phongFragmentSource);
 
-    // phongShader.uniformConverter.color = Rendering.vector3Converter;
     phongShader.uniformConverter.ambientColor = Rendering.vector3Converter;
-    // phongShader.color = [0, 1, 0];
-
 
     const monsterImage = document.getElementById("monsterTexture");
     const monsterTexture = new Texture(monsterImage);
