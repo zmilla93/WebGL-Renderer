@@ -34,8 +34,9 @@ function run() {
     var monster = new GameObject();
     monster.add(new MeshRenderer(Mesh.monster, monsterMaterial));
 
-    monster.position = [0, 0, 0];
+    monster.position = [5, 0, -10];
     monster.setRotation(0, 180, 0);
+    monster.scale = [2, 2, 2];
 
     monsterMaterial.modelMatrix = monster.getModelMatrix();
 
@@ -47,6 +48,8 @@ function run() {
     var light = new GameObject();
     light.add(new MeshRenderer(Mesh.icoSphere, light1Material));
     light.position = [-3, 3, 3];
+    let s = 0.2;
+    light.scale = [s, s, s];
 
     monsterMaterial.lightPos = light.position;
 
