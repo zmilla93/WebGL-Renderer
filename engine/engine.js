@@ -299,7 +299,7 @@ class GameObject {
         mat4.fromQuat(rotationMatrix, this._rotationQuaternion);
         return rotationMatrix;
     }
-    getModelMatrix(){
+    getModelMatrix() {
         var translationMatrix = mat4.create();
         mat4.translate(translationMatrix, translationMatrix, [this.position[0], this.position[1], this.position[2]]);
         var rotationMatrix = this.getRotationMatrix();
@@ -346,12 +346,12 @@ function lerp(a, b, t) {
 
 function glValue(value) {
     switch (value) {
-        case 5126:
-            return "gl.FLOAT";
         case 35632:
             return "FRAGMENT_SHADER";
         case 35633:
             return "VERTEX_SHADER";
+        case 5126:
+            return "gl.FLOAT";
         default:
             return "Unknown GL Value: " + value;
     }
