@@ -274,7 +274,7 @@ class GameObject {
     position = vec3.create();
     rotation = vec3.create();
     _rotationQuaternion = quat.create();
-    scale = vec3.create();
+    scale = vec3.fromValues(1, 2, 1);
     shape;
     components = [];
     static gameObjectList = [];

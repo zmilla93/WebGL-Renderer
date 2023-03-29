@@ -34,7 +34,7 @@ function run() {
     var monster = new GameObject();
     monster.add(new MeshRenderer(Mesh.monster, monsterMaterial));
 
-    monster.position = [0, 0, 8];
+    monster.position = [0, 0, 0];
     monster.setRotation(0, 180, 0);
 
     monsterMaterial.modelMatrix = monster.getModelMatrix();
