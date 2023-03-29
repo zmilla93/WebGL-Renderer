@@ -21,15 +21,20 @@ varying mediump vec3 vNormal;
 varying mediump vec3 vFragPos;
 // varying mediump vec3 vSkyColor;
 varying mediump vec2 vUV1;
+varying mediump vec3 normalMatrix;
+varying mediump mat4 normalMatrix4;
 
 void main() {
     vPosition = vertexPosition;
     vColor = vertexColor;
     vUV1 = vertexUV1;
-    vNormal = vertexNormal;
+    // vNormal = vertexNormal;
+    vNormal = normalize(vec3(modelMatrix * vec4(vertexNormal, 0)));
     // vec4 t = ;
     // vec3 p = 
     vFragPos = vec3(modelMatrix * vec4(vertexPosition.xyz, 1));
     // vSkyColor = skyColor;
+    // normalMatrix4 = transpose(modelMatrix);
+    // normalMatrix = mat3(transpose(inverse(modelMatrix))) * vertexNormal;
     gl_Position = transformMatrix * vertexPosition;
 }

@@ -34,7 +34,8 @@ function run() {
     var monster = new GameObject();
     monster.add(new MeshRenderer(Mesh.monster, monsterMaterial));
 
-    monster.position = [0, 0, 0];
+    monster.position = [0, 0, 8];
+    monster.setRotation(0, 180, 0);
 
     monsterMaterial.modelMatrix = monster.getModelMatrix();
 
@@ -64,6 +65,11 @@ function run() {
         let value = e.target.value;
         monsterMaterial.ambientIntensity = value;
     });
+    monster.update = function () {
+        let t = Time.elapsedTime * 90;
+        monster.setRotation(0, t, 0);
+        monsterMaterial.modelMatrix = monster.getModelMatrix();
+    }
 
 }
 

@@ -300,8 +300,10 @@ class GameObject {
         return rotationMatrix;
     }
     getModelMatrix(){
-        const translationMatrix = mat4.create();
+        var translationMatrix = mat4.create();
         mat4.translate(translationMatrix, translationMatrix, [this.position[0], this.position[1], this.position[2]]);
+        var rotationMatrix = this.getRotationMatrix();
+        mat4.mul(translationMatrix, translationMatrix, rotationMatrix)
         return translationMatrix;
     }
     get matrix() {
