@@ -9,6 +9,7 @@ varying mediump vec3 vNormal;
 varying mediump vec3 vSkyColor;
 
 uniform sampler2D uSampler;
+uniform mediump vec3 objectColor;
 uniform mediump vec3 ambientLight;
 uniform mediump vec3 ambientColor;
 uniform mediump vec3 sunlightColor;
@@ -46,6 +47,8 @@ void main(void) {
     // gl_FragColor = vec4(litTexture.xyz, 1);
     // gl_FragColor = vec4(ambientColor.xyz, 1);
     // gl_FragColor = vec4(0, 0, 0, 1);
-    gl_FragColor = vec4(ambientColor.xyz, 1);
+    vec3 mixedColor = ambientColor * objectColor; 
+
+    gl_FragColor = vec4(mixedColor.xyz, 1);
 
 }
