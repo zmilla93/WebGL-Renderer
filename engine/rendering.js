@@ -173,12 +173,10 @@ class Shader {
 
 class Material {
     shader;
-    applyUniforms;
     uniforms = {};
     // renderers = [];
     static materialMap = new Map();
     // Shader - Shader Class
-    // applyUniforms - function, called once before rendering all objects that use this material
     constructor(shader) {
         this.shader = shader;
         this.renderers = [];
@@ -193,14 +191,13 @@ class Material {
         }
         shaderEntry.push(material);
         Material.materialMap.set(material.shader.name, shaderEntry);
-        // console.log(Material.materialMap);
     }
+    // FIXME : get material seems unnessecary??
     static getMaterial(material) {
         const shaderGroup = Material.materialMap.get(material.shader.name);
         const mat = shaderGroup[shaderGroup.indexOf(material)];
         return mat;
     }
-    // FIXME : get material seems unnessecary??
     static registerRenderer(material, renderer) {
         const mat = Material.getMaterial(material);
         mat.renderers.push(renderer);
