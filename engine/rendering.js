@@ -167,7 +167,7 @@ class Shader {
             this.uniformMap.set(uniformName, uniformLocation);
             return uniformLocation;
         }
-        console.error("Uniform '" + uniformName + "' not found in shader '" + this.name + "'.");
+        // console.error("Uniform '" + uniformName + "' not found in shader '" + this.name + "'.");
     }
 }
 
@@ -587,4 +587,10 @@ Rendering.floatConverter = function (material, uniformName) {
 Rendering.vector3Converter = function (material, uniformName) {
     const vector = material[uniformName] == null ? [1, 1, 1] : material[uniformName];
     Engine.gl.uniform3f(material._shader.uniform(uniformName), vector[0], vector[1], vector[2]);
+}
+
+Rendering.matrix4Converter = function (material, uniformName) {
+    const matrix = material[uniformName] == null ? [1, 1, 1] : material[uniformName];
+    // console.log(matrix);
+    Engine.gl.uniformMatrix4fv(material._shader.uniform(uniformName), false, matrix);
 }

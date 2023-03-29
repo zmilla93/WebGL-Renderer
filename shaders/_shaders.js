@@ -195,6 +195,7 @@ varying mediump vec4 vPosition;
 varying mediump vec3 vColor;
 varying mediump vec2 vUV1;
 varying mediump vec3 vNormal;
+varying mediump vec3 vFragPos;
 varying mediump vec3 vSkyColor;
 
 uniform sampler2D uSampler;
@@ -202,6 +203,8 @@ uniform mediump vec3 objectColor;
 uniform mediump vec3 ambientLight;
 uniform mediump vec3 ambientColor;
 uniform mediump float ambientIntensity;
+uniform mediump vec3 lightColor;
+uniform mediump vec3 lightPos;
 uniform mediump vec3 sunlightColor;
 uniform mediump vec3 sunlightAngle;
 uniform mediump float sunlightIntensity;
@@ -241,7 +244,16 @@ void main(void) {
     // gl_FragColor = vec4(0, 0, 0, 1);
     vec3 mixedColor = combinedAmbient * objectColor; 
 
-    gl_FragColor = vec4(mixedColor.xyz, 1);
+    vec3 lightDir = normalize(lightPos - vFragPos);
+
+    float diff = dot(vNormal, lightDir);
+    // float p = max(1, 0);
+    vec3 diffuse = diff * lightColor;
+
+    vec3 result = (combinedAmbient + diffuse) * objectColor;
+
+    // gl_FragColor = vec4(mixedColor.xyz, 1);
+    gl_FragColor = vec4(result.xyz, 1);
 
 }
 `
@@ -251,9 +263,10 @@ attribute vec4 vertexPosition;
 attribute vec2 vertexUV1;
 attribute vec3 vertexNormal;
 attribute vec3 vertexColor;
-attribute vec3 fragPosition;
+// attribute vec3 fragPos;
 
 // uniform float farPlane;
+uniform mat4 modelMatrix;
 uniform mat4 modelViewMatrix;
 // uniform mat4 projectionMatrix;
 uniform mat4 transformMatrix;
@@ -266,6 +279,7 @@ uniform vec4 dominatingColor;
 varying mediump vec4 vPosition;
 varying mediump vec3 vColor;
 varying mediump vec3 vNormal;
+varying mediump vec3 vFragPos;
 // varying mediump vec3 vSkyColor;
 varying mediump vec2 vUV1;
 
@@ -274,7 +288,9 @@ void main() {
     vColor = vertexColor;
     vUV1 = vertexUV1;
     vNormal = vertexNormal;
-    // fragPosition = 
+    // vec4 t = ;
+    // vec3 p = 
+    vFragPos = vec3(modelMatrix * vec4(vertexPosition.xyz, 1));
     // vSkyColor = skyColor;
     gl_Position = transformMatrix * vertexPosition;
 }
