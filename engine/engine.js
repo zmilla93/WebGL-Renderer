@@ -364,9 +364,9 @@ function hexToRGB(hex, normalize = true) {
     var g = parseInt(h[1], 16);
     var b = parseInt(h[2], 16);
     if (normalize) {
-        r = r / 255;
-        g = g / 255;
-        b = b / 255;
+        r /= 255;
+        g /= 255;
+        b /= 255;
     }
     return [r, g, b];
 }
