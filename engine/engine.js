@@ -299,6 +299,11 @@ class GameObject {
         mat4.fromQuat(rotationMatrix, this._rotationQuaternion);
         return rotationMatrix;
     }
+    getModelMatrix(){
+        const translationMatrix = mat4.create();
+        mat4.translate(translationMatrix, translationMatrix, [this.position[0], this.position[1], this.position[2]]);
+        return translationMatrix;
+    }
     get matrix() {
         // Create Translation Matrix
         const translationMatrix = mat4.create();
@@ -348,4 +353,18 @@ function glValue(value) {
         default:
             return "Unknown GL Value: " + value;
     }
+}
+
+function hexToRGB(hex, normalize = true) {
+    if (hex.startsWith("#")) hex = hex.slice(1);
+    var h = hex.match(/.{1,2}/g);
+    var r = parseInt(h[0], 16);
+    var g = parseInt(h[1], 16);
+    var b = parseInt(h[2], 16);
+    if (normalize) {
+        r = r / 255;
+        g = g / 255;
+        b = b / 255;
+    }
+    return [r, g, b];
 }

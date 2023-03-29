@@ -13,6 +13,7 @@ function run() {
     const phongShader = new Shader("Phong shader", phongVertexSource, phongFragmentSource);
     // Phong uniform converts
     phongShader.uniformConverter.ambientColor = Rendering.vector3Converter;
+    phongShader.uniformConverter.ambientIntensity = Rendering.floatConverter;
     phongShader.uniformConverter.objectColor = Rendering.vector3Converter;
 
 
@@ -22,6 +23,8 @@ function run() {
     const monsterTexture = new Texture(monsterImage);
     const monsterMaterial = new Material(phongShader);
     monsterMaterial.ambientColor = [1, 1, 1];
+    // monsterMaterial.ambientColor = [175, 60, 60];
+    monsterMaterial.ambientIntensity = 0.2;
     monsterMaterial.objectColor = [1, 0.5, 0.31];
 
     // Monster Object
@@ -37,6 +40,20 @@ function run() {
     light.position = [3, 3, -3];
 
     Camera.main.position = [0, 2, 5];
+
+
+    // Controls
+    // FIXME : Controls need to be set to default shader values or vice versa!
+    let ambientColorPicker = document.getElementById("ambientColorPicker");
+    let ambientIntensitySlider = document.getElementById("ambientIntensitySlider");
+    ambientColorPicker.addEventListener("input", function (e) {
+        let color = hexToRGB(e.target.value);
+        monsterMaterial.ambientColor = color;
+    });
+    ambientIntensitySlider.addEventListener("input", function(e){
+        let value = e.target.value;
+        monsterMaterial.ambientIntensity = value;
+    });
 
 }
 

@@ -2,6 +2,7 @@ attribute vec4 vertexPosition;
 attribute vec2 vertexUV1;
 attribute vec3 vertexNormal;
 attribute vec3 vertexColor;
+attribute vec3 fragPosition;
 
 // uniform float farPlane;
 uniform mat4 modelViewMatrix;
@@ -24,6 +25,7 @@ void main() {
     vColor = vertexColor;
     vUV1 = vertexUV1;
     vNormal = vertexNormal;
+    // fragPosition = 
     // vSkyColor = skyColor;
     gl_Position = transformMatrix * vertexPosition;
 }

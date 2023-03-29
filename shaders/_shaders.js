@@ -201,6 +201,7 @@ uniform sampler2D uSampler;
 uniform mediump vec3 objectColor;
 uniform mediump vec3 ambientLight;
 uniform mediump vec3 ambientColor;
+uniform mediump float ambientIntensity;
 uniform mediump vec3 sunlightColor;
 uniform mediump vec3 sunlightAngle;
 uniform mediump float sunlightIntensity;
@@ -212,6 +213,8 @@ void main(void) {
     // Calculate the sunlight intensity.
     float surfaceIntensity = dot(sunlightAngle, vNormal) * sunlightIntensity;
     // Combine sunlight with ambient light
+    vec3 combinedAmbient = ambientColor * ambientIntensity;
+
     vec3 litAmbient = ambientLight + sunlightColor * surfaceIntensity;
     // Combine lit ambient light with texture color.
     vec3 color = vColor * litAmbient;
@@ -236,7 +239,7 @@ void main(void) {
     // gl_FragColor = vec4(litTexture.xyz, 1);
     // gl_FragColor = vec4(ambientColor.xyz, 1);
     // gl_FragColor = vec4(0, 0, 0, 1);
-    vec3 mixedColor = ambientColor * objectColor; 
+    vec3 mixedColor = combinedAmbient * objectColor; 
 
     gl_FragColor = vec4(mixedColor.xyz, 1);
 
@@ -248,6 +251,7 @@ attribute vec4 vertexPosition;
 attribute vec2 vertexUV1;
 attribute vec3 vertexNormal;
 attribute vec3 vertexColor;
+attribute vec3 fragPosition;
 
 // uniform float farPlane;
 uniform mat4 modelViewMatrix;
@@ -270,6 +274,7 @@ void main() {
     vColor = vertexColor;
     vUV1 = vertexUV1;
     vNormal = vertexNormal;
+    // fragPosition = 
     // vSkyColor = skyColor;
     gl_Position = transformMatrix * vertexPosition;
 }
