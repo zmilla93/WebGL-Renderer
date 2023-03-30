@@ -68,17 +68,17 @@ function run() {
     const sliderX = document.getElementById("sunAngleX");
     const sliderY = document.getElementById("sunAngleY");
     const sliderZ = document.getElementById("sunAngleZ");
-    slider.oninput = function () {
-        var vector = vec3.fromValues(0, 1, 0);
-        var value = vec3.create();
-        var angleX = sliderX.value;
-        var angleY = sliderY.value;
-        var angleZ = sliderZ.value;
-        vec3.rotateX(value, vector, VECTOR3_ZERO, angle * DEG2RAD);
-        // litMat.sunlightAngle = vec3.fromValues(0.25, 1, 0.5);
-        litMat.sunlightAngle = value;
-        // console.log(slider.value);
-    }
+    // slider.oninput = function () {
+    //     var vector = vec3.fromValues(0, 1, 0);
+    //     var value = vec3.create();
+    //     var angleX = sliderX.value;
+    //     var angleY = sliderY.value;
+    //     var angleZ = sliderZ.value;
+    //     vec3.rotateX(value, vector, VECTOR3_ZERO, angle * DEG2RAD);
+    //     // litMat.sunlightAngle = vec3.fromValues(0.25, 1, 0.5);
+    //     litMat.sunlightAngle = value;
+    //     // console.log(slider.value);
+    // }
 
     // Create Chunks
     for (var x = -halfCountXZ; x < halfCountXZ; x++) {
