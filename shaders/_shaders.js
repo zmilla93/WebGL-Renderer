@@ -209,6 +209,8 @@ uniform mediump vec3 sunlightColor;
 uniform mediump vec3 sunlightAngle;
 uniform mediump float sunlightIntensity;
 uniform mediump vec3 skyColor;
+uniform mediump vec3 cameraPos;
+uniform mediump float specularStrength;
 
 uniform float viewDistance;
 
@@ -245,11 +247,16 @@ void main(void) {
     vec3 mixedColor = combinedAmbient * objectColor;
 
     vec3 lightDir = normalize(lightPos - vFragPos);
+    vec3 viewDir = normalize(cameraPos - vFragPos);
+    vec3 reflectDir = reflect(-lightDir, vNormal);
 
     float diff = max(dot(vNormal, lightDir), 0.0);
     vec3 diffuse = diff * lightColor;
 
-    vec3 result = (combinedAmbient + diffuse) * objectColor;
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
+    vec3 specular = specularStrength * spec * lightColor;
+
+    vec3 result = (combinedAmbient + diffuse + specular) * objectColor;
 
     // gl_FragColor = vec4(mixedColor.xyz, 1);
     gl_FragColor = vec4(result.xyz, 1);
@@ -290,10 +297,6 @@ void main() {
     vUV1 = vertexUV1;
     // vNormal = vertexNormal;
     vNormal = normalize(vec3(modelMatrix * vec4(vertexNormal, 0)));
-    // vec4 fixedVertex = vec4(vertexPosition.xyz, 1);
-    // vNormal = normalize(vec3(modelMatrix * normalize(fixedVertex)));
-    // vec4 t = ;
-    // vec3 p = 
     vFragPos = vec3(modelMatrix * vec4(vertexPosition.xyz, 1));
     // vSkyColor = skyColor;
     // normalMatrix4 = transpose(modelMatrix);

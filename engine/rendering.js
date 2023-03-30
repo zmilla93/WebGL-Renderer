@@ -484,6 +484,9 @@ class MeshRenderer extends Component {
         if (this.gameObject == null) return;
         Engine.gl.uniformMatrix4fv(this.material._shader.uniform("transformMatrix"), false, this.gameObject.matrix);
         Engine.gl.uniformMatrix4fv(this.material._shader.uniform("modelMatrix"), false, this.gameObject.getModelMatrix());
+        // FIXME : Camera pos could be moved to a per material uniform
+        let camPos = Camera.main.position;
+        Engine.gl.uniform3f(this.material._shader.uniform("cameraPos"), camPos[0], camPos[1], camPos[2]);
     };
     render(gl) {
         if (this.gameObject == null) return;

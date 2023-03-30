@@ -18,6 +18,8 @@ function run() {
     phongShader.uniformConverter.objectColor = Rendering.vector3Converter;
     phongShader.uniformConverter.modelMatrix = Rendering.matrix4Converter;
     phongShader.uniformConverter.lightPos = Rendering.vector3Converter;
+    phongShader.uniformConverter.cameraPos = Rendering.vector3Converter;
+    phongShader.uniformConverter.specularStrength = Rendering.floatConverter;
 
     // Monster Material
     const monsterImage = document.getElementById("monsterTexture");
@@ -28,6 +30,9 @@ function run() {
     // monsterMaterial.ambientColor = [175, 60, 60];
     monsterMaterial.ambientIntensity = 0.2;
     monsterMaterial.objectColor = [1, 0.5, 0.31];
+
+    // monsterMaterial.cameraPos = Camera.main.position;
+    monsterMaterial.specularStrength = 0.5;
 
 
     // Monster Object
@@ -54,11 +59,15 @@ function run() {
     sphere2.add(new MeshRenderer(Mesh.icoSmooth, monsterMaterial));
     sphere2.position = [2, 0, 0];
 
+    var sphere3 = new GameObject();
+    sphere3.add(new MeshRenderer(Mesh.smoothSphere, monsterMaterial));
+    sphere3.position = [0, 0, 5];
+
     // BOX
-    // var box = new GameObject();
-    // box.add(new MeshRenderer(Mesh.cube, monsterMaterial));
-    // box.scale = [10, 1, 1];
-    // box.setRotation(0, 45, 0);
+    var box = new GameObject();
+    box.add(new MeshRenderer(Mesh.cube, monsterMaterial));
+    box.scale = [10, 1, 1];
+    box.setRotation(0, 45, 0);
 
     // var box2 = new GameObject();
     // box2.add(new MeshRenderer(Mesh.cube, monsterMaterial));
@@ -71,7 +80,6 @@ function run() {
     // box3.position = [0, -1, 0];
     // box3.scale = [20, 1, 1];
     // box3.setRotation(0, 45, 0);
-
 
     // Point Light Material
     const light1Material = new Material(Shader.unlitShader);
@@ -103,6 +111,12 @@ function run() {
         let value = e.target.value;
         monsterMaterial.ambientIntensity = value;
     });
+
+    light.update = function () {
+        let t = Math.sin(Time.elapsedTime) * 5;
+        light.position = [t, 5, t];
+        monsterMaterial.lightPos = light.position;
+    }
 
 }
 
