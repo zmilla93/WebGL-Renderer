@@ -30,6 +30,13 @@ function run() {
     phongShader.uniformConverter["directionalLight.ambient"] = Rendering.vector3Converter;
     phongShader.uniformConverter["directionalLight.diffuse"] = Rendering.vector3Converter;
     phongShader.uniformConverter["directionalLight.specular"] = Rendering.vector3Converter;
+    phongShader.uniformConverter["pointLight[0].position"] = Rendering.vector3Converter;
+    phongShader.uniformConverter["pointLight[0].ambient"] = Rendering.vector3Converter;
+    phongShader.uniformConverter["pointLight[0].diffuse"] = Rendering.vector3Converter;
+    phongShader.uniformConverter["pointLight[0].specular"] = Rendering.vector3Converter;
+    phongShader.uniformConverter["pointLight[0].costant"] = Rendering.floatConverter;
+    phongShader.uniformConverter["pointLight[0].linear"] = Rendering.floatConverter;
+    phongShader.uniformConverter["pointLight[0].quadratic"] = Rendering.floatConverter;
 
     // Textures
     let pavingStoneDiffuse = document.getElementById("pavingStonesDiffuse");
@@ -57,7 +64,6 @@ function run() {
     monsterMaterial.objectColor = [1, 0.5, 0.31];
     monsterMaterial.specularStrength = 0.5;
     monsterMaterial.setDirectionalLight(directionalLight);
-    // monsterMaterial["directionalLight.direction"] = [1, -1, 0];
     // monsterMaterial["directionalLight.diffuse"] = [1, 1, 1];
     // monsterMaterial["directionalLight.ambient"] = [0.2, 0.2, 0.2];
     // monsterMaterial["directionalLight.specular"] = [1, 1, 1];
@@ -153,11 +159,35 @@ function run() {
     var light = new GameObject();
     light.add(new MeshRenderer(Mesh.smoothSphere, light1Material));
     // light.position = [0, 5, -6];
-    light.position = [0, 5, -4];
+    light.position = [0, 3, -8];
     let s = 0.2;
     light.scale = [s, s, s];
 
     monsterMaterial.lightPos = light.position;
+
+    monsterMaterial["pointLight[0].position"] = light.position;
+    monsterMaterial["pointLight[0].ambient"] = [0.2,0.2,0.2];
+    monsterMaterial["pointLight[0].diffuse"] = [1,1,1];
+    monsterMaterial["pointLight[0].specular"] = [1,1,1];
+    monsterMaterial["pointLight[0].constant"] = 1;
+    monsterMaterial["pointLight[0].linear"] = 0.14;
+    monsterMaterial["pointLight[0].quadratic"] = 0.07;
+
+    phongMaterial["pointLight[0].position"] = light.position;
+    phongMaterial["pointLight[0].ambient"] = [0.2,0.2,0.2];
+    phongMaterial["pointLight[0].diffuse"] = [1,1,1];
+    phongMaterial["pointLight[0].specular"] = [1,1,1];
+    phongMaterial["pointLight[0].constant"] = 1;
+    phongMaterial["pointLight[0].linear"] = 0.14;
+    phongMaterial["pointLight[0].quadratic"] = 0.07;
+
+    boxMaterial["pointLight[0].position"] = light.position;
+    boxMaterial["pointLight[0].ambient"] = [0.2,0.2,0.2];
+    boxMaterial["pointLight[0].diffuse"] = [1,1,1];
+    boxMaterial["pointLight[0].specular"] = [1,1,1];
+    boxMaterial["pointLight[0].constant"] = 1;
+    boxMaterial["pointLight[0].linear"] = 0.14;
+    boxMaterial["pointLight[0].quadratic"] = 0.07;
 
     Camera.main.position = [0, 2, 5];
 

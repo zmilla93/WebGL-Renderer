@@ -198,6 +198,9 @@ struct DirectionalLight {
 
 struct PointLight {
     vec3 position;
+    float constant;
+    float linear;
+    float quadratic;
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
@@ -219,7 +222,7 @@ uniform sampler2D specularSampler;
 
 // Lighting
 uniform DirectionalLight directionalLight;
-uniform PointLight pointLights[4];
+uniform PointLight pointLight[4];
 
 uniform mediump vec3 objectColor;
 uniform mediump vec3 ambientLight;
@@ -241,6 +244,8 @@ uniform bool useSpecularTexture;
 uniform float viewDistance;
 
 vec3 calculateDirectionalLight(DirectionalLight light, vec3 viewDir, vec3 diffuseSample, vec3 specularSample);
+
+vec3 calculatePointLight(PointLight light, vec3 viewDir, vec3 diffuseSample, vec3 specularSample);
 
 void main(void) {
 
@@ -290,7 +295,11 @@ void main(void) {
         result = (combinedAmbient + diffuse + specular) * objectColor;
 
     result = vec3(0.0, 0.0, 0.0);
-    result += calculateDirectionalLight(directionalLight, viewDir, diffuseSample.xyz, specularSample.xyz);
+    // result += calculateDirectionalLight(directionalLight, viewDir, diffuseSample.xyz, specularSample.xyz);
+
+    result += calculatePointLight(pointLight[0], viewDir, diffuseSample.xyz, specularSample.xyz);
+    // result += calculatePointLight(pointLight[0], viewDir, diffuseSample.xyz, specularSample.xyz);
+
     // outp *= diffuseSample.xyz;
     // result = color(vec3(0, 1, 0));
     // result = calculateDirectionalLight(directionalLight);
@@ -322,6 +331,41 @@ vec3 calculateDirectionalLight(DirectionalLight light, vec3 viewDir, vec3 diffus
     else
         specular = specularStrength * rawSpecular * light.specular;
     return ambient + specular + diffuse;
+}
+
+vec3 calculatePointLight(PointLight light, vec3 viewDir, vec3 diffuseSample, vec3 specularSample) {
+    vec3 lightDir = normalize(light.position - vFragPos);
+    // vec3 viewDir = normalize(cameraPos - vFragPos);
+    vec3 reflectDir = reflect(-lightDir, vNormal);
+    float distance = length(light.position - vFragPos);
+    float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
+
+    vec3 ambient;
+    if(useDiffuseTexture)
+        ambient = light.ambient * diffuseSample;
+    else
+        ambient = light.ambient * objectColor;
+    // Diffuse
+    float rawDiffuse = max(dot(vNormal, lightDir), 0.0);
+    vec3 diffuse;
+    if(useDiffuseTexture)
+        diffuse = rawDiffuse * light.diffuse * diffuseSample;
+    else
+        diffuse = rawDiffuse * light.diffuse * objectColor;
+    // Specular
+    float rawSpecular = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
+    vec3 specular;
+    if(useSpecularTexture)
+        specular = specularSample * rawSpecular * light.specular;
+    else
+        specular = specularStrength * rawSpecular * light.specular;
+    // Apply attenuation
+    ambient *= attenuation;
+    diffuse *= attenuation;
+    specular *= attenuation;
+
+    return ambient + specular + diffuse;
+
 }
 `
 

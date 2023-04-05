@@ -600,6 +600,16 @@ class DirectionalLight{
     specular;
 }
 
+class PointLight{
+    direction;
+    constant;
+    linear;
+    quadratic;
+    ambient;
+    diffuse;
+    specular;
+}
+
 // Handles basic line rendering
 class Line {
     static lineList = [];
