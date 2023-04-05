@@ -25,14 +25,22 @@ function run() {
     const monsterImage = document.getElementById("monsterTexture");
     const monsterTexture = new Texture(monsterImage);
     const monsterMaterial = new Material(phongShader);
+    monsterMaterial.texture = monsterTexture;
     monsterMaterial.lightColor = [1, 1, 1];
     monsterMaterial.ambientColor = [1, 1, 1];
     // monsterMaterial.ambientColor = [175, 60, 60];
     monsterMaterial.ambientIntensity = 0.2;
     monsterMaterial.objectColor = [1, 0.5, 0.31];
+    monsterMaterial.specularStrength = 0.5;
+
+    const phongMaterial = new Material(phongShader);
+    phongMaterial.lightColor = [1, 1, 1];
+    phongMaterial.ambientColor = [1, 1, 1];
+    phongMaterial.ambientIntensity = 0.2;
+    phongMaterial.objectColor = [1, 0.5, 0.31];
+    phongMaterial.specularStrength = 0.5;
 
     // monsterMaterial.cameraPos = Camera.main.position;
-    monsterMaterial.specularStrength = 0.5;
 
 
     // Monster Object
@@ -48,24 +56,24 @@ function run() {
     // monster.scale = [2, 2, 2];
     // console.log(monster.rotation);
 
-    monsterMaterial.modelMatrix = monster.getModelMatrix();
+    // monsterMaterial.modelMatrix = monster.getModelMatrix();
 
     // SPHERE
     var sphere = new GameObject();
-    sphere.add(new MeshRenderer(Mesh.icoSphere, monsterMaterial));
+    sphere.add(new MeshRenderer(Mesh.icoSphere, phongMaterial));
     sphere.position = [-2, 0, 0];
 
     var sphere2 = new GameObject();
-    sphere2.add(new MeshRenderer(Mesh.icoSmooth, monsterMaterial));
+    sphere2.add(new MeshRenderer(Mesh.icoSmooth, phongMaterial));
     sphere2.position = [2, 0, 0];
 
     var sphere3 = new GameObject();
-    sphere3.add(new MeshRenderer(Mesh.smoothSphere, monsterMaterial));
+    sphere3.add(new MeshRenderer(Mesh.smoothSphere, phongMaterial));
     sphere3.position = [0, 0, 5];
 
     // BOX
     var box = new GameObject();
-    box.add(new MeshRenderer(Mesh.cube, monsterMaterial));
+    box.add(new MeshRenderer(Mesh.cube, phongMaterial));
     box.scale = [10, 1, 1];
     box.setRotation(0, 45, 0);
 
@@ -116,6 +124,7 @@ function run() {
         let t = Math.sin(Time.elapsedTime) * 5;
         light.position = [t, 5, t];
         monsterMaterial.lightPos = light.position;
+        phongMaterial.lightPos = light.position;
     }
 
 }

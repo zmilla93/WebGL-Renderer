@@ -69,7 +69,7 @@ void main(void) {
 
     vec3 result = (combinedAmbient + diffuse + specular) * objectColor;
 
-    // gl_FragColor = vec4(mixedColor.xyz, 1);
-    gl_FragColor = vec4(result.xyz, 1);
+    // gl_FragColor = vec4(result.xyz, 1);
+    gl_FragColor = vec4(textureSample.xyz, 1);
 
 }
