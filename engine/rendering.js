@@ -185,6 +185,7 @@ class Material {
     _shader;
     _renderers = [];
     uniform = {};
+    _texture;
     static materialMap = new Map();
     // Shader - Shader Class
     constructor(shader) {
@@ -201,6 +202,10 @@ class Material {
         shaderEntry.push(material);
         Material.materialMap.set(material._shader.name, shaderEntry);
     }
+    // set texture(tex){
+    //     this.texture = tex;
+    //     this.useTexture = tex != null;
+    // }
     // FIXME : get material seems unnessecary??
     static getMaterial(material) {
         const shaderGroup = Material.materialMap.get(material._shader.name);
@@ -604,6 +609,13 @@ function compileShader(gl, type, shaderSource) {
 
 // Converter functions apply a uniform given a material and a uniform name.
 // WebGL will already be using the material's shader when these are called.
+
+Rendering.boolConverter = function (material, uniformName) {
+    let value = material[uniformName] == null ? 1 : material[uniformName];
+    if (value == true || value > 0) value = 1;
+    else value = 0;
+    Engine.gl.uniform1i(material._shader.uniform(uniformName), value);
+}
 
 Rendering.floatConverter = function (material, uniformName) {
     const value = material[uniformName] == null ? 1 : material[uniformName];

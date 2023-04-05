@@ -212,6 +212,8 @@ uniform mediump vec3 skyColor;
 uniform mediump vec3 cameraPos;
 uniform mediump float specularStrength;
 
+uniform bool useTexture;
+
 uniform float viewDistance;
 
 void main(void) {
@@ -256,7 +258,12 @@ void main(void) {
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
     vec3 specular = specularStrength * spec * lightColor;
 
-    vec3 result = (combinedAmbient + diffuse + specular) * objectColor;
+    vec3 result;
+    if(useTexture) {
+        result = (combinedAmbient + diffuse + specular) * textureSample.xyz;
+    } else {
+        result = (combinedAmbient + diffuse + specular) * objectColor;
+    }
 
     gl_FragColor = vec4(result.xyz, 1);
     // gl_FragColor = vec4(textureSample.xyz, 1);

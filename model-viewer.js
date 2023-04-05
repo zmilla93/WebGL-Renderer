@@ -16,10 +16,11 @@ function run() {
     phongShader.uniformConverter.ambientIntensity = Rendering.floatConverter;
     phongShader.uniformConverter.lightColor = Rendering.vector3Converter;
     phongShader.uniformConverter.objectColor = Rendering.vector3Converter;
-    phongShader.uniformConverter.modelMatrix = Rendering.matrix4Converter;
+    // phongShader.uniformConverter.modelMatrix = Rendering.matrix4Converter;
     phongShader.uniformConverter.lightPos = Rendering.vector3Converter;
     phongShader.uniformConverter.cameraPos = Rendering.vector3Converter;
     phongShader.uniformConverter.specularStrength = Rendering.floatConverter;
+    phongShader.uniformConverter.useTexture = Rendering.boolConverter;
 
     // Monster Material
     const monsterImage = document.getElementById("monsterTexture");
@@ -38,9 +39,19 @@ function run() {
     phongMaterial.ambientIntensity = 0.2;
     phongMaterial.objectColor = [1, 0.5, 0.31];
     phongMaterial.specularStrength = 0.5;
+    phongMaterial.useTexture = false;
 
-    // monsterMaterial.cameraPos = Camera.main.position;
-
+    const boxMaterial = new Material(phongShader);
+    const boxDiffuse = document.getElementById("boxDiffuseTexture");
+    const boxSpecular = document.getElementById("boxSpecularTexture");
+    let boxTexture = new Texture(boxDiffuse);
+    boxMaterial.useTexture = true;
+    boxMaterial.texture = boxTexture;
+    boxMaterial.lightColor = [1, 1, 1];
+    boxMaterial.ambientColor = [1, 1, 1];
+    boxMaterial.ambientIntensity = 0.2;
+    boxMaterial.objectColor = [1, 0.5, 0.31];
+    boxMaterial.specularStrength = 1;
 
     // Monster Object
     var monster = new GameObject();
@@ -60,11 +71,11 @@ function run() {
     // SPHERE
     var sphere = new GameObject();
     sphere.add(new MeshRenderer(Mesh.icoSphere, phongMaterial));
-    sphere.position = [-2, 0, 0];
+    sphere.position = [-4, 0, 0];
 
     var sphere2 = new GameObject();
     sphere2.add(new MeshRenderer(Mesh.icoSmooth, phongMaterial));
-    sphere2.position = [2, 0, 0];
+    sphere2.position = [4, 0, 0];
 
     var sphere3 = new GameObject();
     sphere3.add(new MeshRenderer(Mesh.smoothSphere, phongMaterial));
@@ -72,8 +83,8 @@ function run() {
 
     // BOX
     var box = new GameObject();
-    box.add(new MeshRenderer(Mesh.cube, phongMaterial));
-    box.scale = [10, 1, 1];
+    box.add(new MeshRenderer(Mesh.cube, boxMaterial));
+    box.position = [0, 0, -2];
     box.setRotation(0, 45, 0);
 
     // var box2 = new GameObject();
@@ -121,9 +132,10 @@ function run() {
 
     light.update = function () {
         let t = Math.sin(Time.elapsedTime) * 5;
-        light.position = [t, 5, t];
+        // light.position = [t, 5, t];
         monsterMaterial.lightPos = light.position;
         phongMaterial.lightPos = light.position;
+        boxMaterial.lightPos = light.position;
     }
 
 }
