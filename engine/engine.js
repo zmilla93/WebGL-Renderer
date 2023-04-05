@@ -100,7 +100,7 @@ class Engine {
         Input.addKeyboardListeners();
         Input.addMouseListeners(canvas);
         Texture.createPlaceholderTexture();
-        Engine.gl.bindTexture(gl.TEXTURE_2D, Texture.placeholderTexture._texture);
+        Engine.gl.bindTexture(gl.TEXTURE_2D, Texture.placeholderTexture.diffuse);
         window.requestAnimationFrame(Engine.internal_update);
     }
     static updateCamera() {
@@ -224,7 +224,22 @@ class Engine {
                     shaderChanged = true;
                 }
                 // If the material uses a texture, bind it.
-                if (material.texture != null && material.texture._texture != null) Engine.gl.bindTexture(gl.TEXTURE_2D, material.texture._texture);
+                if (material.texture != null) {
+                    if (material.texture.diffuse != null) {
+                        Engine.gl.activeTexture(gl.TEXTURE0);
+                        Engine.gl.bindTexture(gl.TEXTURE_2D, material.texture.diffuse);
+                    }
+                    if (material.texture.normal != null) {
+                        Engine.gl.activeTexture(gl.TEXTURE1);
+                        Engine.gl.bindTexture(gl.TEXTURE_2D, material.texture.normal);
+                    }
+                    if (material.texture.specular != null) {
+                        Engine.gl.activeTexture(gl.TEXTURE2);
+                        Engine.gl.bindTexture(gl.TEXTURE_2D, material.texture.specular);
+                    }
+                }
+                // if (material.texture != null && material.texture.diffuse != null)
+                //     Engine.gl.bindTexture(gl.TEXTURE_2D, material.texture._texture);
                 // Apply per material uniforms
                 // FIXME : This could be optimized to only apply uniforms when the values actually change.
                 for (let converter of Object.entries(material._shader.uniformConverter)) {
@@ -238,7 +253,14 @@ class Engine {
                     renderer.render(gl);
                 });
                 // If a texture was used, unbind it.
-                if (material.texture != null) Engine.gl.bindTexture(gl.TEXTURE_2D, Texture.placeholderTexture._texture);
+                if (material.texture != null) {
+                    Engine.gl.activeTexture(gl.TEXTURE0);
+                    Engine.gl.bindTexture(gl.TEXTURE_2D, Texture.placeholderTexture.diffuse);
+                    Engine.gl.activeTexture(gl.TEXTURE1);
+                    Engine.gl.bindTexture(gl.TEXTURE_2D, Texture.placeholderTexture.diffuse);
+                    Engine.gl.activeTexture(gl.TEXTURE2);
+                    Engine.gl.bindTexture(gl.TEXTURE_2D, Texture.placeholderTexture.diffuse);
+                }
             });
         });
     }

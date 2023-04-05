@@ -184,8 +184,8 @@ class Shader {
 class Material {
     _shader;
     _renderers = [];
-    uniform = {};
-    _texture;
+    // uniform = {};
+    // _texture;
     static materialMap = new Map();
     // Shader - Shader Class
     constructor(shader) {
@@ -230,32 +230,101 @@ const TextureFilter = Object.freeze({
 
 class Texture {
     _texture; // WebGL Texture
+    diffuse;
+    normal;
+    specular
     static placeholderColor = [255, 5, 150];
     static placeholderTexture; // 1x1 pixel Magenta texture that displays when target texture is missing.
-    constructor(image, textureFilter = TextureFilter.Linear, textureWrap = TextureWrap.Wrap) {
-        if (image == null) return;
-        // Create a gl texture and bind it
+    constructor(diffuse, normal, specular, textureFilter = TextureFilter.Linear, textureWrap = TextureWrap.Wrap) {
+        if (diffuse == null) return;
+        // Default values for textures
         const gl = Engine.gl;
-        this._texture = gl.createTexture();
-        gl.bindTexture(gl.TEXTURE_2D, this._texture);
-        // Attempt to send the texture to webGL.
+        const levelOfDetail = 0; // Should always be 0
+        const internalFormat = gl.RGBA;
+        const srcFormat = gl.RGBA;
+        const border = 0; // Should always be 0
+        const type = gl.UNSIGNED_BYTE;
+        // Create a gl texture and bind it
+        this.diffuse = Texture.createGLTexture(gl.TEXTURE0, diffuse, textureFilter, textureWrap);
+        if (normal != null) {
+            this.normal = Texture.createGLTexture(gl.TEXTURE1, normal, textureFilter, textureWrap);
+        }
+        if (specular != null) {
+            this.specular = Texture.createGLTexture(gl.TEXTURE2, specular, textureFilter, textureWrap);
+        }
+        // this.diffuse = gl.createTexture();
+        // gl.bindTexture(gl.TEXTURE_2D, this.diffuse);
+        // // Attempt to send the texture to webGL.
+        // try {
+        //     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true); // Flips the texture vertically.
+        //     gl.texImage2D(gl.TEXTURE_2D, levelOfDetail, internalFormat, diffuse.width, diffuse.height, border, srcFormat, type, diffuse);
+        //     gl.generateMipmap(gl.TEXTURE_2D);
+        // } catch (error) {
+        //     // If creating the texture fails, delete the glTexture and return.
+        //     console.error("Failed to create glTexture using '" + diffuse.id + "' " + diffuse + ". Textures cannot be used in an offline enviroment. See github repo for info to locally host using python.");
+        //     gl.deleteTexture(this.diffuse);
+        //     this.diffuse = null;
+        //     return;
+        // }
+        // // Set texture wrap mode
+        // switch (textureWrap) {
+        //     case TextureWrap.Clamp:
+        //         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        //         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        //         break;
+        //     case TextureWrap.Wrap:
+        //         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+        //         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+        //         break;
+        // }
+        // // Set texture fitler mode
+        // switch (textureFilter) {
+        //     case TextureFilter.Nearest:
+        //         // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST_MIPMAP_LINEAR);
+        //         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST_MIPMAP_NEAREST);
+        //         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+        //         break;
+        //     case TextureFilter.Linear:
+        //         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST_MIPMAP_LINEAR);
+        //         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        //         break;
+        // }
+    }
+    // Creates a 1x1 texture to be used when a texture is missing.
+    static createPlaceholderTexture() {
+        const gl = Engine.gl;
+        const pixel = new Uint8Array([Texture.placeholderColor[0], Texture.placeholderColor[1], Texture.placeholderColor[2], 255]);
+        const format = gl.RGBA;
+        const size = 1;
+        const texture = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, format, size, size, 0, format, gl.UNSIGNED_BYTE, pixel);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+        gl.generateMipmap(gl.TEXTURE_2D);
+        Texture.placeholderTexture = new Texture();
+        Texture.placeholderTexture.diffuse = texture;
+    }
+    static createGLTexture(activeTexture, image, textureFilter, textureWrap) {
+        const gl = Engine.gl;
+        const levelOfDetail = 0; // Should always be 0
+        const internalFormat = gl.RGBA;
+        const srcFormat = gl.RGBA;
+        const border = 0; // Should always be 0
+        const type = gl.UNSIGNED_BYTE;
+        gl.activeTexture(activeTexture);
+        let texture = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, texture);
         try {
-            const levelOfDetail = 0; // Should always be 0
-            const internalFormat = gl.RGBA;
-            const srcFormat = gl.RGBA;
-            const border = 0; // Should always be 0
-            const type = gl.UNSIGNED_BYTE;
             gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true); // Flips the texture vertically.
             gl.texImage2D(gl.TEXTURE_2D, levelOfDetail, internalFormat, image.width, image.height, border, srcFormat, type, image);
             gl.generateMipmap(gl.TEXTURE_2D);
         } catch (error) {
             // If creating the texture fails, delete the glTexture and return.
             console.error("Failed to create glTexture using '" + image.id + "' " + image + ". Textures cannot be used in an offline enviroment. See github repo for info to locally host using python.");
-            gl.deleteTexture(this._texture);
-            this._texture = null;
-            return;
+            gl.deleteTexture(texture);
+            texture = null;
         }
-        // Set texture wrap mode
         switch (textureWrap) {
             case TextureWrap.Clamp:
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
@@ -278,21 +347,7 @@ class Texture {
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
                 break;
         }
-    }
-    // Creates a 1x1 texture to be used when a texture is missing.
-    static createPlaceholderTexture() {
-        const gl = Engine.gl;
-        const pixel = new Uint8Array([Texture.placeholderColor[0], Texture.placeholderColor[1], Texture.placeholderColor[2], 255]);
-        const format = gl.RGBA;
-        const size = 1;
-        const texture = gl.createTexture();
-        gl.bindTexture(gl.TEXTURE_2D, texture);
-        gl.texImage2D(gl.TEXTURE_2D, 0, format, size, size, 0, format, gl.UNSIGNED_BYTE, pixel);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
-        gl.generateMipmap(gl.TEXTURE_2D);
-        Texture.placeholderTexture = new Texture();
-        Texture.placeholderTexture._texture = texture;
+        return texture;
     }
 }
 
@@ -614,6 +669,11 @@ Rendering.boolConverter = function (material, uniformName) {
     let value = material[uniformName] == null ? 1 : material[uniformName];
     if (value == true || value > 0) value = 1;
     else value = 0;
+    Engine.gl.uniform1i(material._shader.uniform(uniformName), value);
+}
+
+Rendering.intConverter = function (material, uniformName) {
+    const value = material[uniformName] == null ? 1 : material[uniformName];
     Engine.gl.uniform1i(material._shader.uniform(uniformName), value);
 }
 

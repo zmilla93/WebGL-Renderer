@@ -21,6 +21,9 @@ function run() {
     phongShader.uniformConverter.cameraPos = Rendering.vector3Converter;
     phongShader.uniformConverter.specularStrength = Rendering.floatConverter;
     phongShader.uniformConverter.useTexture = Rendering.boolConverter;
+    phongShader.uniformConverter.diffuseSampler = Rendering.intConverter;
+    phongShader.uniformConverter.normalSampler = Rendering.intConverter;
+    phongShader.uniformConverter.specularSampler = Rendering.intConverter;
 
     // Monster Material
     const monsterImage = document.getElementById("monsterTexture");
@@ -32,6 +35,8 @@ function run() {
     monsterMaterial.ambientIntensity = 0.2;
     monsterMaterial.objectColor = [1, 0.5, 0.31];
     monsterMaterial.specularStrength = 0.5;
+    monsterMaterial.diffuseSampler = 0;
+    monsterMaterial.specularSampler = 2;
 
     const phongMaterial = new Material(phongShader);
     phongMaterial.lightColor = [1, 1, 1];
@@ -44,7 +49,7 @@ function run() {
     const boxMaterial = new Material(phongShader);
     const boxDiffuse = document.getElementById("boxDiffuseTexture");
     const boxSpecular = document.getElementById("boxSpecularTexture");
-    let boxTexture = new Texture(boxDiffuse);
+    let boxTexture = new Texture(boxDiffuse, null, boxSpecular);
     boxMaterial.useTexture = true;
     boxMaterial.texture = boxTexture;
     boxMaterial.lightColor = [1, 1, 1];
@@ -52,6 +57,8 @@ function run() {
     boxMaterial.ambientIntensity = 0.2;
     boxMaterial.objectColor = [1, 0.5, 0.31];
     boxMaterial.specularStrength = 1;
+    boxMaterial.diffuseSampler = 0;
+    boxMaterial.specularSampler = 2;
 
     // Monster Object
     var monster = new GameObject();
@@ -105,7 +112,7 @@ function run() {
     // Point Light Object
     var light = new GameObject();
     light.add(new MeshRenderer(Mesh.smoothSphere, light1Material));
-    light.position = [0, 3, -4];
+    light.position = [0, 2, -3];
     let s = 0.2;
     light.scale = [s, s, s];
 
