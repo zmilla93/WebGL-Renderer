@@ -93,33 +93,28 @@ function run() {
     // SPHERE
     var sphere = new GameObject();
     sphere.add(new MeshRenderer(Mesh.icoSphere, phongMaterial));
-    sphere.position = [-4, 0, 0];
+    sphere.position = [-4, 1, 0];
 
     var sphere2 = new GameObject();
     sphere2.add(new MeshRenderer(Mesh.icoSmooth, phongMaterial));
-    sphere2.position = [4, 0, 0];
+    sphere2.position = [4, 1, 0];
 
     var sphere3 = new GameObject();
     sphere3.add(new MeshRenderer(Mesh.smoothSphere, phongMaterial));
-    sphere3.position = [0, 0, 5];
+    sphere3.position = [-4, 1, -5];
 
     // BOX
     var box = new GameObject();
     box.add(new MeshRenderer(Mesh.cube, boxMaterial));
-    box.position = [0, 0, -2];
+    box.position = [0, 0.5, -2];
     box.setRotation(0, 45, 0);
 
-    // var box2 = new GameObject();
-    // box2.add(new MeshRenderer(Mesh.cube, monsterMaterial));
-    // box2.position = [0, 1, 0];
-    // box2.scale = [1, 1, 1];
-    // box2.setRotation(0, 45, 0);
-
-    // var box3 = new GameObject();
-    // box3.add(new MeshRenderer(Mesh.cube, monsterMaterial));
-    // box3.position = [0, -1, 0];
-    // box3.scale = [20, 1, 1];
-    // box3.setRotation(0, 45, 0);
+    var plane = new GameObject();
+    plane.add(new MeshRenderer(Mesh.quad, boxMaterial));
+    plane.position = [0, 0.01, -4];
+    var planeScale = 5;
+    plane.scale = [planeScale, 1, planeScale];
+    // plane.setRotation(90, 0, 0);
 
     // Point Light Material
     const light1Material = new Material(Shader.unlitShader);
@@ -127,17 +122,13 @@ function run() {
     // Point Light Object
     var light = new GameObject();
     light.add(new MeshRenderer(Mesh.smoothSphere, light1Material));
-    light.position = [0, 2, -3];
+    light.position = [0, 5, -6];
     let s = 0.2;
     light.scale = [s, s, s];
 
     monsterMaterial.lightPos = light.position;
 
     Camera.main.position = [0, 2, 5];
-
-    // console.log(Object.getOwnPropertyNames(Mesh));
-    console.log(Mesh.list());
-    console.log(Shader.list());
 
     // Controls
     // FIXME : Controls need to be set to default shader values or vice versa!
@@ -154,12 +145,11 @@ function run() {
 
     light.update = function () {
         let t = Math.sin(Time.elapsedTime) * 5;
-        // light.position = [t, 5, t];
+        // light.position = [0, t, 0];
         monsterMaterial.lightPos = light.position;
         phongMaterial.lightPos = light.position;
         boxMaterial.lightPos = light.position;
     }
-
 }
 
 window.addEventListener('load', run);

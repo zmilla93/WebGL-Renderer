@@ -197,6 +197,7 @@ varying mediump vec2 vUV1;
 varying mediump vec3 vNormal;
 varying mediump vec3 vFragPos;
 varying mediump vec3 vSkyColor;
+varying mediump mat4 vModelMatrix;
 
 // Texture Sampling
 uniform sampler2D uSampler;
@@ -247,6 +248,8 @@ void main(void) {
     // float mixZ = mix(color.z, skyColor.z, clipDepth);
     // vec3 foggedColor = vec3(mixX, mixY, mixZ);
 
+    vec3 sampledNormal = normalize(vec3(vModelMatrix * vec4(normalSample.xyz, 0)));
+
     vec3 lightDir = normalize(lightPos - vFragPos);
     vec3 viewDir = normalize(cameraPos - vFragPos);
     vec3 reflectDir = reflect(-lightDir, vNormal);
@@ -257,19 +260,17 @@ void main(void) {
     // Calculate specular value
     float rawSpecular = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
     vec3 specular;
-    if(useSpecularTexture) {
+    if(useSpecularTexture)
         specular = specularSample.xyz * rawSpecular * lightColor;
-    } else {
+    else
         specular = specularStrength * rawSpecular * lightColor;
-    }
 
     // Calculate diffuse value
     vec3 result;
-    if(useDiffuseTexture) {
+    if(useDiffuseTexture) 
         result = (combinedAmbient + diffuse + specular) * diffuseSample.xyz;
-    } else {
+     else 
         result = (combinedAmbient + diffuse + specular) * objectColor;
-    }
 
     gl_FragColor = vec4(result.xyz, 1);
 
@@ -302,6 +303,7 @@ varying mediump vec3 vFragPos;
 varying mediump vec2 vUV1;
 varying mediump vec3 normalMatrix;
 varying mediump mat4 normalMatrix4;
+varying mediump mat4 vModelMatrix;
 
 void main() {
     vPosition = vertexPosition;
@@ -311,9 +313,8 @@ void main() {
     // FIXME : Normals are not properly calculated for nonuniform scaling.
     vNormal = normalize(vec3(modelMatrix * vec4(vertexNormal, 0)));
     vFragPos = vec3(modelMatrix * vec4(vertexPosition.xyz, 1));
-    // vSkyColor = skyColor;
-    // normalMatrix4 = transpose(modelMatrix);
-    // normalMatrix = mat3(transpose(inverse(modelMatrix))) * vertexNormal;
+    vModelMatrix = modelMatrix;
+
     gl_Position = transformMatrix * vertexPosition;
 }
 `

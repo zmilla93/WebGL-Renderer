@@ -23,6 +23,7 @@ varying mediump vec3 vFragPos;
 varying mediump vec2 vUV1;
 varying mediump vec3 normalMatrix;
 varying mediump mat4 normalMatrix4;
+varying mediump mat4 vModelMatrix;
 
 void main() {
     vPosition = vertexPosition;
@@ -32,8 +33,7 @@ void main() {
     // FIXME : Normals are not properly calculated for nonuniform scaling.
     vNormal = normalize(vec3(modelMatrix * vec4(vertexNormal, 0)));
     vFragPos = vec3(modelMatrix * vec4(vertexPosition.xyz, 1));
-    // vSkyColor = skyColor;
-    // normalMatrix4 = transpose(modelMatrix);
-    // normalMatrix = mat3(transpose(inverse(modelMatrix))) * vertexNormal;
+    vModelMatrix = modelMatrix;
+
     gl_Position = transformMatrix * vertexPosition;
 }
