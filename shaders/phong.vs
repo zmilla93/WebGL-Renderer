@@ -29,6 +29,7 @@ void main() {
     vColor = vertexColor;
     vUV1 = vertexUV1;
     // vNormal = vertexNormal;
+    // FIXME : Normals are not properly calculated for nonuniform scaling.
     vNormal = normalize(vec3(modelMatrix * vec4(vertexNormal, 0)));
     vFragPos = vec3(modelMatrix * vec4(vertexPosition.xyz, 1));
     // vSkyColor = skyColor;

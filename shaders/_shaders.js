@@ -258,8 +258,8 @@ void main(void) {
 
     vec3 result = (combinedAmbient + diffuse + specular) * objectColor;
 
-    // gl_FragColor = vec4(result.xyz, 1);
-    gl_FragColor = vec4(textureSample.xyz, 1);
+    gl_FragColor = vec4(result.xyz, 1);
+    // gl_FragColor = vec4(textureSample.xyz, 1);
 
 }
 `
@@ -296,6 +296,7 @@ void main() {
     vColor = vertexColor;
     vUV1 = vertexUV1;
     // vNormal = vertexNormal;
+    // FIXME : Normals are not properly calculated for nonuniform scaling.
     vNormal = normalize(vec3(modelMatrix * vec4(vertexNormal, 0)));
     vFragPos = vec3(modelMatrix * vec4(vertexPosition.xyz, 1));
     // vSkyColor = skyColor;

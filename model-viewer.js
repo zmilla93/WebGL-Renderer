@@ -28,7 +28,6 @@ function run() {
     monsterMaterial.texture = monsterTexture;
     monsterMaterial.lightColor = [1, 1, 1];
     monsterMaterial.ambientColor = [1, 1, 1];
-    // monsterMaterial.ambientColor = [175, 60, 60];
     monsterMaterial.ambientIntensity = 0.2;
     monsterMaterial.objectColor = [1, 0.5, 0.31];
     monsterMaterial.specularStrength = 0.5;
