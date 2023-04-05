@@ -218,25 +218,20 @@ uniform mediump vec3 skyColor;
 uniform mediump vec3 cameraPos;
 uniform mediump float specularStrength;
 
-uniform bool useTexture;
+uniform bool useDiffuseTexture;
+uniform bool useNormalTexture;
+uniform bool useSpecularTexture;
 
 uniform float viewDistance;
 
 void main(void) {
-    // Calculate the sunlight intensity.
-    float surfaceIntensity = dot(sunlightAngle, vNormal) * sunlightIntensity;
-    // Combine sunlight with ambient light
+
     vec3 combinedAmbient = ambientColor * ambientIntensity;
 
-    vec3 litAmbient = ambientLight + sunlightColor * surfaceIntensity;
-    // Combine lit ambient light with texture color.
-    vec3 color = vColor * litAmbient;
-
-    // UNUSED : Sample texture
-    // vec4 textureSample = texture2D(uSampler, vUV1);
+    // Sample Textures
     vec4 diffuseSample = texture2D(diffuseSampler, vUV1);
+    vec4 normalSample = texture2D(normalSampler, vUV1);
     vec4 specularSample = texture2D(specularSampler, vUV1);
-    vec4 litTexture = vec4(color.x, color.y, color.z, 1) * diffuseSample;
 
     // Get the depth of the fragment in clip space.
     float depth = (2.0 * gl_FragCoord.z - gl_DepthRange.near - gl_DepthRange.far) / (gl_DepthRange.far - gl_DepthRange.near);
@@ -246,36 +241,37 @@ void main(void) {
 
     // Use the clip depth to lerp between the texture color and the sky color.
     // This creates a nice fog effect.
-    float mixX = mix(color.x, skyColor.x, clipDepth);
-    float mixY = mix(color.y, skyColor.y, clipDepth);
-    float mixZ = mix(color.z, skyColor.z, clipDepth);
-    vec3 foggedColor = vec3(mixX, mixY, mixZ);
-
-    // gl_FragColor = vec4(litTexture.xyz, 1);
-    // gl_FragColor = vec4(ambientColor.xyz, 1);
-    // gl_FragColor = vec4(0, 0, 0, 1);
-    vec3 mixedColor = combinedAmbient * objectColor;
+    // FIXME: Readd fog?
+    // float mixX = mix(color.x, skyColor.x, clipDepth);
+    // float mixY = mix(color.y, skyColor.y, clipDepth);
+    // float mixZ = mix(color.z, skyColor.z, clipDepth);
+    // vec3 foggedColor = vec3(mixX, mixY, mixZ);
 
     vec3 lightDir = normalize(lightPos - vFragPos);
     vec3 viewDir = normalize(cameraPos - vFragPos);
     vec3 reflectDir = reflect(-lightDir, vNormal);
 
-    float diff = max(dot(vNormal, lightDir), 0.0);
-    vec3 diffuse = diff * lightColor;
+    float rawDiffuse = max(dot(vNormal, lightDir), 0.0);
+    vec3 diffuse = rawDiffuse * lightColor;
 
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
-    // vec3 specular = specularStrength * spec * lightColor;
-    vec3 specular = specularSample.xyz * spec * lightColor;
+    // Calculate specular value
+    float rawSpecular = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
+    vec3 specular;
+    if(useSpecularTexture) {
+        specular = specularSample.xyz * rawSpecular * lightColor;
+    } else {
+        specular = specularStrength * rawSpecular * lightColor;
+    }
 
+    // Calculate diffuse value
     vec3 result;
-    if(useTexture) {
+    if(useDiffuseTexture) {
         result = (combinedAmbient + diffuse + specular) * diffuseSample.xyz;
     } else {
         result = (combinedAmbient + diffuse + specular) * objectColor;
     }
 
     gl_FragColor = vec4(result.xyz, 1);
-    // gl_FragColor = vec4(textureSample.xyz, 1);
 
 }
 `

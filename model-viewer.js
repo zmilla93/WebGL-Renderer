@@ -20,23 +20,33 @@ function run() {
     phongShader.uniformConverter.lightPos = Rendering.vector3Converter;
     phongShader.uniformConverter.cameraPos = Rendering.vector3Converter;
     phongShader.uniformConverter.specularStrength = Rendering.floatConverter;
-    phongShader.uniformConverter.useTexture = Rendering.boolConverter;
+    phongShader.uniformConverter.useDiffuseTexture = Rendering.boolConverter;
+    phongShader.uniformConverter.useSpecularTexture = Rendering.boolConverter;
+    phongShader.uniformConverter.useNormalTexture = Rendering.boolConverter;
     phongShader.uniformConverter.diffuseSampler = Rendering.intConverter;
     phongShader.uniformConverter.normalSampler = Rendering.intConverter;
     phongShader.uniformConverter.specularSampler = Rendering.intConverter;
+
+    // Textures
+    let pavingStoneDiffuse = document.getElementById("pavingStonesDiffuse");
+    let pavingStoneNormal = document.getElementById("pavingStonesDiffuse");
+    let pavingStoneSpecular = document.getElementById("pavingStonesDiffuse");
+    let pavingStonesTexture = new Texture(pavingStoneDiffuse, pavingStoneNormal, pavingStoneSpecular);
 
     // Monster Material
     const monsterImage = document.getElementById("monsterTexture");
     const monsterTexture = new Texture(monsterImage);
     const monsterMaterial = new Material(phongShader);
+    monsterMaterial.useDiffuseTexture = true;
+    monsterMaterial.useSpecularTexture = true;
     monsterMaterial.texture = monsterTexture;
     monsterMaterial.lightColor = [1, 1, 1];
     monsterMaterial.ambientColor = [1, 1, 1];
     monsterMaterial.ambientIntensity = 0.2;
     monsterMaterial.objectColor = [1, 0.5, 0.31];
     monsterMaterial.specularStrength = 0.5;
-    monsterMaterial.diffuseSampler = 0;
-    monsterMaterial.specularSampler = 2;
+    // monsterMaterial.diffuseSampler = 0;
+    // monsterMaterial.specularSampler = 2;
 
     const phongMaterial = new Material(phongShader);
     phongMaterial.lightColor = [1, 1, 1];
@@ -44,21 +54,26 @@ function run() {
     phongMaterial.ambientIntensity = 0.2;
     phongMaterial.objectColor = [1, 0.5, 0.31];
     phongMaterial.specularStrength = 0.5;
-    phongMaterial.useTexture = false;
+    phongMaterial.useDiffuseTexture = false;
+    phongMaterial.useSpecularTexture = false;
+    phongMaterial.useNormalTexture = false;
 
     const boxMaterial = new Material(phongShader);
     const boxDiffuse = document.getElementById("boxDiffuseTexture");
     const boxSpecular = document.getElementById("boxSpecularTexture");
     let boxTexture = new Texture(boxDiffuse, null, boxSpecular);
-    boxMaterial.useTexture = true;
-    boxMaterial.texture = boxTexture;
+    boxMaterial.useDiffuseTexture = true;
+    boxMaterial.useNormalTexture = true;
+    boxMaterial.useSpecularTexture = true;
+    // boxMaterial.texture = boxTexture;
+    boxMaterial.texture = pavingStonesTexture;
     boxMaterial.lightColor = [1, 1, 1];
     boxMaterial.ambientColor = [1, 1, 1];
     boxMaterial.ambientIntensity = 0.2;
     boxMaterial.objectColor = [1, 0.5, 0.31];
     boxMaterial.specularStrength = 1;
-    boxMaterial.diffuseSampler = 0;
-    boxMaterial.specularSampler = 2;
+    // boxMaterial.diffuseSampler = 0;
+    // boxMaterial.specularSampler = 2;
 
     // Monster Object
     var monster = new GameObject();

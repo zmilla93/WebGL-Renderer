@@ -190,9 +190,17 @@ class Material {
     // Shader - Shader Class
     constructor(shader) {
         this._shader = shader;
-        this.registerMaterial(this);
+        this.diffuseSampler = 0;
+        this.normalSampler = 1;
+        this.specularSampler = 2;
+
+        this.useDiffuseTexture = false;
+        this.useSpecularTexture = false;
+        this.useNormalTexture = false;
+
+        Material.registerMaterial(this);
     }
-    registerMaterial(material) {
+    static registerMaterial(material) {
         var shaderEntry;
         if (Material.materialMap.has(material._shader.name)) {
             shaderEntry = Material.materialMap.get(material._shader.name);
