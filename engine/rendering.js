@@ -186,6 +186,7 @@ class Material {
     _renderers = [];
     // uniform = {};
     // _texture;
+    _directionalLight;
     static materialMap = new Map();
     // Shader - Shader Class
     constructor(shader) {
@@ -199,6 +200,13 @@ class Material {
         this.useNormalTexture = false;
 
         Material.registerMaterial(this);
+    }
+    setDirectionalLight(directionalLight){
+        this._directionalLight = directionalLight;
+        this["directionalLight.direction"] = directionalLight.direction;
+        this["directionalLight.diffuse"] = directionalLight.diffuse;
+        this["directionalLight.ambient"] = directionalLight.ambient;
+        this["directionalLight.specular"] = directionalLight.specular;
     }
     static registerMaterial(material) {
         var shaderEntry;
@@ -585,8 +593,11 @@ class MeshRenderer extends Component {
     }
 }
 
-class Light extends Component {
-
+class DirectionalLight{
+    direction;
+    ambient;
+    diffuse;
+    specular;
 }
 
 // Handles basic line rendering

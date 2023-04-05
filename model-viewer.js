@@ -26,6 +26,10 @@ function run() {
     phongShader.uniformConverter.diffuseSampler = Rendering.intConverter;
     phongShader.uniformConverter.normalSampler = Rendering.intConverter;
     phongShader.uniformConverter.specularSampler = Rendering.intConverter;
+    phongShader.uniformConverter["directionalLight.direction"] = Rendering.vector3Converter;
+    phongShader.uniformConverter["directionalLight.ambient"] = Rendering.vector3Converter;
+    phongShader.uniformConverter["directionalLight.diffuse"] = Rendering.vector3Converter;
+    phongShader.uniformConverter["directionalLight.specular"] = Rendering.vector3Converter;
 
     // Textures
     let pavingStoneDiffuse = document.getElementById("pavingStonesDiffuse");
@@ -33,18 +37,32 @@ function run() {
     let pavingStoneSpecular = document.getElementById("pavingStonesDiffuse");
     let pavingStonesTexture = new Texture(pavingStoneDiffuse, pavingStoneNormal, pavingStoneSpecular);
 
+    let directionalLight = new DirectionalLight();
+    directionalLight.direction = [1, -1, -0.5];
+    directionalLight.ambient = [0.2, 0.2, 0.2];
+    directionalLight.diffuse = [1, 1, 1];
+    directionalLight.specular = [0.3, 0.3, 0.3];
+    // directionalLight.specular = [1,0,0];
+
     // Monster Material
     const monsterImage = document.getElementById("monsterTexture");
     const monsterTexture = new Texture(monsterImage);
     const monsterMaterial = new Material(phongShader);
     monsterMaterial.useDiffuseTexture = true;
-    monsterMaterial.useSpecularTexture = true;
+    monsterMaterial.useSpecularTexture = false;
     monsterMaterial.texture = monsterTexture;
     monsterMaterial.lightColor = [1, 1, 1];
     monsterMaterial.ambientColor = [1, 1, 1];
     monsterMaterial.ambientIntensity = 0.2;
     monsterMaterial.objectColor = [1, 0.5, 0.31];
     monsterMaterial.specularStrength = 0.5;
+    monsterMaterial.setDirectionalLight(directionalLight);
+    // monsterMaterial["directionalLight.direction"] = [1, -1, 0];
+    // monsterMaterial["directionalLight.diffuse"] = [1, 1, 1];
+    // monsterMaterial["directionalLight.ambient"] = [0.2, 0.2, 0.2];
+    // monsterMaterial["directionalLight.specular"] = [1, 1, 1];
+    // monsterMaterial["directionalLight.direction"] = [0, 0, 1];
+    // monsterMaterial["directionalLight.direction"] = [0, 0, 1];
     // monsterMaterial.diffuseSampler = 0;
     // monsterMaterial.specularSampler = 2;
 
@@ -57,6 +75,11 @@ function run() {
     phongMaterial.useDiffuseTexture = false;
     phongMaterial.useSpecularTexture = false;
     phongMaterial.useNormalTexture = false;
+    phongMaterial.setDirectionalLight(directionalLight);
+    // phongMaterial["directionalLight.direction"] = [1, -1, 0];
+    // phongMaterial["directionalLight.diffuse"] = [1, 1, 1];
+    // phongMaterial["directionalLight.ambient"] = [0.2, 0.2, 0.2];
+    // phongMaterial["directionalLight.specular"] = [1, 1, 1];
 
     const boxMaterial = new Material(phongShader);
     const boxDiffuse = document.getElementById("boxDiffuseTexture");
@@ -72,6 +95,13 @@ function run() {
     boxMaterial.ambientIntensity = 0.2;
     boxMaterial.objectColor = [1, 0.5, 0.31];
     boxMaterial.specularStrength = 1;
+    boxMaterial.setDirectionalLight(directionalLight);
+    // boxMaterial["directionalLight.direction"] = [1, -1, 0.5];
+    // // boxMaterial["directionalLight.direction"] = [0, -1, 0];
+    // boxMaterial["directionalLight.diffuse"] = [1, 1, 1];
+    // boxMaterial["directionalLight.ambient"] = [0.2, 0.2, 0.2];
+    // boxMaterial["directionalLight.specular"] = [1, 1, 1];
+    // boxMaterial["directionalLight.specular"] = [0.5, 0.5, 0.5];
     // boxMaterial.diffuseSampler = 0;
     // boxMaterial.specularSampler = 2;
 
@@ -122,7 +152,8 @@ function run() {
     // Point Light Object
     var light = new GameObject();
     light.add(new MeshRenderer(Mesh.smoothSphere, light1Material));
-    light.position = [0, 5, -6];
+    // light.position = [0, 5, -6];
+    light.position = [0, 5, -4];
     let s = 0.2;
     light.scale = [s, s, s];
 

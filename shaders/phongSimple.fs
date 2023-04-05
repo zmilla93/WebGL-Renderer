@@ -51,7 +51,9 @@ uniform bool useSpecularTexture;
 
 uniform float viewDistance;
 
-vec3 calculateDirectionalLight(DirectionalLight light, vec3 viewDir, vec3 diffuseSample, vec3 specularSample);
+vec3 color(vec3 incol);
+
+vec3 calculateDirectionalLight(DirectionalLight light);
 
 void main(void) {
 
@@ -100,37 +102,21 @@ void main(void) {
     else
         result = (combinedAmbient + diffuse + specular) * objectColor;
 
-    result = vec3(0.0, 0.0, 0.0);
-    result += calculateDirectionalLight(directionalLight, viewDir, diffuseSample.xyz, specularSample.xyz);
-    // outp *= diffuseSample.xyz;
     // result = color(vec3(0, 1, 0));
     // result = calculateDirectionalLight(directionalLight);
-    // gl_FragColor = vec4(result.xyz, 1);
     gl_FragColor = vec4(result.xyz, 1);
+
 }
 
-vec3 calculateDirectionalLight(DirectionalLight light, vec3 viewDir, vec3 diffuseSample, vec3 specularSample) {
-    vec3 lightDir = normalize(-light.direction);
+vec3 color(vec3 incol) {
+    vec3 red = vec3(1, 0, 0);
+    return incol;
+}
+
+vec3 calculateDirectionalLight(DirectionalLight light) {
+    vec3 lightDir = normalize(lightPos - vFragPos);
     vec3 reflectDir = reflect(-lightDir, vNormal);
-    // Ambient
-    vec3 ambient;
-    if(useDiffuseTexture)
-        ambient = light.ambient * diffuseSample;
-    else
-        ambient = light.ambient * objectColor;
-    // Diffuse
     float rawDiffuse = max(dot(vNormal, lightDir), 0.0);
-    vec3 diffuse;
-    if(useDiffuseTexture)
-        diffuse = rawDiffuse * light.diffuse * diffuseSample;
-    else
-        diffuse = rawDiffuse * light.diffuse * objectColor;
-    // Specular
-    float rawSpecular = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
-    vec3 specular;
-    if(useSpecularTexture)
-        specular = specularSample.xyz * rawSpecular * light.specular;
-    else
-        specular = specularStrength * rawSpecular * light.specular;
-    return ambient + specular + diffuse;
+    vec3 diffuse = rawDiffuse * lightColor;
+    return light.direction;
 }
