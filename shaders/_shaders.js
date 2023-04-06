@@ -215,7 +215,6 @@ varying mediump vec3 vSkyColor;
 varying mediump mat4 vModelMatrix;
 
 // Texture Sampling
-uniform sampler2D uSampler;
 uniform sampler2D diffuseSampler;
 uniform sampler2D normalSampler;
 uniform sampler2D specularSampler;
@@ -225,15 +224,6 @@ uniform DirectionalLight directionalLight;
 uniform PointLight pointLight[4];
 
 uniform mediump vec3 objectColor;
-uniform mediump vec3 ambientLight;
-uniform mediump vec3 ambientColor;
-uniform mediump float ambientIntensity;
-uniform mediump vec3 lightColor;
-uniform mediump vec3 lightPos;
-uniform mediump vec3 sunlightColor;
-uniform mediump vec3 sunlightAngle;
-uniform mediump float sunlightIntensity;
-uniform mediump vec3 skyColor;
 uniform mediump vec3 cameraPos;
 uniform mediump float specularStrength;
 
@@ -306,9 +296,7 @@ vec3 calculateDirectionalLight(DirectionalLight light, vec3 viewDir, vec3 diffus
 vec3 calculatePointLight(PointLight light, vec3 viewDir, vec3 diffuseSample, vec3 specularSample) {
     vec3 lightDir = normalize(light.position - vFragPos);
     vec3 reflectDir = reflect(-lightDir, vNormal);
-    float distance = length(light.position - vFragPos);
-    float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
-
+    // Ambient
     vec3 ambient;
     if(useDiffuseTexture)
         ambient = light.ambient * diffuseSample;
@@ -329,12 +317,13 @@ vec3 calculatePointLight(PointLight light, vec3 viewDir, vec3 diffuseSample, vec
     else
         specular = specularStrength * rawSpecular * light.specular;
     // Apply attenuation
+    float distance = length(light.position - vFragPos);
+    float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
     ambient *= attenuation;
     diffuse *= attenuation;
     specular *= attenuation;
 
     return ambient + specular + diffuse;
-
 }
 `
 

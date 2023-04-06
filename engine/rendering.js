@@ -184,8 +184,20 @@ class Shader {
 class LitShader extends Shader {
     constructor(name, vertexShaderSource, fragmentShaderSource, lightCount = 4, attributes = Engine.defaultVertexAttributes) {
         super(name, vertexShaderSource, fragmentShaderSource, attributes);
-        // this.setupDirectionalLighting();
+        this.setupCommon();
+        this.setupDirectionalLighting();
         this.setupPointLighting(lightCount);
+    }
+    setupCommon(){
+        this.uniformConverter.objectColor = Rendering.vector3Converter;
+        this.uniformConverter.cameraPos = Rendering.vector3Converter;
+        this.uniformConverter.specularStrength = Rendering.floatConverter;
+        this.uniformConverter.useDiffuseTexture = Rendering.boolConverter;
+        this.uniformConverter.useSpecularTexture = Rendering.boolConverter;
+        this.uniformConverter.useNormalTexture = Rendering.boolConverter;
+        this.uniformConverter.diffuseSampler = Rendering.intConverter;
+        this.uniformConverter.normalSampler = Rendering.intConverter;
+        this.uniformConverter.specularSampler = Rendering.intConverter;
     }
     setupDirectionalLighting() {
         this.uniformConverter["directionalLight.direction"] = Rendering.vector3Converter;
@@ -304,43 +316,6 @@ class Texture {
         if (specular != null) {
             this.specular = Texture.createGLTexture(gl.TEXTURE2, specular, textureFilter, textureWrap);
         }
-        // this.diffuse = gl.createTexture();
-        // gl.bindTexture(gl.TEXTURE_2D, this.diffuse);
-        // // Attempt to send the texture to webGL.
-        // try {
-        //     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true); // Flips the texture vertically.
-        //     gl.texImage2D(gl.TEXTURE_2D, levelOfDetail, internalFormat, diffuse.width, diffuse.height, border, srcFormat, type, diffuse);
-        //     gl.generateMipmap(gl.TEXTURE_2D);
-        // } catch (error) {
-        //     // If creating the texture fails, delete the glTexture and return.
-        //     console.error("Failed to create glTexture using '" + diffuse.id + "' " + diffuse + ". Textures cannot be used in an offline enviroment. See github repo for info to locally host using python.");
-        //     gl.deleteTexture(this.diffuse);
-        //     this.diffuse = null;
-        //     return;
-        // }
-        // // Set texture wrap mode
-        // switch (textureWrap) {
-        //     case TextureWrap.Clamp:
-        //         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        //         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        //         break;
-        //     case TextureWrap.Wrap:
-        //         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-        //         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
-        //         break;
-        // }
-        // // Set texture fitler mode
-        // switch (textureFilter) {
-        //     case TextureFilter.Nearest:
-        //         // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST_MIPMAP_LINEAR);
-        //         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST_MIPMAP_NEAREST);
-        //         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-        //         break;
-        //     case TextureFilter.Linear:
-        //         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST_MIPMAP_LINEAR);
-        //         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-        //         break;
-        // }
     }
     // Creates a 1x1 texture to be used when a texture is missing.
     static createPlaceholderTexture() {
@@ -576,10 +551,6 @@ class Mesh {
         this.colors = [];
     }
 }
-
-// function meshToData(mesh) {
-//     const data = data = new Float32Array(mesh.vertices.length * 3 * 2);
-// }
 
 /**
  * Renders a mesh for a given game object.
