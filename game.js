@@ -22,12 +22,10 @@ function run() {
     // img.src = textureCanvas.toDataURL();
 
     const images = document.getElementsByClassName("voxelTexture");
-    const texture = new Texture(atlas.image, TextureFilter.Nearest);
-    // const texture = new Texture(images[0]);
-    const texture2 = new Texture(atlas.image, TextureFilter.Nearest);
+    const texture = new Texture(atlas.image, null, null, TextureFilter.Nearest);
+    const texture2 = new Texture(atlas.image, null, null, TextureFilter.Nearest);
 
     const monsterImage = document.getElementById("monsterTexture");
-    // const monsterTexture = new Texture(monsterImage, TextureFilter.Linear);
     const monsterTexture = new Texture(monsterImage);
 
     var litMat = new Material(Shader.simpleLit);
@@ -61,7 +59,7 @@ function run() {
     textureMat.sunlightIntensity = 1;
     textureMat.sunlightAngle = [0, 1, 0.5];
     textureMat.sunlightColor = [245 / 255, 215 / 255, 66 / 255];
-    
+
     Camera.main.viewDistance = 400;
     litMat.viewDistance = Camera.main.viewDistance;
     // litMat.skyColor = vec3.fromValues(1, 0, 0);
@@ -112,7 +110,7 @@ function run() {
 
 
     target.setRotation(45, 0, 0);
-    
+
     // Create a game object to hold controller scripts
     var controller = new GameObject();
     var orthoToggle = new Component();
