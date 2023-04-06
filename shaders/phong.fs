@@ -59,9 +59,6 @@ vec3 calculateDirectionalLight(DirectionalLight light, vec3 viewDir, vec3 diffus
 vec3 calculatePointLight(PointLight light, vec3 viewDir, vec3 diffuseSample, vec3 specularSample);
 
 void main(void) {
-
-    vec3 combinedAmbient = ambientColor * ambientIntensity;
-
     // Sample Textures
     vec4 diffuseSample = texture2D(diffuseSampler, vUV1);
     vec4 normalSample = texture2D(normalSampler, vUV1);
@@ -81,40 +78,13 @@ void main(void) {
     // float mixZ = mix(color.z, skyColor.z, clipDepth);
     // vec3 foggedColor = vec3(mixX, mixY, mixZ);
 
-    vec3 sampledNormal = normalize(vec3(vModelMatrix * vec4(normalSample.xyz, 0)));
-
-    vec3 lightDir = normalize(lightPos - vFragPos);
     vec3 viewDir = normalize(cameraPos - vFragPos);
-    vec3 reflectDir = reflect(-lightDir, vNormal);
-
-    float rawDiffuse = max(dot(vNormal, lightDir), 0.0);
-    vec3 diffuse = rawDiffuse * lightColor;
-
-    // Calculate specular value
-    float rawSpecular = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
-    vec3 specular;
-    if(useSpecularTexture)
-        specular = specularSample.xyz * rawSpecular * lightColor;
-    else
-        specular = specularStrength * rawSpecular * lightColor;
-
-    // Calculate diffuse value
     vec3 result;
-    if(useDiffuseTexture)
-        result = (combinedAmbient + diffuse + specular) * diffuseSample.xyz;
-    else
-        result = (combinedAmbient + diffuse + specular) * objectColor;
-
     result = vec3(0.0, 0.0, 0.0);
     result += calculateDirectionalLight(directionalLight, viewDir, diffuseSample.xyz, specularSample.xyz);
 
     result += calculatePointLight(pointLight[0], viewDir, diffuseSample.xyz, specularSample.xyz);
-    // result += calculatePointLight(pointLight[0], viewDir, diffuseSample.xyz, specularSample.xyz);
 
-    // outp *= diffuseSample.xyz;
-    // result = color(vec3(0, 1, 0));
-    // result = calculateDirectionalLight(directionalLight);
-    // gl_FragColor = vec4(result.xyz, 1);
     gl_FragColor = vec4(result.xyz, 1);
 }
 
@@ -146,7 +116,6 @@ vec3 calculateDirectionalLight(DirectionalLight light, vec3 viewDir, vec3 diffus
 
 vec3 calculatePointLight(PointLight light, vec3 viewDir, vec3 diffuseSample, vec3 specularSample) {
     vec3 lightDir = normalize(light.position - vFragPos);
-    // vec3 viewDir = normalize(cameraPos - vFragPos);
     vec3 reflectDir = reflect(-lightDir, vNormal);
     float distance = length(light.position - vFragPos);
     float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));

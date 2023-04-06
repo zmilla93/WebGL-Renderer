@@ -184,7 +184,7 @@ class Shader {
 class LitShader extends Shader {
     constructor(name, vertexShaderSource, fragmentShaderSource, lightCount = 4, attributes = Engine.defaultVertexAttributes) {
         super(name, vertexShaderSource, fragmentShaderSource, attributes);
-        this.setupDirectionalLighting();
+        // this.setupDirectionalLighting();
         this.setupPointLighting(lightCount);
     }
     setupDirectionalLighting() {
@@ -227,12 +227,22 @@ class Material {
 
         Material.registerMaterial(this);
     }
-    setDirectionalLight(directionalLight) {
-        this._directionalLight = directionalLight;
-        this["directionalLight.direction"] = directionalLight.direction;
-        this["directionalLight.diffuse"] = directionalLight.diffuse;
-        this["directionalLight.ambient"] = directionalLight.ambient;
-        this["directionalLight.specular"] = directionalLight.specular;
+    setDirectionalLight(light) {
+        this._directionalLight = light;
+        this["directionalLight.direction"] = light.direction;
+        this["directionalLight.diffuse"] = light.diffuse;
+        this["directionalLight.ambient"] = light.ambient;
+        this["directionalLight.specular"] = light.specular;
+    }
+    setPointLight(index, light) {
+        var lightPrefix = "pointLight[" + index + "].";
+        this[lightPrefix + "position"] = light.position;
+        this[lightPrefix + "diffuse"] = light.diffuse;
+        this[lightPrefix + "ambient"] = light.ambient;
+        this[lightPrefix + "specular"] = light.specular;
+        this[lightPrefix + "constant"] = light.constant;
+        this[lightPrefix + "linear"] = light.linear;
+        this[lightPrefix + "quadratic"] = light.quadratic;
     }
     static registerMaterial(material) {
         var shaderEntry;
@@ -627,13 +637,19 @@ class DirectionalLight {
 }
 
 class PointLight {
-    direction;
-    constant;
-    linear;
-    quadratic;
-    ambient;
-    diffuse;
-    specular;
+    position = [0, 0, 0];
+    // Colors
+    ambient = [0.2, 0.2, 0.2];
+    diffuse = [1, 1, 1];
+    specular = [1, 1, 1];
+    // Attenuation values - Default is range 50
+    constant = 1;
+    linear = 0.09;
+    quadratic = 0.032;
+    set color(color) {
+        this.diffuse = color;
+        this.specular = color;
+    }
 }
 
 // Handles basic line rendering
