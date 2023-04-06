@@ -106,7 +106,7 @@ void main(void) {
         result = (combinedAmbient + diffuse + specular) * objectColor;
 
     result = vec3(0.0, 0.0, 0.0);
-    // result += calculateDirectionalLight(directionalLight, viewDir, diffuseSample.xyz, specularSample.xyz);
+    result += calculateDirectionalLight(directionalLight, viewDir, diffuseSample.xyz, specularSample.xyz);
 
     result += calculatePointLight(pointLight[0], viewDir, diffuseSample.xyz, specularSample.xyz);
     // result += calculatePointLight(pointLight[0], viewDir, diffuseSample.xyz, specularSample.xyz);

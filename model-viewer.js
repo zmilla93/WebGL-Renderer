@@ -1,5 +1,7 @@
 function run() {
 
+    console.profile("gl");
+
     const canvas = document.getElementById('glCanvas');
     Engine.init(canvas);
     createGrid();
@@ -10,7 +12,7 @@ function run() {
     controller.add(new SimpleCameraController());
 
     // Phong Shader
-    const phongShader = new Shader("Phong shader", phongVertexSource, phongFragmentSource);
+    const phongShader = new LitShader("Phong shader", phongVertexSource, phongFragmentSource);
     // Phong uniform converts
     phongShader.uniformConverter.ambientColor = Rendering.vector3Converter;
     phongShader.uniformConverter.ambientIntensity = Rendering.floatConverter;
@@ -26,17 +28,17 @@ function run() {
     phongShader.uniformConverter.diffuseSampler = Rendering.intConverter;
     phongShader.uniformConverter.normalSampler = Rendering.intConverter;
     phongShader.uniformConverter.specularSampler = Rendering.intConverter;
-    phongShader.uniformConverter["directionalLight.direction"] = Rendering.vector3Converter;
-    phongShader.uniformConverter["directionalLight.ambient"] = Rendering.vector3Converter;
-    phongShader.uniformConverter["directionalLight.diffuse"] = Rendering.vector3Converter;
-    phongShader.uniformConverter["directionalLight.specular"] = Rendering.vector3Converter;
-    phongShader.uniformConverter["pointLight[0].position"] = Rendering.vector3Converter;
-    phongShader.uniformConverter["pointLight[0].ambient"] = Rendering.vector3Converter;
-    phongShader.uniformConverter["pointLight[0].diffuse"] = Rendering.vector3Converter;
-    phongShader.uniformConverter["pointLight[0].specular"] = Rendering.vector3Converter;
-    phongShader.uniformConverter["pointLight[0].costant"] = Rendering.floatConverter;
-    phongShader.uniformConverter["pointLight[0].linear"] = Rendering.floatConverter;
-    phongShader.uniformConverter["pointLight[0].quadratic"] = Rendering.floatConverter;
+    // phongShader.uniformConverter["directionalLight.direction"] = Rendering.vector3Converter;
+    // phongShader.uniformConverter["directionalLight.ambient"] = Rendering.vector3Converter;
+    // phongShader.uniformConverter["directionalLight.diffuse"] = Rendering.vector3Converter;
+    // phongShader.uniformConverter["directionalLight.specular"] = Rendering.vector3Converter;
+    // phongShader.uniformConverter["pointLight[0].position"] = Rendering.vector3Converter;
+    // phongShader.uniformConverter["pointLight[0].ambient"] = Rendering.vector3Converter;
+    // phongShader.uniformConverter["pointLight[0].diffuse"] = Rendering.vector3Converter;
+    // phongShader.uniformConverter["pointLight[0].specular"] = Rendering.vector3Converter;
+    // phongShader.uniformConverter["pointLight[0].costant"] = Rendering.floatConverter;
+    // phongShader.uniformConverter["pointLight[0].linear"] = Rendering.floatConverter;
+    // phongShader.uniformConverter["pointLight[0].quadratic"] = Rendering.floatConverter;
 
     // Textures
     let pavingStoneDiffuse = document.getElementById("pavingStonesDiffuse");
@@ -166,25 +168,25 @@ function run() {
     monsterMaterial.lightPos = light.position;
 
     monsterMaterial["pointLight[0].position"] = light.position;
-    monsterMaterial["pointLight[0].ambient"] = [0.2,0.2,0.2];
-    monsterMaterial["pointLight[0].diffuse"] = [1,1,1];
-    monsterMaterial["pointLight[0].specular"] = [1,1,1];
+    monsterMaterial["pointLight[0].ambient"] = [0.2, 0.2, 0.2];
+    monsterMaterial["pointLight[0].diffuse"] = [1, 1, 1];
+    monsterMaterial["pointLight[0].specular"] = [1, 1, 1];
     monsterMaterial["pointLight[0].constant"] = 1;
     monsterMaterial["pointLight[0].linear"] = 0.14;
     monsterMaterial["pointLight[0].quadratic"] = 0.07;
 
     phongMaterial["pointLight[0].position"] = light.position;
-    phongMaterial["pointLight[0].ambient"] = [0.2,0.2,0.2];
-    phongMaterial["pointLight[0].diffuse"] = [1,1,1];
-    phongMaterial["pointLight[0].specular"] = [1,1,1];
+    phongMaterial["pointLight[0].ambient"] = [0.2, 0.2, 0.2];
+    phongMaterial["pointLight[0].diffuse"] = [1, 1, 1];
+    phongMaterial["pointLight[0].specular"] = [1, 1, 1];
     phongMaterial["pointLight[0].constant"] = 1;
     phongMaterial["pointLight[0].linear"] = 0.14;
     phongMaterial["pointLight[0].quadratic"] = 0.07;
 
     boxMaterial["pointLight[0].position"] = light.position;
-    boxMaterial["pointLight[0].ambient"] = [0.2,0.2,0.2];
-    boxMaterial["pointLight[0].diffuse"] = [1,1,1];
-    boxMaterial["pointLight[0].specular"] = [1,1,1];
+    boxMaterial["pointLight[0].ambient"] = [0.2, 0.2, 0.2];
+    boxMaterial["pointLight[0].diffuse"] = [1, 1, 1];
+    boxMaterial["pointLight[0].specular"] = [1, 1, 1];
     boxMaterial["pointLight[0].constant"] = 1;
     boxMaterial["pointLight[0].linear"] = 0.14;
     boxMaterial["pointLight[0].quadratic"] = 0.07;
@@ -204,12 +206,19 @@ function run() {
         monsterMaterial.ambientIntensity = value;
     });
 
+    var tick = 0;
     light.update = function () {
         let t = Math.sin(Time.elapsedTime) * 5;
         // light.position = [0, t, 0];
         monsterMaterial.lightPos = light.position;
         phongMaterial.lightPos = light.position;
         boxMaterial.lightPos = light.position;
+        tick++;
+        // console.log(tick);
+        if(tick == 100){
+            console.log("Profile end!!!");
+            console.profileEnd(0);
+        }
     }
 }
 

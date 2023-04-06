@@ -181,6 +181,32 @@ class Shader {
     }
 }
 
+class LitShader extends Shader {
+    constructor(name, vertexShaderSource, fragmentShaderSource, lightCount = 4, attributes = Engine.defaultVertexAttributes) {
+        super(name, vertexShaderSource, fragmentShaderSource, attributes);
+        this.setupDirectionalLighting();
+        this.setupPointLighting(lightCount);
+    }
+    setupDirectionalLighting() {
+        this.uniformConverter["directionalLight.direction"] = Rendering.vector3Converter;
+        this.uniformConverter["directionalLight.ambient"] = Rendering.vector3Converter;
+        this.uniformConverter["directionalLight.diffuse"] = Rendering.vector3Converter;
+        this.uniformConverter["directionalLight.specular"] = Rendering.vector3Converter;
+    }
+    setupPointLighting(lightCount) {
+        for (let i = 0; i < lightCount; i++) {
+            let curLight = "pointLight[" + i + "].";
+            this.uniformConverter[curLight + "position"] = Rendering.vector3Converter;
+            this.uniformConverter[curLight + "ambient"] = Rendering.vector3Converter;
+            this.uniformConverter[curLight + "diffuse"] = Rendering.vector3Converter;
+            this.uniformConverter[curLight + "specular"] = Rendering.vector3Converter;
+            this.uniformConverter[curLight + "costant"] = Rendering.floatConverter;
+            this.uniformConverter[curLight + "linear"] = Rendering.floatConverter;
+            this.uniformConverter[curLight + "quadratic"] = Rendering.floatConverter;
+        }
+    }
+}
+
 class Material {
     _shader;
     _renderers = [];
@@ -201,7 +227,7 @@ class Material {
 
         Material.registerMaterial(this);
     }
-    setDirectionalLight(directionalLight){
+    setDirectionalLight(directionalLight) {
         this._directionalLight = directionalLight;
         this["directionalLight.direction"] = directionalLight.direction;
         this["directionalLight.diffuse"] = directionalLight.diffuse;
@@ -593,14 +619,14 @@ class MeshRenderer extends Component {
     }
 }
 
-class DirectionalLight{
+class DirectionalLight {
     direction;
     ambient;
     diffuse;
     specular;
 }
 
-class PointLight{
+class PointLight {
     direction;
     constant;
     linear;
