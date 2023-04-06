@@ -224,18 +224,18 @@ class Engine {
                     shaderChanged = true;
                 }
                 // If the material uses a texture, bind it.
-                if (material.texture != null) {
-                    if (material.texture.diffuse != null) {
+                if (material._texture != null) {
+                    if (material._texture.diffuse != null) {
                         Engine.gl.activeTexture(gl.TEXTURE0);
-                        Engine.gl.bindTexture(gl.TEXTURE_2D, material.texture.diffuse);
+                        Engine.gl.bindTexture(gl.TEXTURE_2D, material._texture.diffuse);
                     }
-                    if (material.texture.normal != null) {
+                    if (material._texture.normal != null) {
                         Engine.gl.activeTexture(gl.TEXTURE1);
-                        Engine.gl.bindTexture(gl.TEXTURE_2D, material.texture.normal);
+                        Engine.gl.bindTexture(gl.TEXTURE_2D, material._texture.normal);
                     }
-                    if (material.texture.specular != null) {
+                    if (material._texture.specular != null) {
                         Engine.gl.activeTexture(gl.TEXTURE2);
-                        Engine.gl.bindTexture(gl.TEXTURE_2D, material.texture.specular);
+                        Engine.gl.bindTexture(gl.TEXTURE_2D, material._texture.specular);
                     }
                 }
                 // if (material.texture != null && material.texture.diffuse != null)
@@ -253,7 +253,7 @@ class Engine {
                     renderer.render(gl);
                 });
                 // If a texture was used, unbind it.
-                if (material.texture != null) {
+                if (material._texture != null) {
                     Engine.gl.activeTexture(gl.TEXTURE0);
                     Engine.gl.bindTexture(gl.TEXTURE_2D, Texture.placeholderTexture.diffuse);
                     Engine.gl.activeTexture(gl.TEXTURE1);

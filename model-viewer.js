@@ -43,8 +43,6 @@ function run() {
     const monsterImage = document.getElementById("monsterTexture");
     const monsterTexture = new Texture(monsterImage);
     const monsterMaterial = new Material(phongShader);
-    monsterMaterial.useDiffuseTexture = true;
-    monsterMaterial.useSpecularTexture = false;
     monsterMaterial.texture = monsterTexture;
     monsterMaterial.objectColor = [0, 0.75, 0];
     monsterMaterial.specularStrength = 0.5;
@@ -53,9 +51,6 @@ function run() {
     const phongMaterial = new Material(phongShader);
     phongMaterial.objectColor = [1, 0.5, 0.31];
     phongMaterial.specularStrength = 0.5;
-    phongMaterial.useDiffuseTexture = false;
-    phongMaterial.useSpecularTexture = false;
-    phongMaterial.useNormalTexture = false;
     phongMaterial.setDirectionalLight(directionalLight);
     phongMaterial.setPointLight(0, pointLight1);
 
@@ -63,9 +58,6 @@ function run() {
     const boxDiffuse = document.getElementById("boxDiffuseTexture");
     const boxSpecular = document.getElementById("boxSpecularTexture");
     const boxTexture = new Texture(boxDiffuse, null, boxSpecular);
-    boxMaterial.useDiffuseTexture = true;
-    boxMaterial.useNormalTexture = true;
-    boxMaterial.useSpecularTexture = true;
     boxMaterial.texture = pavingStonesTexture;
     boxMaterial.objectColor = [1, 0.5, 0.31];
     boxMaterial.specularStrength = 1;

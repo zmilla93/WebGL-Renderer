@@ -222,17 +222,17 @@ class LitShader extends Shader {
 class Material {
     _shader;
     _renderers = [];
-    // uniform = {};
-    // _texture;
+    _texture;
     _directionalLight;
     static materialMap = new Map();
     // Shader - Shader Class
     constructor(shader) {
         this._shader = shader;
+        // Sets the index for texture sampling.
         this.diffuseSampler = 0;
         this.normalSampler = 1;
         this.specularSampler = 2;
-
+        // Don't use textures by default.
         this.useDiffuseTexture = false;
         this.useSpecularTexture = false;
         this.useNormalTexture = false;
@@ -266,10 +266,12 @@ class Material {
         shaderEntry.push(material);
         Material.materialMap.set(material._shader.name, shaderEntry);
     }
-    // set texture(tex){
-    //     this.texture = tex;
-    //     this.useTexture = tex != null;
-    // }
+    set texture(texture){
+        this.useDiffuseTexture = texture.diffuse != null;
+        this.useNormalTexture = texture.normal != null;
+        this.useSpecularTexture = texture.specular != null;
+        this._texture = texture;
+    }
     // FIXME : get material seems unnessecary??
     static getMaterial(material) {
         const shaderGroup = Material.materialMap.get(material._shader.name);
