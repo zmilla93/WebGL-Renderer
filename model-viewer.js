@@ -26,7 +26,7 @@ function run() {
 
     let light1Material = new Material(Shader.unlitShader);
 
-    let pointLight1Pos = [-4, 3, 0];
+    let pointLight1Pos = [0, 3, 0];
     let pointLight1GO = new GameObject();
     pointLight1GO.add(new MeshRenderer(Mesh.sphere, light1Material));
     pointLight1GO.position = pointLight1Pos;
@@ -47,12 +47,15 @@ function run() {
     monsterMaterial.objectColor = [0, 0.75, 0];
     monsterMaterial.specularStrength = 0.5;
     monsterMaterial.setDirectionalLight(directionalLight);
+    // monsterMaterial.setDirectionalLight(null);
 
     const phongMaterial = new Material(phongShader);
     phongMaterial.objectColor = [1, 0.5, 0.31];
     phongMaterial.specularStrength = 0.5;
     phongMaterial.setDirectionalLight(directionalLight);
+    phongMaterial.setDirectionalLight(null);
     phongMaterial.setPointLight(0, pointLight1);
+    // phongMaterial.setPointLight(0, null);
 
     const boxMaterial = new Material(phongShader);
     const boxDiffuse = document.getElementById("boxDiffuseTexture");

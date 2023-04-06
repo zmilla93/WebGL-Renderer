@@ -4,7 +4,7 @@
 ===
     + Textures
     ~ Transparency
-    - Phong Lighting
+    + Phong Lighting
     - Add mouse delta
     - Better Camera
     + Fog
@@ -16,7 +16,7 @@
     - Normal texture
     - Optimize line rendering
     - Improve grid function
-    - Object scaling
+    ~ Object scaling
 
 ===
 === Voxel

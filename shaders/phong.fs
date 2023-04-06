@@ -31,8 +31,11 @@ uniform sampler2D normalSampler;
 uniform sampler2D specularSampler;
 
 // Lighting
+const int POINT_LIGHT_COUNT = 4;
 uniform DirectionalLight directionalLight;
-uniform PointLight pointLight[4];
+uniform PointLight pointLight[POINT_LIGHT_COUNT];
+uniform bool useDirectionalLight;
+uniform bool usePointLight[POINT_LIGHT_COUNT];
 
 uniform mediump vec3 objectColor;
 uniform mediump vec3 cameraPos;
@@ -69,11 +72,14 @@ void main(void) {
     // vec3 foggedColor = vec3(mixX, mixY, mixZ);
 
     vec3 viewDir = normalize(cameraPos - vFragPos);
-    vec3 result;
-    result = vec3(0.0, 0.0, 0.0);
-    result += calculateDirectionalLight(directionalLight, viewDir, diffuseSample.xyz, specularSample.xyz);
-
-    result += calculatePointLight(pointLight[0], viewDir, diffuseSample.xyz, specularSample.xyz);
+    vec3 result = vec3(0.0, 0.0, 0.0);
+    if(useDirectionalLight)
+        result += calculateDirectionalLight(directionalLight, viewDir, diffuseSample.xyz, specularSample.xyz);
+    for(int i = 0; i < POINT_LIGHT_COUNT; i++) {
+        if(!usePointLight[i])
+            continue;
+        result += calculatePointLight(pointLight[i], viewDir, diffuseSample.xyz, specularSample.xyz);
+    }
 
     gl_FragColor = vec4(result.xyz, 1);
 }

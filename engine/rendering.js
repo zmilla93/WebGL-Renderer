@@ -188,7 +188,7 @@ class LitShader extends Shader {
         this.setupDirectionalLighting();
         this.setupPointLighting(lightCount);
     }
-    setupCommon(){
+    setupCommon() {
         this.uniformConverter.objectColor = Rendering.vector3Converter;
         this.uniformConverter.cameraPos = Rendering.vector3Converter;
         this.uniformConverter.specularStrength = Rendering.floatConverter;
@@ -200,6 +200,7 @@ class LitShader extends Shader {
         this.uniformConverter.specularSampler = Rendering.intConverter;
     }
     setupDirectionalLighting() {
+        this.uniformConverter.useDirectionalLight = Rendering.boolConverter;
         this.uniformConverter["directionalLight.direction"] = Rendering.vector3Converter;
         this.uniformConverter["directionalLight.ambient"] = Rendering.vector3Converter;
         this.uniformConverter["directionalLight.diffuse"] = Rendering.vector3Converter;
@@ -208,6 +209,7 @@ class LitShader extends Shader {
     setupPointLighting(lightCount) {
         for (let i = 0; i < lightCount; i++) {
             let curLight = "pointLight[" + i + "].";
+            this.uniformConverter["usePointLight[" + i + "]"] = Rendering.boolConverter;
             this.uniformConverter[curLight + "position"] = Rendering.vector3Converter;
             this.uniformConverter[curLight + "ambient"] = Rendering.vector3Converter;
             this.uniformConverter[curLight + "diffuse"] = Rendering.vector3Converter;
@@ -237,24 +239,40 @@ class Material {
         this.useSpecularTexture = false;
         this.useNormalTexture = false;
 
+        this.useDirectionalLight = false;
+        // FIXME : Should be a better way to initialize this
+        for (let i = 0; i < 4; i++) {
+            this["usePointLight[" + i + "]"] = false;
+        }
         Material.registerMaterial(this);
     }
     setDirectionalLight(light) {
         this._directionalLight = light;
-        this["directionalLight.direction"] = light.direction;
-        this["directionalLight.diffuse"] = light.diffuse;
-        this["directionalLight.ambient"] = light.ambient;
-        this["directionalLight.specular"] = light.specular;
+        if (light != null) {
+            this.useDirectionalLight = true;
+            this["directionalLight.direction"] = light.direction;
+            this["directionalLight.diffuse"] = light.diffuse;
+            this["directionalLight.ambient"] = light.ambient;
+            this["directionalLight.specular"] = light.specular;
+        } else {
+            this.useDirectionalLight = false;
+        }
     }
     setPointLight(index, light) {
-        var lightPrefix = "pointLight[" + index + "].";
-        this[lightPrefix + "position"] = light.position;
-        this[lightPrefix + "diffuse"] = light.diffuse;
-        this[lightPrefix + "ambient"] = light.ambient;
-        this[lightPrefix + "specular"] = light.specular;
-        this[lightPrefix + "constant"] = light.constant;
-        this[lightPrefix + "linear"] = light.linear;
-        this[lightPrefix + "quadratic"] = light.quadratic;
+        let lightPrefix = "pointLight[" + index + "].";
+        let usePointLightKey = "usePointLight[" + index + "]";
+        if (light != null) {
+            this[lightPrefix + "position"] = light.position;
+            this[lightPrefix + "diffuse"] = light.diffuse;
+            this[lightPrefix + "ambient"] = light.ambient;
+            this[lightPrefix + "specular"] = light.specular;
+            this[lightPrefix + "constant"] = light.constant;
+            this[lightPrefix + "linear"] = light.linear;
+            this[lightPrefix + "quadratic"] = light.quadratic;
+            this[usePointLightKey] = true;
+        } else {
+            this[usePointLightKey] = false;
+        }
     }
     static registerMaterial(material) {
         var shaderEntry;
@@ -266,7 +284,7 @@ class Material {
         shaderEntry.push(material);
         Material.materialMap.set(material._shader.name, shaderEntry);
     }
-    set texture(texture){
+    set texture(texture) {
         this.useDiffuseTexture = texture.diffuse != null;
         this.useNormalTexture = texture.normal != null;
         this.useSpecularTexture = texture.specular != null;
