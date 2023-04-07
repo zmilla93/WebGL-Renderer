@@ -178,8 +178,9 @@ class Shader {
             return uniformLocation;
         }
         // If the uniform can't be found, report an error and add it to a set to avoid repeated errors.
-        if (!this.missingUniforms.has(uniformName)) {
-            this.missingUniforms.add(uniformName);
+        let missingName = this.name + ":" + uniformName;
+        if (!this.missingUniforms.has(missingName)) {
+            this.missingUniforms.add(missingName);
             console.error("Uniform '" + uniformName + "' not found in shader '" + this.name + "'.");
         }
     }
