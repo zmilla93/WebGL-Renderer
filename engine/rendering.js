@@ -140,7 +140,7 @@ class Shader {
     attributes;
     uniformConverter = {};
     uniformMap = new Map();
-
+    missingUniforms = new Set();
     // name - (string) ID
     // vertexShaderSource, fragmentShaderSource - (string) GLSL shader code
     // Attributes - Array of ShaderAttributes
@@ -177,7 +177,11 @@ class Shader {
             this.uniformMap.set(uniformName, uniformLocation);
             return uniformLocation;
         }
-        // console.error("Uniform '" + uniformName + "' not found in shader '" + this.name + "'.");
+        // If the uniform can't be found, report an error and add it to a set to avoid repeated errors.
+        if (!this.missingUniforms.has(uniformName)) {
+            this.missingUniforms.add(uniformName);
+            console.error("Uniform '" + uniformName + "' not found in shader '" + this.name + "'.");
+        }
     }
 }
 
@@ -214,7 +218,7 @@ class LitShader extends Shader {
             this.uniformConverter[curLight + "ambient"] = Rendering.vector3Converter;
             this.uniformConverter[curLight + "diffuse"] = Rendering.vector3Converter;
             this.uniformConverter[curLight + "specular"] = Rendering.vector3Converter;
-            this.uniformConverter[curLight + "costant"] = Rendering.floatConverter;
+            this.uniformConverter[curLight + "constant"] = Rendering.floatConverter;
             this.uniformConverter[curLight + "linear"] = Rendering.floatConverter;
             this.uniformConverter[curLight + "quadratic"] = Rendering.floatConverter;
         }
@@ -294,10 +298,16 @@ class Material {
         Material.materialMap.set(material._shader.name, shaderEntry);
     }
     set texture(texture) {
-        this.useDiffuseTexture = texture.diffuse != null;
-        this.useNormalTexture = texture.normal != null;
-        this.useSpecularTexture = texture.specular != null;
         this._texture = texture;
+        if(texture == null){
+            this.useDiffuseTexture = false;
+            this.useNormalTexture = false;
+            this.useSpecularTexture = false;
+        }else{
+            this.useDiffuseTexture = texture.diffuse != null;
+            this.useNormalTexture = texture.normal != null;
+            this.useSpecularTexture = texture.specular != null;
+        }
     }
     // FIXME : get material seems unnessecary??
     static getMaterial(material) {
@@ -586,7 +596,6 @@ class Mesh {
  */
 class MeshRenderer extends Component {
     material;
-    gameObject;
     constructor(mesh, material) {
         super();
         this.mesh = mesh;
@@ -594,11 +603,13 @@ class MeshRenderer extends Component {
     }
     applyPerObjectUniforms = function () {
         if (this.gameObject == null) return;
-        Engine.gl.uniformMatrix4fv(this.material._shader.uniform("transformMatrix"), false, this.gameObject.matrix);
-        Engine.gl.uniformMatrix4fv(this.material._shader.uniform("modelMatrix"), false, this.gameObject.getModelMatrix());
+        let gl = Engine.gl;
+        gl.uniformMatrix4fv(this.material._shader.uniform("transformMatrix"), false, this.gameObject.matrix);
+        gl.uniformMatrix4fv(this.material._shader.uniform("modelMatrix"), false, this.gameObject.getModelMatrix());
+        gl.uniform3f(this.material._shader.uniform("objectColor"), this.gameObject.color[0], this.gameObject.color[1], this.gameObject.color[2]);
         // FIXME : Camera pos could be moved to a per material uniform
         let camPos = Camera.main.position;
-        Engine.gl.uniform3f(this.material._shader.uniform("cameraPos"), camPos[0], camPos[1], camPos[2]);
+        gl.uniform3f(this.material._shader.uniform("cameraPos"), camPos[0], camPos[1], camPos[2]);
     };
     render(gl) {
         if (this.gameObject == null) return;

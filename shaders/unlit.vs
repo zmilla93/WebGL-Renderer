@@ -6,7 +6,7 @@ attribute vec3 vertexColor;
 uniform mat4 modelViewMatrix;
 // uniform mat4 projectionMatrix;
 uniform mat4 transformMatrix;
-uniform vec3 dominatingColor;
+uniform vec3 objectColor;
 // uniform vec3 ambientLight;
 // uniform vec3 sunlightAngle;
 // uniform float sunlightIntensity;
@@ -22,7 +22,7 @@ void main() {
     // vec4 newPosition = modelViewMatrix * v;
     // vec4 projectedPosition = projectionMatrix * newPosition;
     // vColor = vec4(dominatingColor.x, dominatingColor.y, dominatingColor.z, 1);
-    vColor = dominatingColor;
+    vColor = objectColor;
     vUV1 = vertexUV1;
     vNormal = vertexNormal;
 

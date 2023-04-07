@@ -144,7 +144,7 @@ class Engine {
         Shader.simpleLit.uniformConverter.sunlightAngle = Rendering.vector3Converter;
         Shader.simpleLit.uniformConverter.ambientLight = Rendering.vector3Converter;
         Shader.simpleLit.uniformConverter.skyColor = Rendering.vector3Converter;
-        Shader.unlitShader.uniformConverter.dominatingColor = Rendering.vector3Converter;
+        Shader.unlitShader.uniformConverter.objectColor = Rendering.vector3Converter;
 
         // Line VAO Setup
         // FIXME : Move this?
@@ -301,6 +301,7 @@ class GameObject {
     scale = vec3.fromValues(1, 1, 1);
     shape;
     components = [];
+    color = [1, 1, 1];
     static gameObjectList = [];
     constructor() {
         GameObject.gameObjectList.push(this);

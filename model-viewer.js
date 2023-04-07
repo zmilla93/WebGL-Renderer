@@ -9,7 +9,7 @@ function run() {
 
     // Phong Shader
     // FIXME : Make this into a default shader
-    const phongShader = new LitShader("Phong shader", phongVertexSource, phongFragmentSource);
+    const phongShader = new LitShader("Phong Shader", phongVertexSource, phongFragmentSource);
 
     //////////////
     // TEXTURES //
@@ -61,6 +61,7 @@ function run() {
     const monsterTexture = new Texture(monsterImage);
     const monsterMaterial = new Material(phongShader);
     monsterMaterial.texture = monsterTexture;
+    monsterMaterial.texture = null;
     monsterMaterial.objectColor = [0, 0.75, 0];
     monsterMaterial.specularStrength = 0.5;
     monsterMaterial.setDirectionalLight(directionalLight);
@@ -122,8 +123,8 @@ function run() {
     // Point Light Object
     const light = new GameObject();
     light.add(new MeshRenderer(Mesh.smoothSphere, light1Material));
-    // light.position = [0, 5, -6];
     light.position = [0, 3, -8];
+    light.color = [0, 0, 1];
     let s = 0.2;
     light.scale = [s, s, s];
 
@@ -157,15 +158,18 @@ function run() {
     let dummy = new GameObject();
     let tick = 0;
     dummy.update = function () {
-        let v = (Math.sin(Time.elapsedTime) + 1) / 2;
+        let v = (Math.sin(Time.elapsedTime) + 2) / 4;
+        monster.color = [0, v, 0];
+        monster2.color = [v, 0, 0];
         pointLight1.position = [0, v * 5, 0];
-        tick++;
-        if (tick > 100) {
-            directionalLight.color = [v, 0, 0];
-        } else {
-            directionalLight.color = [0, v, 0];
-        }
+        // tick++;
+        // if (tick > 100) {
+        //     directionalLight.color = [v, 0, 0];
+        // } else {
+        //     directionalLight.color = [0, v, 0];
+        // }
         // monsterMaterial.setDirectionalLight(directionalLight);
+
     }
 
 }
