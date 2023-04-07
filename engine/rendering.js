@@ -12,7 +12,7 @@ class Camera {
     viewDirection;
     forward;
     worldToViewMatrix;
-    _color = [1, 1, 1];
+    _color = [128 / 255, 255 / 255, 128 / 255];
     // Mutual Settings
     nearPlane = 0.01;
     farPlane = 1000;
@@ -226,7 +226,9 @@ class Material {
     _renderers = [];
     _texture;
     _directionalLight;
+    _pointLight = [Material.MAX_POINT_LIGHTS];
     static materialMap = new Map();
+    static MAX_POINT_LIGHTS = 4;
     // Shader - Shader Class
     constructor(shader) {
         this._shader = shader;
@@ -241,37 +243,44 @@ class Material {
 
         this.useDirectionalLight = false;
         // FIXME : Should be a better way to initialize this
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < Material.MAX_POINT_LIGHTS; i++) {
             this["usePointLight[" + i + "]"] = false;
         }
         Material.registerMaterial(this);
     }
     setDirectionalLight(light) {
         this._directionalLight = light;
+    }
+    setPointLight(index, light) {
+        this._pointLight[index] = light;
+    }
+    applyDirectionalLightUniforms() {
+        let light = this._directionalLight;
+        this.useDirectionalLight = this._directionalLight != null;
         if (light != null) {
-            this.useDirectionalLight = true;
             this["directionalLight.direction"] = light.direction;
             this["directionalLight.diffuse"] = light.diffuse;
             this["directionalLight.ambient"] = light.ambient;
             this["directionalLight.specular"] = light.specular;
-        } else {
-            this.useDirectionalLight = false;
         }
     }
-    setPointLight(index, light) {
-        let lightPrefix = "pointLight[" + index + "].";
-        let usePointLightKey = "usePointLight[" + index + "]";
-        if (light != null) {
-            this[lightPrefix + "position"] = light.position;
-            this[lightPrefix + "diffuse"] = light.diffuse;
-            this[lightPrefix + "ambient"] = light.ambient;
-            this[lightPrefix + "specular"] = light.specular;
-            this[lightPrefix + "constant"] = light.constant;
-            this[lightPrefix + "linear"] = light.linear;
-            this[lightPrefix + "quadratic"] = light.quadratic;
-            this[usePointLightKey] = true;
-        } else {
-            this[usePointLightKey] = false;
+    applyPointLightUniforms() {
+        for (let i = 0; i < Material.MAX_POINT_LIGHTS; i++) {
+            var light = this._pointLight[i];
+            let lightPrefix = "pointLight[" + i + "].";
+            let usePointLightKey = "usePointLight[" + i + "]";
+            if (light != null) {
+                this[lightPrefix + "position"] = light.position;
+                this[lightPrefix + "diffuse"] = light.diffuse;
+                this[lightPrefix + "ambient"] = light.ambient;
+                this[lightPrefix + "specular"] = light.specular;
+                this[lightPrefix + "constant"] = light.constant;
+                this[lightPrefix + "linear"] = light.linear;
+                this[lightPrefix + "quadratic"] = light.quadratic;
+                this[usePointLightKey] = true;
+            } else {
+                this[usePointLightKey] = false;
+            }
         }
     }
     static registerMaterial(material) {
@@ -625,6 +634,10 @@ class DirectionalLight {
     ambient;
     diffuse;
     specular;
+    set color(color) {
+        this.diffuse = color;
+        this.specular = color;
+    }
 }
 
 class PointLight {

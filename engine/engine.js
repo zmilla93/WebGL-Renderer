@@ -223,6 +223,8 @@ class Engine {
                     gl.useProgram(material._shader.program);
                     shaderChanged = true;
                 }
+                material.applyDirectionalLightUniforms();
+                material.applyPointLightUniforms();
                 // If the material uses a texture, bind it.
                 if (material._texture != null) {
                     if (material._texture.diffuse != null) {

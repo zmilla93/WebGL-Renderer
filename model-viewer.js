@@ -4,28 +4,41 @@ function run() {
     Engine.init(canvas);
     createGrid();
 
-    Camera.main.color = [0.5, 1, 0.5];
-
     const controller = new GameObject();
     controller.add(new SimpleCameraController());
 
     // Phong Shader
+    // FIXME : Make this into a default shader
     const phongShader = new LitShader("Phong shader", phongVertexSource, phongFragmentSource);
 
-    // Textures
+    //////////////
+    // TEXTURES //
+    //////////////
+
+    // Paving Stone Texture
     let pavingStoneDiffuse = document.getElementById("pavingStonesDiffuse");
     let pavingStoneNormal = document.getElementById("pavingStonesDiffuse");
     let pavingStoneSpecular = document.getElementById("pavingStonesDiffuse");
     let pavingStonesTexture = new Texture(pavingStoneDiffuse, pavingStoneNormal, pavingStoneSpecular);
 
+    // Box Texture
+    let boxDiffuse = document.getElementById("boxDiffuseTexture");
+    let boxSpecular = document.getElementById("boxSpecularTexture");
+    const boxTexture = new Texture(boxDiffuse, null, boxSpecular);
+
+    ////////////
+    // LIGHTS //
+    ////////////
+
+    // Directional Light
     let directionalLight = new DirectionalLight();
     directionalLight.direction = [1, -1, -0.5];
     directionalLight.ambient = [0.2, 0.2, 0.2];
-    directionalLight.diffuse = [1, 1, 1];
-    directionalLight.specular = [0.3, 0.3, 0.3];
+    directionalLight.color = [1, 1, 1];
 
     let light1Material = new Material(Shader.unlitShader);
 
+    // Point Lights
     let pointLight1Pos = [0, 3, 0];
     let pointLight1GO = new GameObject();
     pointLight1GO.add(new MeshRenderer(Mesh.sphere, light1Material));
@@ -38,6 +51,10 @@ function run() {
     pointLight1.ambient = [0.2, 0.2, 0.2];
     pointLight1.linear = 0.09;
     pointLight1.quadratic = 0.032;
+
+    ///////////////
+    // MATERIALS //
+    ///////////////
 
     // Monster Material
     const monsterImage = document.getElementById("monsterTexture");
@@ -58,22 +75,23 @@ function run() {
     // phongMaterial.setPointLight(0, null);
 
     const boxMaterial = new Material(phongShader);
-    const boxDiffuse = document.getElementById("boxDiffuseTexture");
-    const boxSpecular = document.getElementById("boxSpecularTexture");
-    const boxTexture = new Texture(boxDiffuse, null, boxSpecular);
-    boxMaterial.texture = pavingStonesTexture;
+
+    boxMaterial.texture = boxTexture;
     boxMaterial.objectColor = [1, 0.5, 0.31];
     boxMaterial.specularStrength = 1;
+
+    /////////////
+    // OBJECTS //
+    /////////////
 
     // Monster Object
     let monster = new GameObject();
     monster.add(new MeshRenderer(Mesh.monster, monsterMaterial));
+    monster.position = [-2, 0, -10];
 
     let monster2 = new GameObject();
     monster2.add(new MeshRenderer(Mesh.monster2, monsterMaterial));
-
-    monster.position = [-1, 0, -10];
-    monster2.position = [1, 0, -10];
+    monster2.position = [2, 0, -10];
 
     // SPHERE
     const sphere = new GameObject();
@@ -121,18 +139,35 @@ function run() {
         let color = hexToRGB(e.target.value);
         monsterMaterial.ambientColor = color;
     });
-    ambientIntensitySlider.addEventListener("input", function (e) {
-        let value = e.target.value;
-        monsterMaterial.ambientIntensity = value;
-    });
+
+
+    // ambientIntensitySlider.addEventListener("input", function (e) {
+    //     let value = e.target.value;
+    //     monsterMaterial.ambientIntensity = value;
+    // });
 
     light.update = function () {
         let t = Math.sin(Time.elapsedTime) * 5;
         // light.position = [0, t, 0];
-        monsterMaterial.lightPos = light.position;
-        phongMaterial.lightPos = light.position;
+        // monsterMaterial.lightPos = light.position;
+        // phongMaterial.lightPos = light.position;
         // boxMaterial.lightPos = light.position;
     }
+
+    let dummy = new GameObject();
+    let tick = 0;
+    dummy.update = function () {
+        let v = (Math.sin(Time.elapsedTime) + 1) / 2;
+        pointLight1.position = [0, v * 5, 0];
+        tick++;
+        if (tick > 100) {
+            directionalLight.color = [v, 0, 0];
+        } else {
+            directionalLight.color = [0, v, 0];
+        }
+        // monsterMaterial.setDirectionalLight(directionalLight);
+    }
+
 }
 
 window.addEventListener('load', run);
