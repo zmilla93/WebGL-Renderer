@@ -300,11 +300,11 @@ class Material {
     }
     set texture(texture) {
         this._texture = texture;
-        if(texture == null){
+        if (texture == null) {
             this.useDiffuseTexture = false;
             this.useNormalTexture = false;
             this.useSpecularTexture = false;
-        }else{
+        } else {
             this.useDiffuseTexture = texture.diffuse != null;
             this.useNormalTexture = texture.normal != null;
             this.useSpecularTexture = texture.specular != null;
@@ -652,8 +652,8 @@ class DirectionalLight {
     }
 }
 
-class PointLight {
-    position = [0, 0, 0];
+class PointLight extends Component {
+    // position = [0, 0, 0];
     // Colors
     ambient = [0.2, 0.2, 0.2];
     diffuse = [1, 1, 1];
@@ -662,9 +662,25 @@ class PointLight {
     constant = 1;
     linear = 0.09;
     quadratic = 0.032;
+    set position(position) {
+        if (this.gameObject == null) {
+            console.error("Attempted to change position of a point light, but it isn't attached to a game object!");
+            return;
+        }
+        this.gameObject.position = position;
+    }
+    get position() {
+        if (this.gameObject == null) {
+            console.error("Attempted to read position of a point light, but it isn't attached to a game object!");
+            return;
+        }
+        return this.gameObject.position;
+    }
     set color(color) {
         this.diffuse = color;
         this.specular = color;
+        if (this.gameObject != null) this.gameObject.color = color;
+        else console.error("Attempted to set color of a point light, but it isn't attached to a game object!");
     }
 }
 

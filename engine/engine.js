@@ -295,13 +295,14 @@ class Time {
 }
 
 class GameObject {
-    position = vec3.create();
+    _position = vec3.create();
     rotation = vec3.create();
     _rotationQuaternion = quat.create();
     scale = vec3.fromValues(1, 1, 1);
     shape;
     components = [];
     color = [1, 1, 1];
+    _renderers = [];
     static gameObjectList = [];
     constructor() {
         GameObject.gameObjectList.push(this);
@@ -315,6 +316,17 @@ class GameObject {
         var index = this.components.indexOf(component);
         this.components.splice(index, 1);
         component.onRemove(this);
+    }
+    set position(position){
+        this._position = position;
+        for(let component of this.components){
+            if(typeof(component.onPositionChange) ==='function'){
+                console.log("!!!!");
+            }
+        }
+    }
+    get position(){
+        return this._position;
     }
     setRotation(x, y, z) {
         this.rotation = [x, y, z];

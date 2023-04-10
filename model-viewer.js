@@ -41,13 +41,21 @@ function run() {
     // Point Lights
     let pointLight1Pos = [0, 3, 0];
     let pointLight1GO = new GameObject();
-    pointLight1GO.add(new MeshRenderer(Mesh.sphere, light1Material));
+    let pointLight1Renderer = new MeshRenderer(Mesh.sphere, light1Material);
+    pointLight1GO.add(pointLight1Renderer);
     pointLight1GO.position = pointLight1Pos;
     pointLight1GO.scale = [0.2, 0.2, 0.2];
+    // pointLight1GO.color = [1,0,0];
+
 
     let pointLight1 = new PointLight();
-    pointLight1.position = pointLight1Pos;
-    pointLight1.color = [1, 0, 0];
+    pointLight1GO.add(pointLight1);
+    // pointLight1.position = pointLight1Pos;
+
+
+    pointLight1.color = [1, 0.5, 1];
+    // pointLight1GO.color = [1, 0.5, 1];
+    // pointLight1Renderer.gameObject.objectColor = [0,0,1];
     pointLight1.ambient = [0.2, 0.2, 0.2];
     pointLight1.linear = 0.09;
     pointLight1.quadratic = 0.032;
@@ -161,7 +169,7 @@ function run() {
         let v = (Math.sin(Time.elapsedTime) + 2) / 4;
         monster.color = [0, v, 0];
         monster2.color = [v, 0, 0];
-        pointLight1.position = [0, v * 5, 0];
+        pointLight1GO.position = [0, v * 5, 0];
         // tick++;
         // if (tick > 100) {
         //     directionalLight.color = [v, 0, 0];
