@@ -12,6 +12,7 @@ function run() {
     const phongShader = new LitShader("Phong Shader", phongVertexSource, phongFragmentSource);
 
     // Piper Plane Mesh
+    let debugMaterial = new Material(phongShader);
 
     //////////////
     // TEXTURES //
@@ -71,7 +72,7 @@ function run() {
     const monsterTexture = new Texture(monsterImage);
     const monsterMaterial = new Material(phongShader);
     monsterMaterial.texture = monsterTexture;
-    // monsterMaterial.texture = null;
+    monsterMaterial.texture = null;
     monsterMaterial.objectColor = [0, 0.75, 0];
     monsterMaterial.specularStrength = 0.5;
     monsterMaterial.setDirectionalLight(directionalLight);

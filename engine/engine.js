@@ -274,8 +274,8 @@ class Engine {
 }
 
 // FIXME:
-function createGrid() {
-    const gridRadius = 20;
+function createGrid(gridRadius = 10) {
+    // const gridRadius = 20;
     const gridStep = 1;
     const color = vec3.fromValues(70 / 255, 70 / 255, 70 / 255);
     // const color = vec3.fromValues(1, 0, 0);

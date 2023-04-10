@@ -6,6 +6,8 @@ canvas {
     border: black;
     border-width: 1px;
     border-style: solid;
+    margin:auto;
+    display: block;
 }
 
 #editor {
