@@ -208,6 +208,7 @@ class LitShader extends Shader {
         this.uniformConverter.useDirectionalLight = Rendering.boolConverter;
         this.uniformConverter["directionalLight.direction"] = Rendering.vector3Converter;
         this.uniformConverter["directionalLight.ambient"] = Rendering.vector3Converter;
+        this.uniformConverter["directionalLight.ambientIntensity"] = Rendering.floatConverter;
         this.uniformConverter["directionalLight.diffuse"] = Rendering.vector3Converter;
         this.uniformConverter["directionalLight.specular"] = Rendering.vector3Converter;
     }
@@ -217,6 +218,7 @@ class LitShader extends Shader {
             this.uniformConverter["usePointLight[" + i + "]"] = Rendering.boolConverter;
             this.uniformConverter[curLight + "position"] = Rendering.vector3Converter;
             this.uniformConverter[curLight + "ambient"] = Rendering.vector3Converter;
+            this.uniformConverter[curLight + "ambientIntensity"] = Rendering.floatConverter;
             this.uniformConverter[curLight + "diffuse"] = Rendering.vector3Converter;
             this.uniformConverter[curLight + "specular"] = Rendering.vector3Converter;
             this.uniformConverter[curLight + "constant"] = Rendering.floatConverter;
@@ -266,6 +268,7 @@ class Material {
             this["directionalLight.direction"] = light.direction;
             this["directionalLight.diffuse"] = light.diffuse;
             this["directionalLight.ambient"] = light.ambient;
+            this["directionalLight.ambientIntensity"] = light.ambientIntensity;
             this["directionalLight.specular"] = light.specular;
         }
     }
@@ -278,6 +281,7 @@ class Material {
                 this[lightPrefix + "position"] = light.position;
                 this[lightPrefix + "diffuse"] = light.diffuse;
                 this[lightPrefix + "ambient"] = light.ambient;
+                this[lightPrefix + "ambientIntensity"] = light.ambientIntensity;
                 this[lightPrefix + "specular"] = light.specular;
                 this[lightPrefix + "constant"] = light.constant;
                 this[lightPrefix + "linear"] = light.linear;
@@ -642,11 +646,13 @@ class MeshRenderer extends Component {
 }
 
 class DirectionalLight {
-    direction;
-    ambient;
-    diffuse;
-    specular;
+    direction = [0.5, -1, 0.5];
+    ambient = [1, 1, 1];
+    ambientIntensity = 0.2;
+    diffuse = [1, 1, 1];
+    specular = [1, 1, 1];
     set color(color) {
+        this.ambient = color;
         this.diffuse = color;
         this.specular = color;
     }
@@ -655,7 +661,8 @@ class DirectionalLight {
 class PointLight extends Component {
     // position = [0, 0, 0];
     // Colors
-    ambient = [0.2, 0.2, 0.2];
+    ambient = [1, 1, 1];
+    ambientIntensity = 0.2;
     diffuse = [1, 1, 1];
     specular = [1, 1, 1];
     // Attenuation values - Default is range 50

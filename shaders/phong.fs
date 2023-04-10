@@ -3,6 +3,7 @@ precision mediump float;
 struct DirectionalLight {
     vec3 direction;
     vec3 ambient;
+    float ambientIntensity;
     vec3 diffuse;
     vec3 specular;
 };
@@ -13,6 +14,7 @@ struct PointLight {
     float linear;
     float quadratic;
     vec3 ambient;
+    float ambientIntensity;
     vec3 diffuse;
     vec3 specular;
 };
@@ -90,9 +92,9 @@ vec3 calculateDirectionalLight(DirectionalLight light, vec3 viewDir, vec3 diffus
     // Ambient
     vec3 ambient;
     if(useDiffuseTexture)
-        ambient = light.ambient * diffuseSample;
+        ambient = light.ambient * light.ambientIntensity * diffuseSample;
     else
-        ambient = light.ambient * objectColor;
+        ambient = light.ambient * light.ambientIntensity * objectColor;
     // Diffuse
     float rawDiffuse = max(dot(vNormal, lightDir), 0.0);
     vec3 diffuse;
@@ -116,9 +118,9 @@ vec3 calculatePointLight(PointLight light, vec3 viewDir, vec3 diffuseSample, vec
     // Ambient
     vec3 ambient;
     if(useDiffuseTexture)
-        ambient = light.ambient * diffuseSample;
+        ambient = light.ambient * light.ambientIntensity * diffuseSample;
     else
-        ambient = light.ambient * objectColor;
+        ambient = light.ambient * light.ambientIntensity * objectColor;
     // Diffuse
     float rawDiffuse = max(dot(vNormal, lightDir), 0.0);
     vec3 diffuse;

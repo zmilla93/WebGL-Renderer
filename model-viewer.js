@@ -11,23 +11,6 @@ function run() {
     // FIXME : Make this into a default shader
     const phongShader = new LitShader("Phong Shader", phongVertexSource, phongFragmentSource);
 
-    // Piper Plane Mesh
-
-    //////////////
-    // TEXTURES //
-    //////////////
-
-    // Paving Stone Texture
-    let pavingStoneDiffuse = document.getElementById("pavingStonesDiffuse");
-    let pavingStoneNormal = document.getElementById("pavingStonesDiffuse");
-    let pavingStoneSpecular = document.getElementById("pavingStonesDiffuse");
-    let pavingStonesTexture = new Texture(pavingStoneDiffuse, pavingStoneNormal, pavingStoneSpecular);
-
-    // Box Texture
-    let boxDiffuse = document.getElementById("boxDiffuseTexture");
-    let boxSpecular = document.getElementById("boxSpecularTexture");
-    const boxTexture = new Texture(boxDiffuse, null, boxSpecular);
-
     ////////////
     // LIGHTS //
     ////////////
@@ -56,8 +39,6 @@ function run() {
 
 
     pointLight1.color = [1, 0.5, 1];
-    // pointLight1GO.color = [1, 0.5, 1];
-    // pointLight1Renderer.gameObject.objectColor = [0,0,1];
     pointLight1.ambient = [0.2, 0.2, 0.2];
     pointLight1.linear = 0.09;
     pointLight1.quadratic = 0.032;
@@ -74,7 +55,7 @@ function run() {
     // monsterMaterial.texture = null;
     monsterMaterial.objectColor = [0, 0.75, 0];
     monsterMaterial.specularStrength = 0.5;
-    monsterMaterial.setDirectionalLight(directionalLight);
+    // monsterMaterial.setDirectionalLight(directionalLight);
     // monsterMaterial.setDirectionalLight(null);
 
     const phongMaterial = new Material(phongShader);
@@ -87,7 +68,7 @@ function run() {
 
     const boxMaterial = new Material(phongShader);
 
-    boxMaterial.texture = boxTexture;
+    boxMaterial.texture = phongMaterial;
     boxMaterial.objectColor = [1, 0.5, 0.31];
     boxMaterial.specularStrength = 1;
 
@@ -98,7 +79,8 @@ function run() {
     // Monster Object
     let monster = new GameObject();
     monster.add(new MeshRenderer(Mesh.monster, monsterMaterial));
-    monster.position = [-2, 0, -10];
+
+    // monster.position = [-2, 0, -10];
 
     let monster2 = new GameObject();
     monster2.add(new MeshRenderer(Mesh.monster2, monsterMaterial));
@@ -139,6 +121,7 @@ function run() {
     light.scale = [s, s, s];
 
     boxMaterial.setPointLight(0, pointLight1);
+    monsterMaterial.setPointLight(0, pointLight1);
 
     Camera.main.position = [0, 2, 5];
 
@@ -148,14 +131,15 @@ function run() {
     let ambientIntensitySlider = document.getElementById("ambientIntensitySlider");
     ambientColorPicker.addEventListener("input", function (e) {
         let color = hexToRGB(e.target.value);
-        monsterMaterial.ambientColor = color;
+        pointLight1.color = color;
     });
 
 
-    // ambientIntensitySlider.addEventListener("input", function (e) {
-    //     let value = e.target.value;
-    //     monsterMaterial.ambientIntensity = value;
-    // });
+    ambientIntensitySlider.addEventListener("input", function (e) {
+        let value = e.target.value;
+        console.log(value);
+        pointLight1.ambientIntensity = value;
+    });
 
     light.update = function () {
         let t = Math.sin(Time.elapsedTime) * 5;
@@ -168,10 +152,10 @@ function run() {
     let dummy = new GameObject();
     let tick = 0;
     dummy.update = function () {
-        let v = (Math.sin(Time.elapsedTime) + 2) / 4;
+        let v = (Math.sin(Time.elapsedTime)) / 4;
         monster.color = [0, v, 0];
         monster2.color = [v, 0, 0];
-        pointLight1GO.position = [0, v * 5, 0];
+        pointLight1GO.position = [0, v * 5, 1];
         // tick++;
         // if (tick > 100) {
         //     directionalLight.color = [v, 0, 0];
