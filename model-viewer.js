@@ -61,6 +61,7 @@ function run() {
     const phongMaterial = new Material(phongShader);
     phongMaterial.objectColor = [1, 0.5, 0.31];
     phongMaterial.specularStrength = 0.5;
+    phongMaterial.color = [0, 1, 0];
     // phongMaterial.setDirectionalLight(directionalLight);
     // phongMaterial.setDirectionalLight(null);
     // phongMaterial.setPointLight(0, pointLight1);
@@ -104,6 +105,7 @@ function run() {
     box.add(new MeshRenderer(Mesh.cube, boxMaterial));
     box.position = [0, 0.5, -2];
     box.setRotation(0, 45, 0);
+    box.color = [1, 0, 0];
 
     const plane = new GameObject();
     plane.add(new MeshRenderer(Mesh.quad, boxMaterial));
@@ -130,6 +132,10 @@ function run() {
     boxMaterial.setPointLight(1, light2);
     monsterMaterial.setPointLight(1, light2);
     phongMaterial.setPointLight(1, light2);
+
+    boxMaterial.setDirectionalLight(directionalLight);
+    monsterMaterial.setDirectionalLight(directionalLight);
+    phongMaterial.setDirectionalLight(directionalLight);
 
     Camera.main.position = [0, 2, 5];
 

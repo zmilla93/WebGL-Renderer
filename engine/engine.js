@@ -301,7 +301,7 @@ class GameObject {
     scale = vec3.fromValues(1, 1, 1);
     shape;
     components = [];
-    color = [1, 1, 1];
+    color;
     _renderers = [];
     static gameObjectList = [];
     constructor() {

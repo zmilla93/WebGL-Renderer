@@ -234,6 +234,7 @@ class Material {
     _texture;
     _directionalLight;
     _pointLight = [];
+    color = [1, 1, 1];
     static materialMap = new Map();
     static MAX_POINT_LIGHTS = 4;
     // Shader - Shader Class
@@ -611,7 +612,8 @@ class MeshRenderer extends Component {
         let gl = Engine.gl;
         gl.uniformMatrix4fv(this.material._shader.uniform("transformMatrix"), false, this.gameObject.matrix);
         gl.uniformMatrix4fv(this.material._shader.uniform("modelMatrix"), false, this.gameObject.getModelMatrix());
-        gl.uniform3f(this.material._shader.uniform("objectColor"), this.gameObject.color[0], this.gameObject.color[1], this.gameObject.color[2]);
+        let color = this.gameObject.color == null ? this.material.color : this.gameObject.color;
+        gl.uniform3f(this.material._shader.uniform("objectColor"), color[0], color[1], color[2]);
         // FIXME : Camera pos could be moved to a per material uniform
         let camPos = Camera.main.position;
         gl.uniform3f(this.material._shader.uniform("cameraPos"), camPos[0], camPos[1], camPos[2]);
@@ -690,8 +692,8 @@ class PointLight extends Component {
         if (this.gameObject != null) this.gameObject.color = color;
         else console.error("Attempted to set color of a point light, but it isn't attached to a game object!");
     }
-    static create(){
-        if(PointLight.material == null) PointLight.material = new Material(Shader.unlitShader);
+    static create() {
+        if (PointLight.material == null) PointLight.material = new Material(Shader.unlitShader);
         let gameObject = new GameObject();
         let light = new PointLight();
         gameObject.add(light);
