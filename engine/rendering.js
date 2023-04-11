@@ -669,6 +669,7 @@ class PointLight extends Component {
     constant = 1;
     linear = 0.09;
     quadratic = 0.032;
+    static material;
     set position(position) {
         if (this.gameObject == null) {
             console.error("Attempted to change position of a point light, but it isn't attached to a game object!");
@@ -688,6 +689,16 @@ class PointLight extends Component {
         this.specular = color;
         if (this.gameObject != null) this.gameObject.color = color;
         else console.error("Attempted to set color of a point light, but it isn't attached to a game object!");
+    }
+    static create(){
+        if(PointLight.material == null) PointLight.material = new Material(Shader.unlitShader);
+        let gameObject = new GameObject();
+        let light = new PointLight();
+        gameObject.add(light);
+        gameObject.add(new MeshRenderer(Mesh.sphere, PointLight.material));
+        let scale = 0.2;
+        gameObject.scale = [scale, scale, scale];
+        return light;
     }
 }
 

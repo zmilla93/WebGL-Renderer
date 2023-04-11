@@ -61,9 +61,9 @@ function run() {
     const phongMaterial = new Material(phongShader);
     phongMaterial.objectColor = [1, 0.5, 0.31];
     phongMaterial.specularStrength = 0.5;
-    phongMaterial.setDirectionalLight(directionalLight);
-    phongMaterial.setDirectionalLight(null);
-    phongMaterial.setPointLight(0, pointLight1);
+    // phongMaterial.setDirectionalLight(directionalLight);
+    // phongMaterial.setDirectionalLight(null);
+    // phongMaterial.setPointLight(0, pointLight1);
     // phongMaterial.setPointLight(0, null);
 
     const boxMaterial = new Material(phongShader);
@@ -120,8 +120,16 @@ function run() {
     let s = 0.2;
     light.scale = [s, s, s];
 
-    boxMaterial.setPointLight(0, pointLight1);
-    monsterMaterial.setPointLight(0, pointLight1);
+    let light2 = PointLight.create();
+    light2.color = [0, 0.5, 0];
+
+    // boxMaterial.setPointLight(0, pointLight1);
+    // monsterMaterial.setPointLight(0, pointLight1);
+    // phongMaterial.setPointLight(0, pointLight1);
+
+    // boxMaterial.setPointLight(1, light2);
+    // monsterMaterial.setPointLight(1, light2);
+    // phongMaterial.setPointLight(1, light2);
 
     Camera.main.position = [0, 2, 5];
 
@@ -133,8 +141,6 @@ function run() {
         let color = hexToRGB(e.target.value);
         pointLight1.color = color;
     });
-
-
     ambientIntensitySlider.addEventListener("input", function (e) {
         let value = e.target.value;
         console.log(value);
@@ -156,6 +162,7 @@ function run() {
         monster.color = [0, v, 0];
         monster2.color = [v, 0, 0];
         pointLight1GO.position = [0, v * 5, 1];
+        light2.position = [v * 10, 0, 1];
         // tick++;
         // if (tick > 100) {
         //     directionalLight.color = [v, 0, 0];
