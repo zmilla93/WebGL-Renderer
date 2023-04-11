@@ -233,7 +233,7 @@ class Material {
     _renderers = [];
     _texture;
     _directionalLight;
-    _pointLight = [Material.MAX_POINT_LIGHTS];
+    _pointLight = [];
     static materialMap = new Map();
     static MAX_POINT_LIGHTS = 4;
     // Shader - Shader Class

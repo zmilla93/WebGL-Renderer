@@ -121,15 +121,15 @@ function run() {
     light.scale = [s, s, s];
 
     let light2 = PointLight.create();
-    light2.color = [0, 0.5, 0];
+    light2.color = [0, 1, 0];
 
-    // boxMaterial.setPointLight(0, pointLight1);
-    // monsterMaterial.setPointLight(0, pointLight1);
-    // phongMaterial.setPointLight(0, pointLight1);
+    boxMaterial.setPointLight(0, pointLight1);
+    monsterMaterial.setPointLight(0, pointLight1);
+    phongMaterial.setPointLight(0, pointLight1);
 
-    // boxMaterial.setPointLight(1, light2);
-    // monsterMaterial.setPointLight(1, light2);
-    // phongMaterial.setPointLight(1, light2);
+    boxMaterial.setPointLight(1, light2);
+    monsterMaterial.setPointLight(1, light2);
+    phongMaterial.setPointLight(1, light2);
 
     Camera.main.position = [0, 2, 5];
 
