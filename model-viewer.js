@@ -143,6 +143,7 @@ function run() {
     // FIXME : Controls need to be set to default shader values or vice versa!
     let ambientColorPicker = document.getElementById("ambientColorPicker");
     let ambientIntensitySlider = document.getElementById("ambientIntensitySlider");
+    let pointlight1Checkbox = document.getElementById("pointLight1Checkbox");
     ambientColorPicker.addEventListener("input", function (e) {
         let color = hexToRGB(e.target.value);
         pointLight1.color = color;
@@ -152,14 +153,27 @@ function run() {
         console.log(value);
         pointLight1.ambientIntensity = value;
     });
+    pointlight1Checkbox.addEventListener("input", function(e){
+        let value = e.target.checked;
+        pointLight1.enabled = value;
+    });
+    // ambientIntensitySlider.addEventListener("input", function (e) {
+    //     let value = e.target.value;
+    //     console.log(value);
+    //     pointLight1.ambientIntensity = value;
+    // });
 
     light.update = function () {
-        let t = Math.sin(Time.elapsedTime) * 5;
+        // let t = Math.sin(Time.elapsedTime) * 5;
         // light.position = [0, t, 0];
         // monsterMaterial.lightPos = light.position;
         // phongMaterial.lightPos = light.position;
         // boxMaterial.lightPos = light.position;
     }
+
+    directionalLight.enabled = false;
+    pointLight1.enabled = true;
+    light2.enabled = false;
 
     let dummy = new GameObject();
     let tick = 0;
@@ -167,7 +181,7 @@ function run() {
         let v = (Math.sin(Time.elapsedTime)) / 4;
         monster.color = [0, v, 0];
         monster2.color = [v, 0, 0];
-        pointLight1GO.position = [0, v * 5, 1];
+        // pointLight1GO.position = [0, v * 5, 1];
         light2.position = [v * 10, 0, 1];
         // tick++;
         // if (tick > 100) {

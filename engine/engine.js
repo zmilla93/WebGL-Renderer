@@ -302,7 +302,7 @@ class GameObject {
     shape;
     components = [];
     color;
-    _renderers = [];
+    enabled = true;
     static gameObjectList = [];
     constructor() {
         GameObject.gameObjectList.push(this);

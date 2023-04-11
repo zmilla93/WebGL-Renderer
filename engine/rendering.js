@@ -264,7 +264,7 @@ class Material {
     }
     applyDirectionalLightUniforms() {
         let light = this._directionalLight;
-        this.useDirectionalLight = this._directionalLight != null;
+        this.useDirectionalLight = this._directionalLight != null && this._directionalLight.enabled;
         if (light != null) {
             this["directionalLight.direction"] = light.direction;
             this["directionalLight.diffuse"] = light.diffuse;
@@ -287,7 +287,7 @@ class Material {
                 this[lightPrefix + "constant"] = light.constant;
                 this[lightPrefix + "linear"] = light.linear;
                 this[lightPrefix + "quadratic"] = light.quadratic;
-                this[usePointLightKey] = true;
+                this[usePointLightKey] = light.gameObject.enabled;
             } else {
                 this[usePointLightKey] = false;
             }
@@ -608,7 +608,7 @@ class MeshRenderer extends Component {
         this.setMaterial(material);
     }
     applyPerObjectUniforms = function () {
-        if (this.gameObject == null) return;
+        if (this.gameObject == null || !this.gameObject.enabled) return;
         let gl = Engine.gl;
         gl.uniformMatrix4fv(this.material._shader.uniform("transformMatrix"), false, this.gameObject.matrix);
         gl.uniformMatrix4fv(this.material._shader.uniform("modelMatrix"), false, this.gameObject.getModelMatrix());
@@ -619,7 +619,7 @@ class MeshRenderer extends Component {
         gl.uniform3f(this.material._shader.uniform("cameraPos"), camPos[0], camPos[1], camPos[2]);
     };
     render(gl) {
-        if (this.gameObject == null) return;
+        if (this.gameObject == null || !this.gameObject.enabled) return;
         gl.bindVertexArray(this.mesh.vao);
         if (this.mesh.wireframe) {
             // console.log(this.mesh.triCount);
@@ -691,6 +691,12 @@ class PointLight extends Component {
         this.specular = color;
         if (this.gameObject != null) this.gameObject.color = color;
         else console.error("Attempted to set color of a point light, but it isn't attached to a game object!");
+    }
+    set enabled(state){
+        this.gameObject.enabled = state;
+    }
+    get enabled(){
+        return this.gameObject.enabled;
     }
     static create() {
         if (PointLight.material == null) PointLight.material = new Material(Shader.unlitShader);
