@@ -317,15 +317,15 @@ class GameObject {
         this.components.splice(index, 1);
         component.onRemove(this);
     }
-    set position(position){
+    set position(position) {
         this._position = position;
-        for(let component of this.components){
-            if(typeof(component.onPositionChange) ==='function'){
+        for (let component of this.components) {
+            if (typeof (component.onPositionChange) === 'function') {
                 console.log("!!!!");
             }
         }
     }
-    get position(){
+    get position() {
         return this._position;
     }
     setRotation(x, y, z) {
@@ -382,7 +382,6 @@ class Component {
 }
 
 function lerp(a, b, t) {
-    // return (1 - t) * a + t * b;
     return a + t * (b - a);
 }
 
@@ -401,14 +400,25 @@ function glValue(value) {
 
 function hexToRGB(hex, normalize = true) {
     if (hex.startsWith("#")) hex = hex.slice(1);
-    var h = hex.match(/.{1,2}/g);
-    var r = parseInt(h[0], 16);
-    var g = parseInt(h[1], 16);
-    var b = parseInt(h[2], 16);
+    let h = hex.match(/.{1,2}/g);
+    let r = parseInt(h[0], 16);
+    let g = parseInt(h[1], 16);
+    let b = parseInt(h[2], 16);
     if (normalize) {
         r /= 255;
         g /= 255;
         b /= 255;
     }
     return [r, g, b];
+}
+
+function componentToHex(c) {
+    c *= 255;
+    c = Math.round(c);
+    let hex = c.toString(16);
+    return hex.length == 1 ? "0" + hex : hex;
+}
+
+function rgbToHex(rgb) {
+    return "#" + componentToHex(rgb[0]) + componentToHex(rgb[1]) + componentToHex(rgb[2]);
 }

@@ -1,3 +1,7 @@
+#controls{
+    display: inline-block;
+}
+
 .control {
     background-color: rgb(164, 226, 205);
     width: fit-content;
@@ -6,6 +10,7 @@
     border-color: rgb(255, 255, 255);
     border-radius: 5px;
     padding: 5px;
+    display: inline-block;
 }
 
 .control-header {

@@ -49,30 +49,135 @@
     </div>
 
     <div id="controls">
+
+        <!-- Directional Light -->
         <fieldset class="control">
-            <legend class="control-header">Point Light #1</legend>
+            <legend class="control-header">Directional Light</legend>
             <table>
                 <tr>
                     <td>Enabled</td>
                     <td>&emsp;</td>
-                    <td><input type="checkbox" id="pointLight1Checkbox"></td>
+                    <td><input type="checkbox" id="directionalLightCheckbox"></td>
                 </tr>
                 <tr>
                     <td>Color</td>
                     <td>&emsp;</td>
-                    <td><input type="color" id="ambientColorPicker"></td>
+                    <td><input type="color" class="directionalLightColorPicker"></td>
                 </tr>
-                <tr>
+                <!-- <tr>
                     <td>Position</td>
                     <td>&emsp;</td>
                     <td>
-                        X&nbsp;<input type="number" id="pointLight1X" step="0.1" min="-20" max="20">
-                        Y&nbsp;<input type="number" id="pointLight1Y" step="0.1" min="-20" max="20">
-                        Z&nbsp;<input type="number" id="pointLight1Z" step="0.1" min="-20" max="20">
+                        X&nbsp;<input type="number" class="pointLightX" step="0.1" min="-20" max="20">
+                        Y&nbsp;<input type="number" class="pointLightY" step="0.1" min="-20" max="20">
+                        Z&nbsp;<input type="number" class="pointLightZ" step="0.1" min="-20" max="20">
                     </td>
-                </tr>
+                </tr> -->
             </table>
         </fieldset>
+
+        <div id="pointLightControls">
+            <!-- Point Light #1 -->
+            <fieldset class="control pointLightControl">
+                <legend class="control-header">Point Light #1</legend>
+                <table>
+                    <tr>
+                        <td>Enabled</td>
+                        <td>&emsp;</td>
+                        <td><input type="checkbox" class="pointLightCheckbox"></td>
+                    </tr>
+                    <tr>
+                        <td>Color</td>
+                        <td>&emsp;</td>
+                        <td><input type="color" class="pointLightColorPicker"></td>
+                    </tr>
+                    <tr>
+                        <td>Position</td>
+                        <td>&emsp;</td>
+                        <td>
+                            X&nbsp;<input type="number" class="pointLightX" step="0.1" min="-20" max="20">
+                            Y&nbsp;<input type="number" class="pointLightY" step="0.1" min="-20" max="20">
+                            Z&nbsp;<input type="number" class="pointLightZ" step="0.1" min="-20" max="20">
+                        </td>
+                    </tr>
+                </table>
+            </fieldset>
+            <!-- Point Light #2 -->
+            <fieldset class="control pointLightControl">
+                <legend class="control-header">Point Light #2</legend>
+                <table>
+                    <tr>
+                        <td>Enabled</td>
+                        <td>&emsp;</td>
+                        <td><input type="checkbox" class="pointLightCheckbox"></td>
+                    </tr>
+                    <tr>
+                        <td>Color</td>
+                        <td>&emsp;</td>
+                        <td><input type="color" class="pointLightColorPicker"></td>
+                    </tr>
+                    <tr>
+                        <td>Position</td>
+                        <td>&emsp;</td>
+                        <td>
+                            X&nbsp;<input type="number" class="pointLightX" step="0.1" min="-20" max="20">
+                            Y&nbsp;<input type="number" class="pointLightY" step="0.1" min="-20" max="20">
+                            Z&nbsp;<input type="number" class="pointLightZ" step="0.1" min="-20" max="20">
+                        </td>
+                    </tr>
+                </table>
+            </fieldset>
+            <!-- Point Light #3 -->
+            <fieldset class="control pointLightControl">
+                <legend class="control-header">Point Light #3</legend>
+                <table>
+                    <tr>
+                        <td>Enabled</td>
+                        <td>&emsp;</td>
+                        <td><input type="checkbox" class="pointLightCheckbox"></td>
+                    </tr>
+                    <tr>
+                        <td>Color</td>
+                        <td>&emsp;</td>
+                        <td><input type="color" class="pointLightColorPicker"></td>
+                    </tr>
+                    <tr>
+                        <td>Position</td>
+                        <td>&emsp;</td>
+                        <td>
+                            X&nbsp;<input type="number" class="pointLightX" step="0.1" min="-20" max="20">
+                            Y&nbsp;<input type="number" class="pointLightY" step="0.1" min="-20" max="20">
+                            Z&nbsp;<input type="number" class="pointLightZ" step="0.1" min="-20" max="20">
+                        </td>
+                    </tr>
+                </table>
+            </fieldset>
+            <!-- Point Light #4 -->
+            <fieldset class="control pointLightControl">
+                <legend class="control-header">Point Light #4</legend>
+                <table>
+                    <tr>
+                        <td>Enabled</td>
+                        <td>&emsp;</td>
+                        <td><input type="checkbox" class="pointLightCheckbox"></td>
+                    </tr>
+                    <tr>
+                        <td>Color</td>
+                        <td>&emsp;</td>
+                        <td><input type="color" class="pointLightColorPicker"></td>
+                    </tr>
+                    <tr>
+                        <td>Position</td>
+                        <td>&emsp;</td>
+                        <td>
+                            X&nbsp;<input type="number" class="pointLightX" step="0.1" min="-20" max="20">
+                            Y&nbsp;<input type="number" class="pointLightY" step="0.1" min="-20" max="20">
+                            Z&nbsp;<input type="number" class="pointLightZ" step="0.1" min="-20" max="20">
+                        </td>
+                    </tr>
+                </table>
+            </fieldset>
+        </div>
     </div>
 
     <div id="texturesDebug">
@@ -88,8 +193,8 @@
 
     </div>
 
-    <!-- <div id="textures" style="display:none;"> -->
-    <div id="textures">
+    <div id="textures" style="display:none;">
+        <!-- <div id="textures"> -->
         <img src="textures/monster.png" id="monsterTexture">
         <img src="textures/monster_normal.png" id="monsterNormalTexture">
         <img src="textures/michelle-diffuse.png" id="michelleDiffuse">

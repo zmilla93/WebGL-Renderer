@@ -660,6 +660,9 @@ class DirectionalLight {
         this.diffuse = color;
         this.specular = color;
     }
+    get color(){
+        return this.diffuse;
+    }
 }
 
 class PointLight extends Component {

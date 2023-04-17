@@ -45,7 +45,7 @@ function run() {
         [0, 1, 2],
         [0, 1, -2],
     ]
-    for(let i = 0;i<pointLightCount;i++){
+    for (let i = 0; i < pointLightCount; i++) {
         lights[i].color = lightColors[i];
         lights[i].position = lightPositions[i];
     }
@@ -95,44 +95,53 @@ function run() {
     // CONTROLS //
     //////////////
 
-    // FIXME : Controls need to be set to default shader values or vice versa!
-    let ambientColorPicker = document.getElementById("ambientColorPicker");
-    let ambientIntensitySlider = document.getElementById("ambientIntensitySlider");
-    let pointlight1Checkbox = document.getElementById("pointLight1Checkbox");
-    let pointlight1X = document.getElementById("pointLight1X");
-    let pointlight1Y = document.getElementById("pointLight1Y");
-    let pointlight1Z = document.getElementById("pointLight1Z");
+    // Directional Light Controls
+    let directionalLightCheckbox = document.getElementById("directionalLightCheckbox");
+    let directionalLightColorPicker = document.getElementById("directionalLightColorPicker");
 
-    pointlight1Checkbox.addEventListener("input", function (e) {
-        let value = e.target.checked;
-        pointLight1.enabled = value;
-    });
-    ambientColorPicker.addEventListener("input", function (e) {
-        let color = hexToRGB(e.target.value);
-        pointLight1.color = color;
-    });
-    // ambientIntensitySlider.addEventListener("input", function (e) {
-    //     let value = e.target.value;
-    //     console.log(value);
-    //     pointLight1.ambientIntensity = value;
-    // });
+    // directionalLightCheckbox.checked = directionalLight.enabled;
+    // directionalLightColorPicker.value = rgbToHex(directionalLight.color);
 
-    pointlight1X.addEventListener("input", function (e) {
-        let value = e.target.value;
-        let oldPos = pointLight1.position;
-        pointLight1.gameObject.position = [value, oldPos[1], oldPos[2]];
-    });
-    pointlight1Y.addEventListener("input", function (e) {
-        let value = e.target.value;
-        let oldPos = pointLight1.position;
-        pointLight1.gameObject.position = [oldPos[0], value, oldPos[2]];
-    });
-    pointlight1Z.addEventListener("input", function (e) {
-        let value = e.target.value;
-        let oldPos = pointLight1.position;
-        pointLight1.gameObject.position = [oldPos[0], oldPos[1], value];
-    });
+    // Point Light Controls
+    let pointLightColorPickers = document.getElementsByClassName("pointLightColorPicker");
+    let pointLightCheckboxes = document.getElementsByClassName("pointLightCheckbox");
+    let pointLightPosX = document.getElementsByClassName("pointLightX");
+    let pointLightPosY = document.getElementsByClassName("pointLightY");
+    let pointLightPosZ = document.getElementsByClassName("pointLightZ");
 
+    for (let i = 0; i < pointLightCount; i++) {
+        // Checkbox
+        pointLightCheckboxes[i].checked = lights[i].enabled;
+        pointLightCheckboxes[i].addEventListener("input", function (e) {
+            lights[i].enabled = e.target.checked;
+        });
+        // Color Picker
+        pointLightColorPickers[i].value = rgbToHex(lightColors[i]);
+        pointLightColorPickers[i].addEventListener("input", function (e) {
+            let color = hexToRGB(e.target.value);
+            lights[i].color = color;
+        });
+        // Position Selector
+        let position = lights[i].position;
+        pointLightPosX[i].value = position[0];
+        pointLightPosY[i].value = position[1];
+        pointLightPosZ[i].value = position[2];
+        pointLightPosX[i].addEventListener("input", function (e) {
+            let curPos = lights[i].position;
+            let value = parseFloat(e.target.value);
+            lights[i].position = [value, curPos[1], curPos[2]];
+        });
+        pointLightPosY[i].addEventListener("input", function (e) {
+            let curPos = lights[i].position;
+            let value = parseFloat(e.target.value);
+            lights[i].position = [curPos[0], value, curPos[2]];
+        });
+        pointLightPosZ[i].addEventListener("input", function (e) {
+            let curPos = lights[i].position;
+            let value = parseFloat(e.target.value);
+            lights[i].position = [curPos[0], curPos[1], value];
+        });
+    }
 }
 
 window.addEventListener('load', run);
