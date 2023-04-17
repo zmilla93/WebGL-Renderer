@@ -661,7 +661,7 @@ class DirectionalLight {
         this.diffuse = color;
         this.specular = color;
     }
-    get color(){
+    get color() {
         return this.diffuse;
     }
 }
@@ -677,6 +677,7 @@ class PointLight extends Component {
     constant = 1;
     linear = 0.09;
     quadratic = 0.032;
+    static DEFAULT_SCALE = 0.05;
     static material;
     set position(position) {
         if (this.gameObject == null) {
@@ -710,8 +711,7 @@ class PointLight extends Component {
         let light = new PointLight();
         gameObject.add(light);
         gameObject.add(new MeshRenderer(Mesh.sphere, PointLight.material));
-        let scale = 0.2;
-        gameObject.scale = [scale, scale, scale];
+        gameObject.scale = [PointLight.DEFAULT_SCALE, PointLight.DEFAULT_SCALE, PointLight.DEFAULT_SCALE];
         return light;
     }
 }
