@@ -56,11 +56,12 @@ function run() {
     // MATERIALS //
     ///////////////
 
-    // Monster Material
-    const monsterImage = document.getElementById("monsterTexture");
-    const monsterTexture = new Texture(monsterImage);
-    const monsterMaterial = new Material(Shader.phongShader);
-    monsterMaterial.texture = monsterTexture;
+    // Ninja Material
+    const ninjaDiffuse = document.getElementById("ninjaDiffuse");
+    const ninjaSpecular = document.getElementById("ninjaSpecular");
+    const ninjaTexture = new Texture(ninjaDiffuse, null, ninjaSpecular);
+    const ninjaMaterial = new Material(Shader.phongShader);
+    ninjaMaterial.texture = ninjaTexture;
 
     // Michelle Material
     const michelleDiffuse = document.getElementById("michelleDiffuse");
@@ -69,15 +70,16 @@ function run() {
     const michelleMaterial = new Material(Shader.phongShader);
     michelleMaterial.texture = michelleTexture;
 
-    // Ninja Material
-    const ninjaDiffuse = document.getElementById("ninjaDiffuse");
-    const ninjaSpecular = document.getElementById("ninjaSpecular");
-    const ninjaTexture = new Texture(ninjaDiffuse, null, ninjaSpecular);
-    const ninjaMaterial = new Material(Shader.phongShader);
-    ninjaMaterial.texture = ninjaTexture;
+    // Monster Material
+    const monsterImage = document.getElementById("monsterTexture");
+    const monsterTexture = new Texture(monsterImage);
+    const monsterMaterial = new Material(Shader.phongShader);
+    monsterMaterial.texture = monsterTexture;
+
+    let textures = [ninjaTexture, michelleTexture, monsterTexture];
 
     // Assign lights to all materials
-    let materials = [monsterMaterial, michelleMaterial, ninjaMaterial];
+    let materials = [ninjaMaterial, michelleMaterial, monsterMaterial];
     for (material of materials) {
         material.setDirectionalLight(directionalLight);
         for (let i = 0; i < pointLightCount; i++) {
@@ -92,20 +94,52 @@ function run() {
     // Monster Object
     let monster = new GameObject();
     monster.add(new MeshRenderer(Mesh.monster, monsterMaterial));
-    monster.enabled = false;
+    // monster.enabled = false;
 
     const michelleMesh = objToMesh(michelleTriModel);
     let michelle = new GameObject();
     michelle.add(new MeshRenderer(michelleMesh, michelleMaterial));
-    michelle.enabled = false;
+    // michelle.enabled = false;
 
     const ninjaMesh = objToMesh(ninjaModel);
     let ninja = new GameObject();
     ninja.add(new MeshRenderer(ninjaMesh, ninjaMaterial));
 
+    let gameObjects = [ninja, michelle, monster];
+    for (gameObject of gameObjects) {
+        gameObject.enabled = false;
+    }
+    gameObjects[0].enabled = true;
+
     //////////////
     // CONTROLS //
     //////////////
+
+    // Model Controls
+    let modelSelect = document.getElementById("modelSelect");
+    let textureCheckbox = document.getElementById("modelTextureCheckbox");
+    let specularCheckbox = document.getElementById("modelSpecularCheckbox");
+    let selectedModel = 0;
+    textureCheckbox.checked = true;
+    specularCheckbox.checked = true;
+    modelSelect.addEventListener("input", function (e) {
+        gameObjects[selectedModel].enabled = false;
+        selectedModel = parseInt(e.target.value);
+        // for (let i = 0; i < gameObjects.length; i++) {
+        //     gameObjects[i].enabled = false;
+        // }
+        gameObjects[selectedModel].enabled = true;
+    });
+    textureCheckbox.addEventListener("input", function (e) {
+        for (material of materials) {
+            material.useDiffuseTexture = e.target.checked;
+        }
+    });
+    specularCheckbox.addEventListener("input", function (e) {
+        for (material of materials) {
+            material.useSpecularTexture = e.target.checked;
+        }
+    });
 
     // Directional Light Controls
     let directionalLightCheckbox = document.getElementById("directionalLightCheckbox");
@@ -116,7 +150,7 @@ function run() {
         directionalLight.enabled = e.target.checked;
     });
     directionalLightColorPicker.value = rgbToHex(directionalLight.color);
-    directionalLightColorPicker.addEventListener("input", function(e){
+    directionalLightColorPicker.addEventListener("input", function (e) {
         directionalLight.color = hexToRGB(e.target.value);
     });
 
