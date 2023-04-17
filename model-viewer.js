@@ -50,7 +50,7 @@ function run() {
         lights[i].position = lightPositions[i];
     }
 
-    directionalLight.enabled = false;
+    // directionalLight.enabled = false;
     light1.enabled = false;
 
     ///////////////
@@ -99,8 +99,14 @@ function run() {
     let directionalLightCheckbox = document.getElementById("directionalLightCheckbox");
     let directionalLightColorPicker = document.getElementById("directionalLightColorPicker");
 
-    // directionalLightCheckbox.checked = directionalLight.enabled;
-    // directionalLightColorPicker.value = rgbToHex(directionalLight.color);
+    directionalLightCheckbox.checked = directionalLight.enabled;
+    directionalLightCheckbox.addEventListener("input", function (e) {
+        directionalLight.enabled = e.target.checked;
+    });
+    directionalLightColorPicker.value = rgbToHex(directionalLight.color);
+    directionalLightColorPicker.addEventListener("input", function(e){
+        directionalLight.color = hexToRGB(e.target.value);
+    });
 
     // Point Light Controls
     let pointLightColorPickers = document.getElementsByClassName("pointLightColorPicker");

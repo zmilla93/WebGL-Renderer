@@ -655,6 +655,7 @@ class DirectionalLight {
     ambientIntensity = 0.2;
     diffuse = [1, 1, 1];
     specular = [1, 1, 1];
+    enabled = true;
     set color(color) {
         this.ambient = color;
         this.diffuse = color;
