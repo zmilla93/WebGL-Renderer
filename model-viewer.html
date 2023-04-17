@@ -4,6 +4,8 @@
     <title>WebGL</title>
 
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/model-viewer.css">
+
 
     <!-- Third Party -->
     <script src="third-party/gl-matrix-min.js"></script>
@@ -47,23 +49,42 @@
     </div>
 
     <div id="controls">
-        Point Light #1
-        <input type="range" min="0" max="1" value="0.2" step="0.01" class="slider" id="ambientIntensitySlider">
-        <input type="color" id="ambientColorPicker">
-        <input type="checkbox" id="pointLight1Checkbox">
-        <input type="number" id="pointLight1X">
+        <fieldset class="control">
+            <legend class="control-header">Point Light #1</legend>
+            <table>
+                <tr>
+                    <td>Enabled</td>
+                    <td>&emsp;</td>
+                    <td><input type="checkbox" id="pointLight1Checkbox"></td>
+                </tr>
+                <tr>
+                    <td>Color</td>
+                    <td>&emsp;</td>
+                    <td><input type="color" id="ambientColorPicker"></td>
+                </tr>
+                <tr>
+                    <td>Position</td>
+                    <td>&emsp;</td>
+                    <td>
+                        X&nbsp;<input type="number" id="pointLight1X" step="0.1" min="-20" max="20">
+                        Y&nbsp;<input type="number" id="pointLight1Y" step="0.1" min="-20" max="20">
+                        Z&nbsp;<input type="number" id="pointLight1Z" step="0.1" min="-20" max="20">
+                    </td>
+                </tr>
+            </table>
+        </fieldset>
     </div>
 
     <div id="texturesDebug">
 
-        <img src="textures/bedrock.png" name="Bedrock" class="voxelTexture">
+        <!-- <img src="textures/bedrock.png" name="Bedrock" class="voxelTexture">
         <img src="textures/stone.png" name="Stone" class="voxelTexture">
         <img src="textures/obsidian.png" name="Obsidian" class="voxelTexture">
         <img src="textures/tnt.png" name="TNT" class="voxelTexture">
         <img src="textures/sand.png" name="Sand" class="voxelTexture">
         <img src="textures/glass.png" name="Glass" class="voxelTexture">
         <img src="textures/gold.png" name="Gold" class="voxelTexture">
-        <img src="textures/grass.png" name="Grass" class="voxelTexture">
+        <img src="textures/grass.png" name="Grass" class="voxelTexture"> -->
 
     </div>
 

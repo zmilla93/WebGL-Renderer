@@ -199,7 +199,7 @@ class LitShader extends Shader {
         this.uniformConverter.specularStrength = Rendering.floatConverter;
         this.uniformConverter.useDiffuseTexture = Rendering.boolConverter;
         this.uniformConverter.useSpecularTexture = Rendering.boolConverter;
-        this.uniformConverter.useNormalTexture = Rendering.boolConverter;
+        // this.uniformConverter.useNormalTexture = Rendering.boolConverter;
         this.uniformConverter.diffuseSampler = Rendering.intConverter;
         this.uniformConverter.normalSampler = Rendering.intConverter;
         this.uniformConverter.specularSampler = Rendering.intConverter;

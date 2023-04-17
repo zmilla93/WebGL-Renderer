@@ -74,7 +74,6 @@ function directionToVector(direction) {
 }
 
 class Engine {
-    shaders = {};
     static canvas;
     static gl;
     static defaultVertexAttributes;
@@ -129,9 +128,10 @@ class Engine {
         // Default Shaders
         Shader.defaultShader = new Shader("Default Shader", litVertexSource, litFragmentSource);
         Shader.simpleLit = new Shader("Simple Lit", simpleLitVertexSource, simpleLitFragmentSource);
-        Shader.lit = new Shader("Lit Shader", litVertexSource, litFragmentSource);
+        Shader.litShader = new Shader("Lit Shader", litVertexSource, litFragmentSource);
         Shader.unlitShader = new Shader("Unlit Shader", unlitVertexSource, unlitFragmentSource);
         Shader.lineShader = new Shader("Line Shader", lineVertexSource, lineFragmentSource, lineAttributes);
+        Shader.phongShader = new LitShader("Phong Shader", phongVertexSource, phongFragmentSource);
 
         // Functions that map uniform values to their respective glUniform calls
         // Function name must match the uniform name!

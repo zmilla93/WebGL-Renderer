@@ -9,7 +9,7 @@ function run() {
 
     // Phong Shader
     // FIXME : Make this into a default shader
-    const phongShader = new LitShader("Phong Shader", phongVertexSource, phongFragmentSource);
+    // const phongShader = new LitShader("Phong Shader", phongVertexSource, phongFragmentSource);
 
     ////////////
     // LIGHTS //
@@ -50,7 +50,7 @@ function run() {
     // Monster Material
     const monsterImage = document.getElementById("monsterTexture");
     const monsterTexture = new Texture(monsterImage);
-    const monsterMaterial = new Material(phongShader);
+    const monsterMaterial = new Material(Shader.phongShader);
     monsterMaterial.texture = monsterTexture;
     // monsterMaterial.texture = null;
     monsterMaterial.objectColor = [0, 0.75, 0];
@@ -58,20 +58,19 @@ function run() {
     // monsterMaterial.setDirectionalLight(directionalLight);
     // monsterMaterial.setDirectionalLight(null);
 
-    const phongMaterial = new Material(phongShader);
+    const phongMaterial = new Material(Shader.phongShader);
     phongMaterial.objectColor = [1, 0.5, 0.31];
     phongMaterial.specularStrength = 0.5;
     phongMaterial.color = [0, 1, 0];
-    // phongMaterial.setDirectionalLight(directionalLight);
-    // phongMaterial.setDirectionalLight(null);
-    // phongMaterial.setPointLight(0, pointLight1);
-    // phongMaterial.setPointLight(0, null);
 
-    const boxMaterial = new Material(phongShader);
+    const boxMaterial = new Material(Shader.phongShader);
 
     boxMaterial.texture = phongMaterial;
     boxMaterial.objectColor = [1, 0.5, 0.31];
     boxMaterial.specularStrength = 1;
+
+    const light2 = PointLight.create();
+    const light3 = PointLight.create();
 
     /////////////
     // OBJECTS //
@@ -86,44 +85,6 @@ function run() {
     let monster2 = new GameObject();
     monster2.add(new MeshRenderer(Mesh.monster2, monsterMaterial));
     monster2.position = [2, 0, -10];
-
-    // SPHERE
-    const sphere = new GameObject();
-    sphere.add(new MeshRenderer(Mesh.icoSphere, phongMaterial));
-    sphere.position = [-4, 1, 0];
-
-    const sphere2 = new GameObject();
-    sphere2.add(new MeshRenderer(Mesh.icoSmooth, phongMaterial));
-    sphere2.position = [4, 1, 0];
-
-    const sphere3 = new GameObject();
-    sphere3.add(new MeshRenderer(Mesh.smoothSphere, phongMaterial));
-    sphere3.position = [-4, 1, -5];
-
-    // BOX
-    const box = new GameObject();
-    box.add(new MeshRenderer(Mesh.cube, boxMaterial));
-    box.position = [0, 0.5, -2];
-    box.setRotation(0, 45, 0);
-    box.color = [1, 0, 0];
-
-    const plane = new GameObject();
-    plane.add(new MeshRenderer(Mesh.quad, boxMaterial));
-    plane.position = [0, 0.01, -4];
-    let planeScale = 1;
-    plane.scale = [planeScale, 1, planeScale];
-
-
-    // Point Light Object
-    const light = new GameObject();
-    light.add(new MeshRenderer(Mesh.smoothSphere, light1Material));
-    light.position = [0, 3, -8];
-    light.color = [0, 0, 1];
-    let s = 0.2;
-    light.scale = [s, s, s];
-
-    let light2 = PointLight.create();
-    light2.color = [0, 1, 0];
 
     boxMaterial.setPointLight(0, pointLight1);
     monsterMaterial.setPointLight(0, pointLight1);
@@ -144,18 +105,17 @@ function run() {
     let ambientColorPicker = document.getElementById("ambientColorPicker");
     let ambientIntensitySlider = document.getElementById("ambientIntensitySlider");
     let pointlight1Checkbox = document.getElementById("pointLight1Checkbox");
-    ambientColorPicker.addEventListener("input", function (e) {
-        let color = hexToRGB(e.target.value);
-        pointLight1.color = color;
-    });
-    ambientIntensitySlider.addEventListener("input", function (e) {
-        let value = e.target.value;
-        console.log(value);
-        pointLight1.ambientIntensity = value;
-    });
+    let pointlight1X = document.getElementById("pointLight1X");
+    let pointlight1Y = document.getElementById("pointLight1Y");
+    let pointlight1Z = document.getElementById("pointLight1Z");
+    
     pointlight1Checkbox.addEventListener("input", function(e){
         let value = e.target.checked;
         pointLight1.enabled = value;
+    });
+    ambientColorPicker.addEventListener("input", function (e) {
+        let color = hexToRGB(e.target.value);
+        pointLight1.color = color;
     });
     // ambientIntensitySlider.addEventListener("input", function (e) {
     //     let value = e.target.value;
@@ -163,35 +123,21 @@ function run() {
     //     pointLight1.ambientIntensity = value;
     // });
 
-    light.update = function () {
-        // let t = Math.sin(Time.elapsedTime) * 5;
-        // light.position = [0, t, 0];
-        // monsterMaterial.lightPos = light.position;
-        // phongMaterial.lightPos = light.position;
-        // boxMaterial.lightPos = light.position;
-    }
-
-    directionalLight.enabled = false;
-    pointLight1.enabled = true;
-    light2.enabled = false;
-
-    let dummy = new GameObject();
-    let tick = 0;
-    dummy.update = function () {
-        let v = (Math.sin(Time.elapsedTime)) / 4;
-        monster.color = [0, v, 0];
-        monster2.color = [v, 0, 0];
-        // pointLight1GO.position = [0, v * 5, 1];
-        light2.position = [v * 10, 0, 1];
-        // tick++;
-        // if (tick > 100) {
-        //     directionalLight.color = [v, 0, 0];
-        // } else {
-        //     directionalLight.color = [0, v, 0];
-        // }
-        // monsterMaterial.setDirectionalLight(directionalLight);
-
-    }
+    pointlight1X.addEventListener("input", function(e){
+        let value = e.target.value;
+        let oldPos = pointLight1.position;
+        pointLight1.gameObject.position = [value, oldPos[1], oldPos[2]];
+    });
+    pointlight1Y.addEventListener("input", function(e){
+        let value = e.target.value;
+        let oldPos = pointLight1.position;
+        pointLight1.gameObject.position = [oldPos[0], value, oldPos[2]];
+    });
+    pointlight1Z.addEventListener("input", function(e){
+        let value = e.target.value;
+        let oldPos = pointLight1.position;
+        pointLight1.gameObject.position = [oldPos[0], oldPos[1], value];
+    });
 
 }
 

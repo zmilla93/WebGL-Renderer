@@ -1,0 +1,37 @@
+.control {
+    background-color: rgb(164, 226, 205);
+    width: fit-content;
+    border: solid;
+    border-width: 1px;
+    border-color: rgb(255, 255, 255);
+    border-radius: 5px;
+    padding: 5px;
+}
+
+.control-header {
+    color: blue;
+    background-color: rgb(173, 190, 206);
+    border-radius: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.control table {
+    border-spacing: 0px;
+}
+
+.control td {
+    padding: 2px;
+    padding-top: 5px;
+    border-bottom: 1px solid;
+}
+
+.control input[type=checkbox] {
+    background-color: blue;
+}
+
+input[type=number] {
+    /* color: red; */
+    /* background-color: orange; */
+    width: 40px;
+}
