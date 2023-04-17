@@ -199,10 +199,12 @@ class LitShader extends Shader {
         this.uniformConverter.specularStrength = Rendering.floatConverter;
         this.uniformConverter.useDiffuseTexture = Rendering.boolConverter;
         this.uniformConverter.useSpecularTexture = Rendering.boolConverter;
+        this.uniformConverter.useEmissionTexture = Rendering.boolConverter;
         // this.uniformConverter.useNormalTexture = Rendering.boolConverter;
         this.uniformConverter.diffuseSampler = Rendering.intConverter;
         this.uniformConverter.normalSampler = Rendering.intConverter;
         this.uniformConverter.specularSampler = Rendering.intConverter;
+        this.uniformConverter.emissionSampler = Rendering.intConverter;
     }
     setupDirectionalLighting() {
         this.uniformConverter.useDirectionalLight = Rendering.boolConverter;
@@ -244,10 +246,12 @@ class Material {
         this.diffuseSampler = 0;
         this.normalSampler = 1;
         this.specularSampler = 2;
+        this.emissionSampler = 3;
         // Don't use textures by default.
         this.useDiffuseTexture = false;
         this.useSpecularTexture = false;
         this.useNormalTexture = false;
+        this.useEmissionTexture = false;
 
         this.useDirectionalLight = false;
         // FIXME : Should be a better way to initialize this
@@ -309,10 +313,12 @@ class Material {
             this.useDiffuseTexture = false;
             this.useNormalTexture = false;
             this.useSpecularTexture = false;
+            this.useEmissionTexture = false;
         } else {
             this.useDiffuseTexture = texture.diffuse != null;
             this.useNormalTexture = texture.normal != null;
             this.useSpecularTexture = texture.specular != null;
+            this.useEmissionTexture = texture.emission != null;
         }
     }
     // FIXME : get material seems unnessecary??
@@ -341,10 +347,11 @@ class Texture {
     _texture; // WebGL Texture
     diffuse;
     normal;
-    specular
+    specular;
+    emission;
     static placeholderColor = [255, 5, 150];
     static placeholderTexture; // 1x1 pixel Magenta texture that displays when target texture is missing.
-    constructor(diffuse, normal, specular, textureFilter = TextureFilter.Linear, textureWrap = TextureWrap.Wrap) {
+    constructor(diffuse, normal, specular, emission, textureFilter = TextureFilter.Linear, textureWrap = TextureWrap.Wrap) {
         if (diffuse == null) return;
         // Default values for textures
         const gl = Engine.gl;
@@ -360,6 +367,9 @@ class Texture {
         }
         if (specular != null) {
             this.specular = Texture.createGLTexture(gl.TEXTURE2, specular, textureFilter, textureWrap);
+        }
+        if(emission != null){
+            this.emission = Texture.createGLTexture(gl.TEXTURE3, emission, textureFilter, textureWrap);
         }
     }
     // Creates a 1x1 texture to be used when a texture is missing.

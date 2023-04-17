@@ -76,17 +76,25 @@ function run() {
     const monsterMaterial = new Material(Shader.phongShader);
     monsterMaterial.texture = monsterTexture;
 
-    // Warrock Material
+    // Vampire Material
     const vampireDiffuse = document.getElementById("vampire-diffuse");
     const vampireSpecular = document.getElementById("vampire-specular");
     const vampireTexture = new Texture(vampireDiffuse, null, vampireSpecular);
     const vampireMaterial = new Material(Shader.phongShader);
     vampireMaterial.texture = vampireTexture;
 
-    let textures = [ninjaTexture, michelleTexture, monsterTexture, vampireTexture];
+    // Ely Material
+    const elyDiffuse = document.getElementById("ely-diffuse");
+    const elySpecular = document.getElementById("ely-specular");
+    const elyEmission = document.getElementById("ely-emission");
+    const elyTexture = new Texture(elyDiffuse, null, elySpecular, elyEmission);
+    const elyMaterial = new Material(Shader.phongShader);
+    elyMaterial.texture = elyTexture;
+
+    let textures = [ninjaTexture, michelleTexture, monsterTexture, vampireTexture, elyTexture];
 
     // Assign lights to all materials
-    let materials = [ninjaMaterial, michelleMaterial, monsterMaterial, vampireMaterial];
+    let materials = [ninjaMaterial, michelleMaterial, monsterMaterial, vampireMaterial, elyMaterial];
     for (material of materials) {
         material.setDirectionalLight(directionalLight);
         for (let i = 0; i < pointLightCount; i++) {
@@ -116,7 +124,11 @@ function run() {
     let vampire = new GameObject();
     vampire.add(new MeshRenderer(vampireMesh, vampireMaterial));
 
-    let gameObjects = [ninja, michelle, monster, vampire];
+    const elyMesh = objToMesh(elyModel);
+    let ely = new GameObject();
+    ely.add(new MeshRenderer(elyMesh, elyMaterial));
+
+    let gameObjects = [ninja, michelle, monster, vampire, ely];
     for (gameObject of gameObjects) {
         gameObject.enabled = false;
     }

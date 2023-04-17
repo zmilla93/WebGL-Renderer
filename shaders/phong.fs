@@ -31,6 +31,7 @@ varying mediump mat4 vModelMatrix;
 uniform sampler2D diffuseSampler;
 uniform sampler2D normalSampler;
 uniform sampler2D specularSampler;
+uniform sampler2D emissionSampler;
 
 // Lighting
 const int POINT_LIGHT_COUNT = 4;
@@ -46,6 +47,7 @@ uniform mediump float specularStrength;
 uniform bool useDiffuseTexture;
 uniform bool useNormalTexture;
 uniform bool useSpecularTexture;
+uniform bool useEmissionTexture;
 
 uniform float viewDistance;
 
@@ -58,6 +60,7 @@ void main(void) {
     vec4 diffuseSample = texture2D(diffuseSampler, vUV1);
     vec4 normalSample = texture2D(normalSampler, vUV1);
     vec4 specularSample = texture2D(specularSampler, vUV1);
+    vec4 emissionSample = texture2D(emissionSampler, vUV1);
 
     // Get the depth of the fragment in clip space.
     float depth = (2.0 * gl_FragCoord.z - gl_DepthRange.near - gl_DepthRange.far) / (gl_DepthRange.far - gl_DepthRange.near);
@@ -82,7 +85,8 @@ void main(void) {
             continue;
         result += calculatePointLight(pointLight[i], viewDir, diffuseSample.xyz, specularSample.xyz);
     }
-
+    if(useEmissionTexture)
+        result += emissionSample.xyz;
     gl_FragColor = vec4(result.xyz, 1);
 }
 
