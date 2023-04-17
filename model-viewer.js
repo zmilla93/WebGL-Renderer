@@ -76,10 +76,17 @@ function run() {
     const monsterMaterial = new Material(Shader.phongShader);
     monsterMaterial.texture = monsterTexture;
 
-    let textures = [ninjaTexture, michelleTexture, monsterTexture];
+    // Warrock Material
+    const vampireDiffuse = document.getElementById("vampire-diffuse");
+    const vampireSpecular = document.getElementById("vampire-specular");
+    const vampireTexture = new Texture(vampireDiffuse, null, vampireSpecular);
+    const vampireMaterial = new Material(Shader.phongShader);
+    vampireMaterial.texture = vampireTexture;
+
+    let textures = [ninjaTexture, michelleTexture, monsterTexture, vampireTexture];
 
     // Assign lights to all materials
-    let materials = [ninjaMaterial, michelleMaterial, monsterMaterial];
+    let materials = [ninjaMaterial, michelleMaterial, monsterMaterial, vampireMaterial];
     for (material of materials) {
         material.setDirectionalLight(directionalLight);
         for (let i = 0; i < pointLightCount; i++) {
@@ -105,7 +112,11 @@ function run() {
     let ninja = new GameObject();
     ninja.add(new MeshRenderer(ninjaMesh, ninjaMaterial));
 
-    let gameObjects = [ninja, michelle, monster];
+    const vampireMesh = objToMesh(vampireModel);
+    let vampire = new GameObject();
+    vampire.add(new MeshRenderer(vampireMesh, vampireMaterial));
+
+    let gameObjects = [ninja, michelle, monster, vampire];
     for (gameObject of gameObjects) {
         gameObject.enabled = false;
     }
