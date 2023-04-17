@@ -2,14 +2,17 @@ function run() {
 
     const canvas = document.getElementById('glCanvas');
     Engine.init(canvas);
-    createGrid();
+    createGrid(5);
 
     const controller = new GameObject();
     controller.add(new SimpleCameraController());
+    Camera.main.position = [0, 2, 5];
+    Camera.main.color = [0.2, 0.2, 0.2];
 
-    // Phong Shader
-    // FIXME : Make this into a default shader
-    // const phongShader = new LitShader("Phong Shader", phongVertexSource, phongFragmentSource);
+    ////////////
+    // MESHES //
+    ////////////
+    const michelleMesh = objToMesh(michelleTriModel);
 
     ////////////
     // LIGHTS //
@@ -21,27 +24,34 @@ function run() {
     directionalLight.ambient = [0.2, 0.2, 0.2];
     directionalLight.color = [1, 1, 1];
 
-    let light1Material = new Material(Shader.unlitShader);
-
     // Point Lights
-    let pointLight1Pos = [0, 3, 0];
-    let pointLight1GO = new GameObject();
-    let pointLight1Renderer = new MeshRenderer(Mesh.sphere, light1Material);
-    pointLight1GO.add(pointLight1Renderer);
-    pointLight1GO.position = pointLight1Pos;
-    pointLight1GO.scale = [0.2, 0.2, 0.2];
-    // pointLight1GO.color = [1,0,0];
+    const pointLightCount = 4;
+    let light1 = PointLight.create();
+    let light2 = PointLight.create();
+    let light3 = PointLight.create();
+    let light4 = PointLight.create();
+    let lights = [light1, light2, light3, light4];
 
+    // Point Light Properties
+    let lightColors = [
+        [1, 1, 1],
+        [1, 0, 0],
+        [0, 1, 0],
+        [0, 0, 1],
+    ];
+    let lightPositions = [
+        [2, 1, 0],
+        [-2, 1, 0],
+        [0, 1, 2],
+        [0, 1, -2],
+    ]
+    for(let i = 0;i<pointLightCount;i++){
+        lights[i].color = lightColors[i];
+        lights[i].position = lightPositions[i];
+    }
 
-    let pointLight1 = new PointLight();
-    pointLight1GO.add(pointLight1);
-    // pointLight1.position = pointLight1Pos;
-
-
-    pointLight1.color = [1, 0.5, 1];
-    pointLight1.ambient = [0.2, 0.2, 0.2];
-    pointLight1.linear = 0.09;
-    pointLight1.quadratic = 0.032;
+    directionalLight.enabled = false;
+    light1.enabled = false;
 
     ///////////////
     // MATERIALS //
@@ -52,25 +62,22 @@ function run() {
     const monsterTexture = new Texture(monsterImage);
     const monsterMaterial = new Material(Shader.phongShader);
     monsterMaterial.texture = monsterTexture;
-    // monsterMaterial.texture = null;
-    monsterMaterial.objectColor = [0, 0.75, 0];
-    monsterMaterial.specularStrength = 0.5;
-    // monsterMaterial.setDirectionalLight(directionalLight);
-    // monsterMaterial.setDirectionalLight(null);
 
-    const phongMaterial = new Material(Shader.phongShader);
-    phongMaterial.objectColor = [1, 0.5, 0.31];
-    phongMaterial.specularStrength = 0.5;
-    phongMaterial.color = [0, 1, 0];
+    // Michelle Material
+    const michelleDiffuse = document.getElementById("michelleDiffuse");
+    const michelleSpecular = document.getElementById("michelleSpecular");
+    const michelleTexture = new Texture(michelleDiffuse, null, michelleSpecular);
+    const michelleMaterial = new Material(Shader.phongShader);
+    michelleMaterial.texture = michelleTexture;
 
-    const boxMaterial = new Material(Shader.phongShader);
-
-    boxMaterial.texture = phongMaterial;
-    boxMaterial.objectColor = [1, 0.5, 0.31];
-    boxMaterial.specularStrength = 1;
-
-    const light2 = PointLight.create();
-    const light3 = PointLight.create();
+    // Assign lights to all materials
+    let materials = [monsterMaterial, michelleMaterial];
+    for (material of materials) {
+        material.setDirectionalLight(directionalLight);
+        for (let i = 0; i < pointLightCount; i++) {
+            material.setPointLight(i, lights[i]);
+        }
+    }
 
     /////////////
     // OBJECTS //
@@ -79,28 +86,15 @@ function run() {
     // Monster Object
     let monster = new GameObject();
     monster.add(new MeshRenderer(Mesh.monster, monsterMaterial));
+    monster.enabled = false;
 
-    // monster.position = [-2, 0, -10];
+    let michelle = new GameObject();
+    michelle.add(new MeshRenderer(michelleMesh, michelleMaterial));
 
-    let monster2 = new GameObject();
-    monster2.add(new MeshRenderer(Mesh.monster2, monsterMaterial));
-    monster2.position = [2, 0, -10];
+    //////////////
+    // CONTROLS //
+    //////////////
 
-    boxMaterial.setPointLight(0, pointLight1);
-    monsterMaterial.setPointLight(0, pointLight1);
-    phongMaterial.setPointLight(0, pointLight1);
-
-    boxMaterial.setPointLight(1, light2);
-    monsterMaterial.setPointLight(1, light2);
-    phongMaterial.setPointLight(1, light2);
-
-    boxMaterial.setDirectionalLight(directionalLight);
-    monsterMaterial.setDirectionalLight(directionalLight);
-    phongMaterial.setDirectionalLight(directionalLight);
-
-    Camera.main.position = [0, 2, 5];
-
-    // Controls
     // FIXME : Controls need to be set to default shader values or vice versa!
     let ambientColorPicker = document.getElementById("ambientColorPicker");
     let ambientIntensitySlider = document.getElementById("ambientIntensitySlider");
@@ -108,8 +102,8 @@ function run() {
     let pointlight1X = document.getElementById("pointLight1X");
     let pointlight1Y = document.getElementById("pointLight1Y");
     let pointlight1Z = document.getElementById("pointLight1Z");
-    
-    pointlight1Checkbox.addEventListener("input", function(e){
+
+    pointlight1Checkbox.addEventListener("input", function (e) {
         let value = e.target.checked;
         pointLight1.enabled = value;
     });
@@ -123,17 +117,17 @@ function run() {
     //     pointLight1.ambientIntensity = value;
     // });
 
-    pointlight1X.addEventListener("input", function(e){
+    pointlight1X.addEventListener("input", function (e) {
         let value = e.target.value;
         let oldPos = pointLight1.position;
         pointLight1.gameObject.position = [value, oldPos[1], oldPos[2]];
     });
-    pointlight1Y.addEventListener("input", function(e){
+    pointlight1Y.addEventListener("input", function (e) {
         let value = e.target.value;
         let oldPos = pointLight1.position;
         pointLight1.gameObject.position = [oldPos[0], value, oldPos[2]];
     });
-    pointlight1Z.addEventListener("input", function(e){
+    pointlight1Z.addEventListener("input", function (e) {
         let value = e.target.value;
         let oldPos = pointLight1.position;
         pointLight1.gameObject.position = [oldPos[0], oldPos[1], value];
