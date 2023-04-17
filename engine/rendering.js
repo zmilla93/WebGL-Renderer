@@ -611,12 +611,14 @@ class MeshRenderer extends Component {
         if (this.gameObject == null || !this.gameObject.enabled) return;
         let gl = Engine.gl;
         gl.uniformMatrix4fv(this.material._shader.uniform("transformMatrix"), false, this.gameObject.matrix);
-        gl.uniformMatrix4fv(this.material._shader.uniform("modelMatrix"), false, this.gameObject.getModelMatrix());
         let color = this.gameObject.color == null ? this.material.color : this.gameObject.color;
         gl.uniform3f(this.material._shader.uniform("objectColor"), color[0], color[1], color[2]);
-        // FIXME : Camera pos could be moved to a per material uniform
-        let camPos = Camera.main.position;
-        gl.uniform3f(this.material._shader.uniform("cameraPos"), camPos[0], camPos[1], camPos[2]);
+        if (this.material._shader instanceof LitShader) {
+            // FIXME : Camera pos could be moved to a per material uniform
+            let camPos = Camera.main.position;
+            gl.uniformMatrix4fv(this.material._shader.uniform("modelMatrix"), false, this.gameObject.getModelMatrix());
+            gl.uniform3f(this.material._shader.uniform("cameraPos"), camPos[0], camPos[1], camPos[2]);
+        }
     };
     render(gl) {
         if (this.gameObject == null || !this.gameObject.enabled) return;
@@ -692,10 +694,10 @@ class PointLight extends Component {
         if (this.gameObject != null) this.gameObject.color = color;
         else console.error("Attempted to set color of a point light, but it isn't attached to a game object!");
     }
-    set enabled(state){
+    set enabled(state) {
         this.gameObject.enabled = state;
     }
-    get enabled(){
+    get enabled() {
         return this.gameObject.enabled;
     }
     static create() {
