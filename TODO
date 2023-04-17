@@ -27,3 +27,14 @@
     - More Biomes
     - Infinite Terrain
     - Better Biome Map System
+
+
+===
+=== Model Viewer
+===
+    - Add emission maps
+    - Finish adding example models
+    - New camera controller
+    - Optimize texture loading
+    - Finish viewer controls
+    - CSS
