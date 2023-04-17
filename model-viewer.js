@@ -12,7 +12,6 @@ function run() {
     ////////////
     // MESHES //
     ////////////
-    const michelleMesh = objToMesh(michelleTriModel);
 
     ////////////
     // LIGHTS //
@@ -70,8 +69,15 @@ function run() {
     const michelleMaterial = new Material(Shader.phongShader);
     michelleMaterial.texture = michelleTexture;
 
+    // Ninja Material
+    const ninjaDiffuse = document.getElementById("ninjaDiffuse");
+    const ninjaSpecular = document.getElementById("ninjaSpecular");
+    const ninjaTexture = new Texture(ninjaDiffuse, null, ninjaSpecular);
+    const ninjaMaterial = new Material(Shader.phongShader);
+    ninjaMaterial.texture = ninjaTexture;
+
     // Assign lights to all materials
-    let materials = [monsterMaterial, michelleMaterial];
+    let materials = [monsterMaterial, michelleMaterial, ninjaMaterial];
     for (material of materials) {
         material.setDirectionalLight(directionalLight);
         for (let i = 0; i < pointLightCount; i++) {
@@ -88,8 +94,14 @@ function run() {
     monster.add(new MeshRenderer(Mesh.monster, monsterMaterial));
     monster.enabled = false;
 
+    const michelleMesh = objToMesh(michelleTriModel);
     let michelle = new GameObject();
     michelle.add(new MeshRenderer(michelleMesh, michelleMaterial));
+    michelle.enabled = false;
+
+    const ninjaMesh = objToMesh(ninjaModel);
+    let ninja = new GameObject();
+    ninja.add(new MeshRenderer(ninjaMesh, ninjaMaterial));
 
     //////////////
     // CONTROLS //
