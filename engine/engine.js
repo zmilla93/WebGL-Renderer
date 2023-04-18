@@ -320,11 +320,6 @@ class GameObject {
     }
     set position(position) {
         this._position = position;
-        for (let component of this.components) {
-            if (typeof (component.onPositionChange) === 'function') {
-                console.log("!!!!");
-            }
-        }
     }
     get position() {
         return this._position;
