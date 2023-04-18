@@ -142,6 +142,7 @@ function run() {
     let modelSelect = document.getElementById("modelSelect");
     let textureCheckbox = document.getElementById("modelTextureCheckbox");
     let specularCheckbox = document.getElementById("modelSpecularCheckbox");
+    let modelAlbedo = document.getElementById("modelAlbedo");
     let selectedModel = 0;
     textureCheckbox.checked = true;
     specularCheckbox.checked = true;
@@ -161,6 +162,12 @@ function run() {
     specularCheckbox.addEventListener("input", function (e) {
         for (material of materials) {
             material.useSpecularTexture = e.target.checked;
+        }
+    });
+    modelAlbedo.addEventListener("input", function (e) {
+        let color = hexToRGB(e.target.value);
+        for (material of materials) {
+            material.albedo = color;
         }
     });
 

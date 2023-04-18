@@ -195,6 +195,7 @@ class LitShader extends Shader {
     }
     setupCommon() {
         this.uniformConverter.objectColor = Rendering.vector3Converter;
+        this.uniformConverter.albedo = Rendering.vector3Converter;
         this.uniformConverter.cameraPos = Rendering.vector3Converter;
         this.uniformConverter.specularStrength = Rendering.floatConverter;
         this.uniformConverter.useDiffuseTexture = Rendering.boolConverter;

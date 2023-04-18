@@ -40,6 +40,7 @@ uniform PointLight pointLight[POINT_LIGHT_COUNT];
 uniform bool useDirectionalLight;
 uniform bool usePointLight[POINT_LIGHT_COUNT];
 
+uniform mediump vec3 albedo;
 uniform mediump vec3 objectColor;
 uniform mediump vec3 cameraPos;
 uniform mediump float specularStrength;
@@ -88,6 +89,7 @@ void main(void) {
         vec4 emissionSample = texture2D(emissionSampler, vUV1);
         result += emissionSample.xyz;
     }
+    result *= albedo;
     gl_FragColor = vec4(result.xyz, 1);
 }
 
