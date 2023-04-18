@@ -253,6 +253,10 @@ class Material {
         this.useNormalTexture = false;
         this.useEmissionTexture = false;
 
+        this.hasSpecularTexture = false;
+        this.hasNormalTexture = false;
+        this.hasEmissionTexture = false;
+
         this.useDirectionalLight = false;
         // FIXME : Should be a better way to initialize this
         for (let i = 0; i < Material.MAX_POINT_LIGHTS; i++) {
@@ -312,13 +316,19 @@ class Material {
         if (texture == null) {
             this.useDiffuseTexture = false;
             this.useNormalTexture = false;
+            this.hasNormalTexture = false
             this.useSpecularTexture = false;
+            this.hasSpecularTexture = false;
             this.useEmissionTexture = false;
+            this.hasEmissionTexture = false;
         } else {
             this.useDiffuseTexture = texture.diffuse != null;
             this.useNormalTexture = texture.normal != null;
+            this.hasNormalTexture = texture.normal != null;
             this.useSpecularTexture = texture.specular != null;
+            this.hasSpecularTexture = texture.specular != null;
             this.useEmissionTexture = texture.emission != null;
+            this.hasEmissionTexture = texture.emission != null;
         }
     }
     // FIXME : get material seems unnessecary??
@@ -368,7 +378,7 @@ class Texture {
         if (specular != null) {
             this.specular = Texture.createGLTexture(gl.TEXTURE2, specular, textureFilter, textureWrap);
         }
-        if(emission != null){
+        if (emission != null) {
             this.emission = Texture.createGLTexture(gl.TEXTURE3, emission, textureFilter, textureWrap);
         }
     }
