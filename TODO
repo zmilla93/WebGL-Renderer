@@ -32,7 +32,7 @@
 ===
 === Model Viewer
 ===
-    - Add emission maps
+    + Add emission maps
     - Finish adding example models
     - New camera controller
     - Optimize texture loading

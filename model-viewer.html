@@ -40,16 +40,16 @@
 
 <body>
 
-    <div>
+    <div id="navbar">
+        <h1>WebGL Model Viewer</h1>
+    </div>
+
+    <div id="canvasContainer">
+        <!-- <h1>WebGL Model Viewer</h1> -->
         <canvas id="glCanvas" tabindex="1" width="900" height="600"></canvas>
-        <!-- <canvas id="textureCanvas" width="200" height="200"></canvas> -->
-    </div>
-    <div id="editor">
-
     </div>
 
-    <div id="controls">
-
+    <div id="controlContainer">
         <fieldset class="control">
             <legend class="control-header">Model</legend>
             <table>
@@ -92,7 +92,7 @@
                 </tr> -->
             </table>
         </fieldset>
-
+        <!-- <br> -->
         <!-- Directional Light -->
         <fieldset class="control">
             <legend class="control-header">Directional Light</legend>
@@ -220,6 +220,59 @@
                     </tr>
                 </table>
             </fieldset>
+
+
+            <!-- DUMMY -->
+            <fieldset class="control pointLightControl">
+                <legend class="control-header">Point Light #4</legend>
+                <table>
+                    <tr>
+                        <td>Enabled</td>
+                        <td>&emsp;</td>
+                        <td><input type="checkbox" class="pointLightCheckbox"></td>
+                    </tr>
+                    <tr>
+                        <td>Color</td>
+                        <td>&emsp;</td>
+                        <td><input type="color" class="pointLightColorPicker"></td>
+                    </tr>
+                    <tr>
+                        <td>Position</td>
+                        <td>&emsp;</td>
+                        <td>
+                            X&nbsp;<input type="number" class="pointLightX" step="0.1" min="-20" max="20">
+                            Y&nbsp;<input type="number" class="pointLightY" step="0.1" min="-20" max="20">
+                            Z&nbsp;<input type="number" class="pointLightZ" step="0.1" min="-20" max="20">
+                        </td>
+                    </tr>
+                </table>
+            </fieldset>
+            <!-- DUMMY -->
+            <fieldset class="control pointLightControl">
+                <legend class="control-header">Point Light #4</legend>
+                <table>
+                    <tr>
+                        <td>Enabled</td>
+                        <td>&emsp;</td>
+                        <td><input type="checkbox" class="pointLightCheckbox"></td>
+                    </tr>
+                    <tr>
+                        <td>Color</td>
+                        <td>&emsp;</td>
+                        <td><input type="color" class="pointLightColorPicker"></td>
+                    </tr>
+                    <tr>
+                        <td>Position</td>
+                        <td>&emsp;</td>
+                        <td>
+                            X&nbsp;<input type="number" class="pointLightX" step="0.1" min="-20" max="20">
+                            Y&nbsp;<input type="number" class="pointLightY" step="0.1" min="-20" max="20">
+                            Z&nbsp;<input type="number" class="pointLightZ" step="0.1" min="-20" max="20">
+                        </td>
+                    </tr>
+                </table>
+            </fieldset>
+
         </div>
     </div>
 

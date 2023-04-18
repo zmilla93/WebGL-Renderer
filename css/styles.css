@@ -1,61 +1,24 @@
 @import url('https://fonts.googleapis.com/css2?family=Hind&display=swap');
 
-body{
-    background-color: #353535;
+body,
+html {
+    background-color: #834a4a;
     font-family: 'Hind', sans-serif;
+    overflow: auto;
+    height: 100%;
+    padding: 0;
+    margin: 0;
 }
 
-canvas {
-    border: black;
-    border-width: 1px;
-    border-style: solid;
-    margin:auto;
-    display: block;
+#navbar{
+    height:80px;
 }
 
-#editor {
-    /* background-color: bisque; */
-    display: block;
-    display: flex;
-    flex-flow: row nowrap;
-}
-
-#editor div{
-    /* display: flex;
-     */
+#navbar h1 {
     /* display: block; */
-    /* height: 100%; */
+    /* height: 50%; */
+    text-align: center;
+    vertical-align: auto;
+    margin: auto;
+    padding: 0px;
 }
-
-#gameObjectListWrapper{
-    display: flex;
-}
-
-#gameObjectList {
-    /* background-color: purple; */
-    color: green;
-    display: flex;
-    padding-left: 5px;
-    padding-right: 5px;
-    /* padding-top: 5px;
-    padding-bottom: 5px; */
-    /* height:fit-content; */
-    /* height: max-content; */
-    /* float: right; */
-    /* height: 600px; */
-    /* display: flex; */
-    /* flex-flow: column; */
-}
-
-#inspector {
-    background-color: orange;
-    /* height: 600px; */
-}
-
-
-
-
-
-/* body{
-    color:green;
-} */
