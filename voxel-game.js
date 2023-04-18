@@ -22,7 +22,7 @@ function run() {
 
     const textureCanvas = document.getElementById("textureCanvas");
     const images = document.getElementsByClassName("texture");
-    const texture = new Texture(textureCanvas, null, null, TextureFilter.Nearest);
+    const texture = new Texture(textureCanvas, null, null, null, TextureFilter.Nearest);
 
     console.log(Block.list);
 
