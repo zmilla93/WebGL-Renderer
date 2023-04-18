@@ -6,6 +6,8 @@ function run() {
 
     const controller = new GameObject();
     controller.add(new SimpleCameraController());
+    controller.add(new ModelCameraController());
+
     Camera.main.position = [0, 2, 5];
     Camera.main.color = [0.2, 0.2, 0.2];
 

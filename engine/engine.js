@@ -97,7 +97,8 @@ class Engine {
         Mesh.initMeshes();
         VoxelMesh.initMeshes();
         Input.addKeyboardListeners();
-        Input.addMouseListeners(canvas);
+        Input.addMouseListeners();
+        Input.updateCanvasRect();
         Texture.createPlaceholderTexture();
         Engine.gl.bindTexture(gl.TEXTURE_2D, Texture.placeholderTexture.diffuse);
         window.requestAnimationFrame(Engine.internal_update);
@@ -190,7 +191,7 @@ class Engine {
         // Render the scene
         Engine.render();
         // Clear single frame key presses
-        Input.pressedThisFrame.clear();
+        Input.clearPressedThisFrame();
         // Request a new animation frame
         window.requestAnimationFrame(Engine.internal_update);
     }

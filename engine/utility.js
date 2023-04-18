@@ -178,3 +178,9 @@ function symbolToString(symbol) {
     var str = symbol.toString();
     return str.substring(7, str.length - 1);
 }
+
+function isPointWithinRect(x, y, rect) {
+    if (x < rect.x || x > rect.x + rect.width) return false;
+    if (y < rect.y || y > rect.y + rect.height) return false;
+    return true;
+}
