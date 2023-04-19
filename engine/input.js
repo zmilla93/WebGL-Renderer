@@ -27,6 +27,8 @@ class Input {
     static deltaY = 0;
     static dragX = 0;
     static dragY = 0;
+    static scroll = 0;
+    static scrollNormalized = 0;
     static canvasRect;
     static isKeyPressed(keyCode) {
         return Input.pressedKeys.has(keyCode);
@@ -43,7 +45,7 @@ class Input {
     static mousePressedThisFrame(button) {
         return Input.pressedMouseButtonsThisFrame.has(button);
     }
-    static updateCanvasRect(){
+    static updateCanvasRect() {
         Input.canvasRect = Engine.canvas.getBoundingClientRect();
     }
     // This is called at the end of the engine event loop every frame
@@ -54,6 +56,8 @@ class Input {
         Input.deltaY = 0;
         Input.dragX = 0;
         Input.dragY = 0;
+        Input.scroll = 0;
+        Input.scrollNormalized = 0;
     }
     static addCanvas(canvas) {
         Input.canvasList.push(canvas);
@@ -92,10 +96,9 @@ class Input {
         });
         document.addEventListener("mousemove", function (e) {
             // Delta X & Y
-            if (isPointWithinRect(e.clientX, e.clientY, Input.canvasRect)) {
-                Input.deltaX = e.movementX;
-                Input.deltaY = e.movementY;
-            }
+            if (!isPointWithinRect(e.clientX, e.clientY, Input.canvasRect)) return;
+            Input.deltaX = e.movementX;
+            Input.deltaY = e.movementY;
             // Drag X & Y
             if (Input.pressedMouseButtons.has(0)
                 || Input.pressedMouseButtons.has(1)
@@ -104,7 +107,11 @@ class Input {
                 Input.dragX = e.movementX;
                 Input.dragY = e.movementY;
             }
-
+        });
+        document.addEventListener("wheel", function (e) {
+            if (!isPointWithinRect(e.clientX, e.clientY, Input.canvasRect)) return;
+            Input.scroll = e.deltaY;
+            Input.scrollNormalized = e.deltaY / Math.abs(e.deltaY);
         });
     }
     static updateKey(e, state) {
