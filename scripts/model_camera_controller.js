@@ -5,8 +5,9 @@ class ModelCameraController extends Component {
     sensitivity = 20;
     scrollSensitivity = 0.5;
     maxYaw = 50;
-    minDistance = 2;
-    maxDistance = 15;
+    minDistance = 1;
+    maxDistance = 10;
+    targetHeight = 1.5;
     // Internal
     quat = quat.create();
     targetPos = vec3.create();
@@ -23,8 +24,9 @@ class ModelCameraController extends Component {
         if (this.distance > this.maxDistance) this.distance = this.maxDistance;
         // Calculate camera position
         quat.fromEuler(this.quat, this.yaw, this.rotation, 0);
-        let original = vec3.fromValues(0, 1.5, this.distance);
+        let original = vec3.fromValues(0, 0, this.distance);
         vec3.transformQuat(this.targetPos, original, this.quat);
+        this.targetPos[1] += this.targetHeight;
         // Apply camera position & rotation
         camera.position = this.targetPos;
         camera.setRotation(this.yaw, this.rotation, 0);
