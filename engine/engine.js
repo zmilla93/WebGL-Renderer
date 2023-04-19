@@ -94,6 +94,9 @@ class Engine {
         gl.clearColor(106 / 255, 204 / 255, 181 / 255, 1);
         Engine.setupDefaultShaders();
         Camera.main = new Camera();
+        let canvasObserver = new CanvasObserver(Engine.canvas);
+        canvasObserver.onSizeChange = Engine.handleCanvasSizeChange;
+        Engine.handleCanvasSizeChange();
         Mesh.initMeshes();
         VoxelMesh.initMeshes();
         Input.addKeyboardListeners();
@@ -106,6 +109,15 @@ class Engine {
     static updateCamera() {
         const color = Camera.main.color;
         Engine.gl.clearColor(color[0], color[1], color[2], 1);
+    }
+    static handleCanvasSizeChange() {
+        let width = Engine.canvas.clientWidth;
+        let height = Engine.canvas.clientHeight;
+        Engine.canvas.width = width;
+        Engine.canvas.height = height;
+        Camera.main.updateAspectRatio();
+        Engine.gl.viewport(0, 0, width, height);
+        Input.updateCanvasRect();
     }
     static setupDefaultShaders() {
         const gl = Engine.gl;
@@ -187,6 +199,9 @@ class Engine {
                     component.update();
                 }
             }
+        }
+        for (let component of SimpleComponent.list) {
+            if (typeof component.update === 'function') component.update();
         }
         // Render the scene
         Engine.render();
@@ -327,7 +342,7 @@ class GameObject {
         }
         return null;
     }
-    getComponents(type){
+    getComponents(type) {
         let components = [];
         for (let component of this.components) {
             if (component instanceof type) {
@@ -403,6 +418,44 @@ class Component {
     }
     get parent() {
         return this.gameObject;
+    }
+}
+
+// An object that can be given an update callback without attaching to a game object.
+class SimpleComponent {
+    static list = [];
+    update; // Overwrite this to a function
+    constructor() {
+        SimpleComponent.list.push(this);
+    }
+}
+
+class CanvasObserver extends SimpleComponent {
+    canvas;
+    canvasWidth;
+    canvasHeight;
+    constructor(canvas) {
+        super();
+        this.canvas = canvas;
+        this.canvasWidth = canvas.clientWidth;
+        this.canvasHeight = canvas.clientHeight;
+    }
+    update = function (e) {
+        let sizeChanged = false;
+        if (this.canvasWidth != this.canvas.clientWidth) {
+            this.canvasWidth = this.canvas.clientWidth;
+            sizeChanged = true;
+        }
+        if (this.canvasHeight != this.canvas.clientHeight) {
+            this.canvasHeight = this.canvas.clientHeight;
+            sizeChanged = true;
+        }
+        if (sizeChanged) {
+            this.onSizeChange(this.canvasWidth, this.canvasHeight);
+        }
+    }
+    onSizeChange = function (width, height) {
+
     }
 }
 

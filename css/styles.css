@@ -4,7 +4,7 @@ body,
 html {
     background-color: #834a4a;
     font-family: 'Hind', sans-serif;
-    overflow: auto;
+    /* overflow: auto; */
     height: 100%;
     padding: 0;
     margin: 0;

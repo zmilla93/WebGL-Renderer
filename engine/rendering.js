@@ -75,6 +75,10 @@ class Camera {
     getProjectionMatrix() {
         return this.projectionMatrix;
     }
+    updateAspectRatio() {
+        this.aspectRatio = Engine.canvas.clientWidth / Engine.canvas.clientHeight;
+        this.calculateProjectionMatrix();
+    }
     updateMainCamera() {
         if (this.isMainCamera()) {
             Engine.gl.clearColor(this.color[0], this.color[1], this.color[2], 1);
