@@ -54,14 +54,7 @@ function run() {
         lights[i].position = lightPositions[i];
     }
 
-    // directionalLight.enabled = false;
     light1.enabled = false;
-
-    // let cube = GameObject.createCube(mat);
-    // let sphere = GameObject.createSphere(mat);
-    let sphere = GameObject.createObject(Mesh.cube);
-    sphere.color = [0, 1, 0];
-    sphere.position = [3, 1, 3];
 
     ///////////////
     // MATERIALS //
@@ -120,12 +113,10 @@ function run() {
     // Monster Object
     let monster = new GameObject();
     monster.add(new MeshRenderer(Mesh.monster, monsterMaterial));
-    // monster.enabled = false;
 
     const michelleMesh = objToMesh(michelleTriModel);
     let michelle = new GameObject();
     michelle.add(new MeshRenderer(michelleMesh, michelleMaterial));
-    // michelle.enabled = false;
 
     const ninjaMesh = objToMesh(ninjaModel);
     let ninja = new GameObject();
