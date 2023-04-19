@@ -184,3 +184,34 @@ function isPointWithinRect(x, y, rect) {
     if (y < rect.y || y > rect.y + rect.height) return false;
     return true;
 }
+
+// Converts a quaterntion back to euler angles.
+// Taken from https://github.com/toji/gl-matrix/issues/329
+quat.getEuler = function (out, quat) {
+    let x = quat[0],
+        y = quat[1],
+        z = quat[2],
+        w = quat[3],
+        x2 = x * x,
+        y2 = y * y,
+        z2 = z * z,
+        w2 = w * w;
+    let unit = x2 + y2 + z2 + w2;
+    let test = x * w - y * z;
+    if (test > 0.499995 * unit) { //TODO: Use glmatrix.EPSILON
+        // singularity at the north pole
+        out[0] = Math.PI / 2 * RAD2DEG;
+        out[1] = 2 * Math.atan2(y, x) * RAD2DEG;
+        out[2] = 0 * RAD2DEG;
+    } else if (test < -0.499995 * unit) { //TODO: Use glmatrix.EPSILON
+        // singularity at the south pole
+        out[0] = -Math.PI / 2 * RAD2DEG;
+        out[1] = 2 * Math.atan2(y, x) * RAD2DEG;
+        out[2] = 0 * RAD2DEG;
+    } else {
+        out[0] = Math.asin(2 * (x * z - w * y)) * RAD2DEG;
+        out[1] = Math.atan2(2 * (x * w + y * z), 1 - 2 * (z2 + w2)) * RAD2DEG;
+        out[2] = Math.atan2(2 * (x * y + z * w), 1 - 2 * (y2 + z2)) * RAD2DEG;
+    }
+    return out;
+}
