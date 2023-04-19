@@ -1,6 +1,7 @@
 class SimpleCameraController extends Component {
     walkSpeed = 5;
     runSpeed = 10;
+    rotationSpeed = 100;
     update = function () {
         var cam = Camera.main;
         const speed = Input.isKeyPressed('ShiftLeft') || Input.isKeyPressed('ShiftRight') ? this.runSpeed : this.walkSpeed;
@@ -42,22 +43,22 @@ class SimpleCameraController extends Component {
         }
         if (Input.isKeyPressed('KeyQ')) {
             var rotationY = cam.rotation[1];
-            rotationY += 90 * DEG2RAD * Time.deltaTime;
+            rotationY += Time.deltaTime * this.rotationSpeed;
             cam.setRotation(cam.rotation[0], rotationY, cam.rotation[2]);
         }
         if (Input.isKeyPressed('KeyE')) {
             var rotationY = cam.rotation[1];
-            rotationY -= 90 * DEG2RAD * Time.deltaTime;
+            rotationY -= Time.deltaTime * this.rotationSpeed;
             cam.setRotation(cam.rotation[0], rotationY, cam.rotation[2]);
         }
         if (Input.isKeyPressed('KeyC')) {
             var rotationX = cam.rotation[0];
-            rotationX += 90 * DEG2RAD * Time.deltaTime;
+            rotationX += Time.deltaTime * this.rotationSpeed;
             cam.setRotation(rotationX, cam.rotation[1], 0);
         }
         if (Input.isKeyPressed('KeyX')) {
             var rotationX = cam.rotation[0];
-            rotationX -= 90 * DEG2RAD * Time.deltaTime;
+            rotationX -= Time.deltaTime * this.rotationSpeed;
             cam.setRotation(rotationX, cam.rotation[1], 0);
         }
         if (Input.wasPressedThisFrame('KeyV')) {
@@ -67,7 +68,7 @@ class SimpleCameraController extends Component {
 }
 
 class CameraController extends Component {
-    update = function(){
+    update = function () {
         const walkSpeed = 5;
         const runSpeed = 10;
         const speed = Input.isKeyPressed('ShiftLeft') || Input.isKeyPressed('ShiftRight') ? runSpeed : walkSpeed;

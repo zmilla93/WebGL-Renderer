@@ -82,31 +82,32 @@ class Camera {
     }
     calculateWorldToViewMatrix() {
         this.worldToViewMatrix = mat4.create();
-        var localViewDirection = vec3.clone(VECTOR3_FORWARD);
+        let localViewDirection = vec3.clone(VECTOR3_FORWARD);
         this.forward = vec3.clone(VECTOR3_FORWARD);
-        // console.log(localViewDirection);
-        // console.log(this.rotation);
-        // this.rotation[1] = 45 * DEG2RAD;
-        this.rotation[2] = 0 * DEG2RAD;
-        // this.rotation[0] = -45 * DEG2RAD;
+        // this.rotation[2] = 0 * DEG2RAD;
 
-        // vec3.rotateX(localViewDirection, localViewDirection, VECTOR3_ZERO, this.rotation[0]);
-        vec3.rotateX(localViewDirection, localViewDirection, VECTOR3_ZERO, this.rotation[0]);
-        // this.forward = vec3.clone(localViewDirection);
-        vec3.rotateY(localViewDirection, localViewDirection, VECTOR3_ZERO, this.rotation[1]);
-        vec3.rotateY(this.forward, this.forward, VECTOR3_ZERO, this.rotation[1]);
+        // Convert rotation to radians
+        let rotationRad = vec3.clone(this.rotation);
+        rotationRad[0] *= DEG2RAD;
+        rotationRad[1] *= DEG2RAD;
+        rotationRad[2] *= DEG2RAD;
+
+        // Apply rotation
+        vec3.rotateX(localViewDirection, localViewDirection, VECTOR3_ZERO, rotationRad[0]);
+        vec3.rotateY(localViewDirection, localViewDirection, VECTOR3_ZERO, rotationRad[1]);
+        vec3.rotateY(this.forward, this.forward, VECTOR3_ZERO, rotationRad[1]);
         this.viewDirection = localViewDirection;
 
         // vec3.rotateZ(localViewDirection, localViewDirection, VECTOR3_ZERO, this.rotation[2]);
         // vec3.rotateY(this.rotation[1]);
 
-        const lookVector = vec3.create();
+        let lookVector = vec3.create();
         vec3.add(lookVector, this.position, localViewDirection);
 
-        var upVector = vec3.clone(VECTOR3_UP);
-        vec3.rotateZ(upVector, upVector, VECTOR3_ZERO, this.rotation[2]);
-        vec3.rotateX(upVector, upVector, VECTOR3_ZERO, this.rotation[0]);
-        vec3.rotateY(upVector, upVector, VECTOR3_ZERO, this.rotation[1]);
+        let upVector = vec3.clone(VECTOR3_UP);
+        vec3.rotateZ(upVector, upVector, VECTOR3_ZERO, rotationRad[2]);
+        vec3.rotateX(upVector, upVector, VECTOR3_ZERO, rotationRad[0]);
+        vec3.rotateY(upVector, upVector, VECTOR3_ZERO, rotationRad[1]);
 
         mat4.lookAt(this.worldToViewMatrix, this.position, lookVector, upVector);
     }

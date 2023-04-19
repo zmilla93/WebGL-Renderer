@@ -10,6 +10,7 @@ function run() {
 
     Camera.main.position = [0, 2, 5];
     Camera.main.color = [0.2, 0.2, 0.2];
+    Camera.main.setRotation(-45, 45, 0);
 
     let mat = new Material(Shader.phongShader);
 
