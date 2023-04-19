@@ -305,6 +305,7 @@ class GameObject {
     color;
     enabled = true;
     static gameObjectList = [];
+    static defaultMaterial;
     constructor() {
         GameObject.gameObjectList.push(this);
     }
@@ -317,6 +318,23 @@ class GameObject {
         var index = this.components.indexOf(component);
         this.components.splice(index, 1);
         component.onRemove(this);
+    }
+    getComponent(type) {
+        for (let component of this.components) {
+            if (component instanceof type) {
+                return component;
+            }
+        }
+        return null;
+    }
+    getComponents(type){
+        let components = [];
+        for (let component of this.components) {
+            if (component instanceof type) {
+                components.push(component);
+            }
+        }
+        return components;
     }
     set position(position) {
         this._position = position;
@@ -360,6 +378,17 @@ class GameObject {
     destroy() {
         const index = GameObject.gameObjectList.indexOf(this);
         GameObject.gameObjectList.splice(index, 1);
+    }
+    static createObject(mesh, material) {
+        if (material == null) {
+            if (GameObject.defaultMaterial == null)
+                GameObject.defaultMaterial = new Material(Shader.unlitShader);
+            material = GameObject.defaultMaterial;
+        }
+        let gameObject = new GameObject();
+        let renderer = new MeshRenderer(mesh, material);
+        gameObject.add(renderer);
+        return gameObject;
     }
 }
 

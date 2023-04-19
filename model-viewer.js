@@ -11,6 +11,8 @@ function run() {
     Camera.main.position = [0, 2, 5];
     Camera.main.color = [0.2, 0.2, 0.2];
 
+    let mat = new Material(Shader.phongShader);
+
     ////////////
     // MESHES //
     ////////////
@@ -54,6 +56,12 @@ function run() {
     // directionalLight.enabled = false;
     light1.enabled = false;
 
+    // let cube = GameObject.createCube(mat);
+    // let sphere = GameObject.createSphere(mat);
+    let sphere = GameObject.createObject(Mesh.cube);
+    sphere.color = [0, 1, 0];
+    sphere.position = [3, 1, 3];
+
     ///////////////
     // MATERIALS //
     ///////////////
@@ -96,7 +104,7 @@ function run() {
     let textures = [ninjaTexture, michelleTexture, monsterTexture, vampireTexture, elyTexture];
 
     // Assign lights to all materials
-    let materials = [ninjaMaterial, michelleMaterial, monsterMaterial, vampireMaterial, elyMaterial];
+    let materials = [ninjaMaterial, michelleMaterial, monsterMaterial, vampireMaterial, elyMaterial, mat];
     for (material of materials) {
         material.setDirectionalLight(directionalLight);
         for (let i = 0; i < pointLightCount; i++) {
