@@ -37,22 +37,66 @@
     <!-- <script src="game.js"></script> -->
     <!-- <script src="voxel-game.js"></script> -->
     <script src="model-viewer.js"></script>
+
+    <!-- Page -->
+    <script src="page.js"></script>
+
 </head>
 
 <body>
 
-    <div id="navbar">
-        <h1>WebGL Model Viewer</h1>
+    <!-- Navbar -->
+    <ul id="navbar">
+        <li class="title navleft">
+            <h1>WebGL Model Viewer</h1>
+        </li>
+        <li class="navright"><a href="http://www.github.com" target="_blank">Github</a></li>
+        <li id="aboutButton" class="navright"><a href="#">About</a></li>
+    </ul>
+
+    <!-- About Dialog -->
+    <div id="aboutDialog" class="contentBorder">
+        <div id="aboutContents">
+            <h2>Controls</h2>
+            <ul>
+                <li>Click and drag to rotate camera</li>
+                <li>Shift & Space to adjust camera height</li>
+                <li>Scroll wheel to zoom</li>
+            </ul>
+            <h2>WebGL Tutorials</h2>
+            <ul>
+                <li><a href="https://learnopengl.com/" target="_blank">LearnOpenGL</a></li>
+                <li>Jamie King's <a
+                        href="https://www.youtube.com/watch?v=6c1QYZAEP2M&list=PLRwVmtr-pp06qT6ckboaOhnm9FxmzHpbY"
+                        target="_blank">3D Computer Graphics Course</a></li>
+            </ul>
+            <h2>Credits</h2>
+            <ul>
+                <li>Linear math library by <a href="https://glmatrix.net/" target="_blank">glMatrix</a></li>
+                <li>Models from <a href="https://www.mixamo.com/" target="_blank">Mixamo</a></li>
+                <li>Icons from <a href="http://www.iconfinder.com" target="_blank">IconFinder</a></li>
+            </ul>
+            <a href="#" id="aboutBackButton" class="button">Back</a>
+            <img id="aboutCloseButton" src="icons/close.png" class="icon">
+        </div>
     </div>
 
-    <div id="canvasContainer">
-        <!-- <h1>WebGL Model Viewer</h1> -->
+
+    <!-- Canvas -->
+    <div id="canvasContainer" class="contentBorder">
+        <div id="loadingDialog">
+            <h1>Loading...</h1>
+        </div>
         <canvas id="glCanvas" tabindex="1" width="100" height="100"></canvas>
     </div>
 
-    <div id="controlContainer">
+    <!-- Controls -->
+    <div id="controlContainer" class="contentBorder">
         <fieldset class="control">
-            <legend class="control-header">Model</legend>
+            <legend class="control-header">
+                <img src="icons/cube.png" class="icon">
+                Model
+            </legend>
             <table>
                 <tr>
                     <td>Model</td>
@@ -96,7 +140,10 @@
         <!-- <br> -->
         <!-- Directional Light -->
         <fieldset class="control">
-            <legend class="control-header">Directional Light</legend>
+            <legend class="control-header">
+                <img src="icons/sun.png" class="icon">
+                Directional Light
+            </legend>
             <table>
                 <tr>
                     <td>Enabled</td>
@@ -123,7 +170,10 @@
         <div id="pointLightControls">
             <!-- Point Light #1 -->
             <fieldset class="control pointLightControl">
-                <legend class="control-header">Point Light #1</legend>
+                <legend class="control-header">
+                    <img src="icons/light.png" class="icon">
+                    Point Light #1
+                </legend>
                 <table>
                     <tr>
                         <td>Enabled</td>
@@ -148,7 +198,10 @@
             </fieldset>
             <!-- Point Light #2 -->
             <fieldset class="control pointLightControl">
-                <legend class="control-header">Point Light #2</legend>
+                <legend class="control-header">
+                    <img src="icons/light.png" class="icon">
+                    Point Light #2
+                </legend>
                 <table>
                     <tr>
                         <td>Enabled</td>
@@ -173,7 +226,10 @@
             </fieldset>
             <!-- Point Light #3 -->
             <fieldset class="control pointLightControl">
-                <legend class="control-header">Point Light #3</legend>
+                <legend class="control-header">
+                    <img src="icons/light.png" class="icon">
+                    Point Light #3
+                </legend>
                 <table>
                     <tr>
                         <td>Enabled</td>
@@ -198,7 +254,10 @@
             </fieldset>
             <!-- Point Light #4 -->
             <fieldset class="control pointLightControl">
-                <legend class="control-header">Point Light #4</legend>
+                <legend class="control-header">
+                    <img src="icons/light.png" class="icon">
+                    Point Light #4
+                </legend>
                 <table>
                     <tr>
                         <td>Enabled</td>

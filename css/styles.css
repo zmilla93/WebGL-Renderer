@@ -4,21 +4,91 @@ body,
 html {
     background-color: #834a4a;
     font-family: 'Hind', sans-serif;
-    /* overflow: auto; */
     height: 100%;
     padding: 0;
     margin: 0;
 }
 
-#navbar{
-    height:80px;
+/* Navbar Styles */
+
+#navbar {
+    height: 50px;
+    background-color: #2b2b2b;
+    margin: 0px;
+    padding: 0px;
 }
 
-#navbar h1 {
-    /* display: block; */
-    /* height: 50%; */
+#navbar ul {
+    list-style-type: none;
+}
+
+#navbar li,
+#navbar li a,
+.title,
+.button {
+    display: flex;
+    /* background-color: green; */
+    color: #b6f542;
+    background-color: none;
+    margin: 0;
+    height: 100%;
     text-align: center;
-    vertical-align: auto;
-    margin: auto;
-    padding: 0px;
+    align-content: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+#navbar li a {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-right: 10px;
+}
+
+.title {
+    padding-left: 10px;
+}
+
+#navbar a,
+#navbar a:visited,
+.button {
+    background-color: none;
+    border-width: 2px;
+    border-style: solid;
+    border-color: #b6f542;
+    border-radius: 5px;
+    padding-left: 20px;
+    padding-right: 20px;
+    text-decoration: none;
+}
+
+#aboutBackButton {
+    width: fit-content;
+}
+
+#aboutCloseButton {
+    width: 30px;
+    height: 30px;
+    position: fixed;
+    top: 50px;
+    right: 20%;
+    cursor: pointer;
+    transform: translate(-10px, 10px);
+}
+
+#navbar a:hover {}
+
+.navleft {
+    float: left;
+}
+
+.navright {
+    float: right;
+    margin-left: 20px;
+}
+
+.icon {
+    width: 16px;
+    height: 16px;
+    transform: translate(0, 2.5px);
+    filter: invert(100%);
 }
