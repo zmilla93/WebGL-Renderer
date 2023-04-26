@@ -419,7 +419,7 @@ class Texture {
             gl.generateMipmap(gl.TEXTURE_2D);
         } catch (error) {
             // If creating the texture fails, delete the glTexture and return.
-            console.error("Failed to create glTexture using '" + image.id + "' " + image.toString() + ". Textures cannot be used in an offline enviroment. See github repo for info to locally host using python.");
+            console.error("Failed to create glTexture using '" + image.id + "' " + image.toString() + ". Textures cannot be used in an offline enviroment.");
             gl.deleteTexture(texture);
             texture = null;
         }
