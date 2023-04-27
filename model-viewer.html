@@ -4,8 +4,6 @@
     <title>WebGL</title>
 
     <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/model-viewer.css">
-
 
     <!-- Third Party -->
     <script src="third-party/gl-matrix-min.js"></script>
@@ -65,7 +63,7 @@
             </ul>
             <h2>WebGL Tutorials</h2>
             <ul>
-                <li><a href="https://learnopengl.com/" target="_blank">LearnOpenGL</a></li>
+                <li>Joey de Vries' <a href="https://learnopengl.com/" target="_blank">LearnOpenGL</a></li>
                 <li>Jamie King's <a
                         href="https://www.youtube.com/watch?v=6c1QYZAEP2M&list=PLRwVmtr-pp06qT6ckboaOhnm9FxmzHpbY"
                         target="_blank">3D Computer Graphics Course</a></li>
@@ -77,7 +75,7 @@
                 <li>Icons from <a href="http://www.iconfinder.com" target="_blank">IconFinder</a></li>
             </ul>
             <a href="#" id="aboutBackButton" class="button">Back</a>
-            <img id="aboutCloseButton" src="icons/close.png" class="icon">
+            <img id="aboutCloseButton" class="colorIcon" src="icons/close.png" class="icon">
         </div>
     </div>
 
@@ -126,15 +124,6 @@
                     <td>&emsp;</td>
                     <td><input type="color" id="modelAlbedo"></td>
                 </tr>
-                <!-- <tr>
-                    <td>Position</td>
-                    <td>&emsp;</td>
-                    <td>
-                        X&nbsp;<input type="number" class="pointLightX" step="0.1" min="-20" max="20">
-                        Y&nbsp;<input type="number" class="pointLightY" step="0.1" min="-20" max="20">
-                        Z&nbsp;<input type="number" class="pointLightZ" step="0.1" min="-20" max="20">
-                    </td>
-                </tr> -->
             </table>
         </fieldset>
         <!-- <br> -->
@@ -155,15 +144,6 @@
                     <td>&emsp;</td>
                     <td><input type="color" id="directionalLightColorPicker"></td>
                 </tr>
-                <!-- <tr>
-                    <td>Position</td>
-                    <td>&emsp;</td>
-                    <td>
-                        X&nbsp;<input type="number" class="pointLightX" step="0.1" min="-20" max="20">
-                        Y&nbsp;<input type="number" class="pointLightY" step="0.1" min="-20" max="20">
-                        Z&nbsp;<input type="number" class="pointLightZ" step="0.1" min="-20" max="20">
-                    </td>
-                </tr> -->
             </table>
         </fieldset>
 
@@ -280,77 +260,11 @@
                     </tr>
                 </table>
             </fieldset>
-
-
-            <!-- DUMMY -->
-            <fieldset class="control pointLightControl">
-                <legend class="control-header">Point Light #4</legend>
-                <table>
-                    <tr>
-                        <td>Enabled</td>
-                        <td>&emsp;</td>
-                        <td><input type="checkbox" class="pointLightCheckbox"></td>
-                    </tr>
-                    <tr>
-                        <td>Color</td>
-                        <td>&emsp;</td>
-                        <td><input type="color" class="pointLightColorPicker"></td>
-                    </tr>
-                    <tr>
-                        <td>Position</td>
-                        <td>&emsp;</td>
-                        <td>
-                            X&nbsp;<input type="number" class="pointLightX" step="0.1" min="-20" max="20">
-                            Y&nbsp;<input type="number" class="pointLightY" step="0.1" min="-20" max="20">
-                            Z&nbsp;<input type="number" class="pointLightZ" step="0.1" min="-20" max="20">
-                        </td>
-                    </tr>
-                </table>
-            </fieldset>
-            <!-- DUMMY -->
-            <fieldset class="control pointLightControl">
-                <legend class="control-header">Point Light #4</legend>
-                <table>
-                    <tr>
-                        <td>Enabled</td>
-                        <td>&emsp;</td>
-                        <td><input type="checkbox" class="pointLightCheckbox"></td>
-                    </tr>
-                    <tr>
-                        <td>Color</td>
-                        <td>&emsp;</td>
-                        <td><input type="color" class="pointLightColorPicker"></td>
-                    </tr>
-                    <tr>
-                        <td>Position</td>
-                        <td>&emsp;</td>
-                        <td>
-                            X&nbsp;<input type="number" class="pointLightX" step="0.1" min="-20" max="20">
-                            Y&nbsp;<input type="number" class="pointLightY" step="0.1" min="-20" max="20">
-                            Z&nbsp;<input type="number" class="pointLightZ" step="0.1" min="-20" max="20">
-                        </td>
-                    </tr>
-                </table>
-            </fieldset>
-
         </div>
     </div>
 
-    <div id="texturesDebug">
-
-        <!-- <img src="textures/bedrock.png" name="Bedrock" class="voxelTexture">
-        <img src="textures/stone.png" name="Stone" class="voxelTexture">
-        <img src="textures/obsidian.png" name="Obsidian" class="voxelTexture">
-        <img src="textures/tnt.png" name="TNT" class="voxelTexture">
-        <img src="textures/sand.png" name="Sand" class="voxelTexture">
-        <img src="textures/glass.png" name="Glass" class="voxelTexture">
-        <img src="textures/gold.png" name="Gold" class="voxelTexture">
-        <img src="textures/grass.png" name="Grass" class="voxelTexture"> -->
-
-    </div>
-
     <div id="textures" style="display:none;">
-        <!-- <div id="textures"> -->
+
         <img src="textures/monster.png" id="monsterTexture">
         <img src="textures/monster_normal.png" id="monsterNormalTexture">
 
@@ -367,16 +281,6 @@
         <img src="textures/ely-specular.png" id="ely-specular">
         <img src="textures/ely-emission.png" id="ely-emission">
 
-
-
-        <!-- <img src="textures/box_diffuse.png" id="boxDiffuseTexture">
-        <img src="textures/box_specular.png" id="boxSpecularTexture"> -->
-        <!-- Paving Stones -->
-        <!-- <img src="textures/paving_stones/paving_stones_diffuse.png" id="pavingStonesDiffuse">
-        <img src="textures/paving_stones/paving_stones_normal.png" id="pavingStonesNormal">
-        <img src="textures/paving_stones/paving_stones_specular.png" id="pavingStonesSpecular"> -->
-        <!-- Piper Plane -->
-        <!-- <img src="textures/piper_plane_diffuse.png" id="piperPlaneDiffuse"> -->
     </div>
 
 </body>

@@ -7,6 +7,21 @@ html {
     height: 100%;
     padding: 0;
     margin: 0;
+    /* --main-color: #78db73; */
+    --main-color: #7fcc4b;
+    --main-bg-color: #2b2b2b;
+    --text-color: #d1d5da;
+    /* b6f542 */
+}
+
+canvas {
+    /* border: black; */
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: block;
+    margin: auto;
+    outline: none;
 }
 
 /* Navbar Styles */
@@ -27,13 +42,12 @@ html {
 .title,
 .button {
     display: flex;
-    /* background-color: green; */
-    color: #b6f542;
+    color: var(--main-color);
     background-color: none;
     margin: 0;
     height: 100%;
     text-align: center;
-    align-content: center;
+    /* align-content: center; */
     justify-content: center;
     flex-direction: column;
 }
@@ -54,7 +68,7 @@ html {
     background-color: none;
     border-width: 2px;
     border-style: solid;
-    border-color: #b6f542;
+    border-color: var(--main-color);
     border-radius: 5px;
     padding-left: 20px;
     padding-right: 20px;
@@ -86,9 +100,146 @@ html {
     margin-left: 20px;
 }
 
+
+.contentBorder {
+    border-top: var(--main-color);
+    border-top-style: solid;
+    border-top-width: 1px;
+}
+
+/* Loading Dialog */
+
+#loadingDialog{
+    display: flex;
+    height: 100%;
+    text-align: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+/* About Dialog */
+
+#aboutDialog {
+    z-index: 1;
+    visibility: hidden;
+}
+
+#aboutDialog h2,
+#aboutDialog ul {
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    list-style-type: circle;
+}
+
+#aboutDialog ul {
+    margin-bottom: 20px;
+}
+
+#aboutContents {
+    margin: 20px;
+}
+
+#aboutDialog a,
+#aboutDialog a:visited {
+    color: var(--main-color);
+}
+
+/* Controls */
+
+#canvasContainer,
+#aboutDialog {
+    position: fixed;
+    top: 50px;
+    bottom: 0px;
+    left: 0px;
+    right: 80%;
+    width: 80%;
+    color: var(--main-color);
+    background-color: var(--main-bg-color);
+    margin: 0px;
+    padding: 0px;
+}
+
+
+#controlContainer {
+    width: 20%;
+    position: fixed;
+    top: 50px;
+    bottom: 0px;
+    left: 80%;
+    right: 0px;
+    background-color: var(--main-bg-color);
+    margin: 0;
+    padding: 0;
+    overflow-y: auto;
+    /* display: none; */
+    border-left: var(--main-color);
+    border-left-style: solid;
+    border-left-width: 1px;
+}
+
+.control {
+    /* color: var(--main-color); */
+    color: var(--text-color);
+    background-color: var(--main-bg-color);
+    width: 85%;
+    border: solid;
+    border-color: var(--main-color);
+    border-width: 1px;
+    border-radius: 2px;
+    padding: 5px;
+    margin: 10px;
+}
+
+.control-header {
+    color: white;
+    /* background-color: rgb(124, 124, 124); */
+    background-color: var(--main-color);
+    border-radius: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.control table {
+    border-spacing: 0px;
+}
+
+.control td {
+    padding: 2px;
+    padding-top: 5px;
+    border-bottom: 1px solid;
+}
+
+.control input[type=checkbox] {
+    accent-color: var(--main-color);
+}
+
+.control input[type=number] {
+    width: 40px;
+    color: var(--text-color);
+    background-color: var(--main-bg-color);
+}
+
+.control input[type=color] {
+    background-color: var(--main-bg-color);
+    border: none;
+}
+
+.control select {
+    color: var(--text-color);
+    background-color: var(--main-bg-color);
+}
+
 .icon {
     width: 16px;
     height: 16px;
     transform: translate(0, 2.5px);
     filter: invert(100%);
+}
+
+.colorIcon{
+    /* Generated with https://codepen.io/sosuke/pen/Pjoqqp */
+    filter: invert(65%) sepia(45%) saturate(552%) hue-rotate(52deg) brightness(102%) contrast(90%);
 }

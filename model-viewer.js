@@ -38,23 +38,23 @@ function run() {
 
     // Point Light Properties
     let lightColors = [
-        [1, 1, 1],
         [1, 0, 0],
         [0, 1, 0],
         [0, 0, 1],
+        [1, 1, 1],
     ];
     let lightPositions = [
-        [1, 1, 0],
         [-1, 1, 1],
         [1, 1, 1],
         [1, 1, -1],
+        [1, 1, 0],
     ]
     for (let i = 0; i < pointLightCount; i++) {
         lights[i].color = lightColors[i];
         lights[i].position = lightPositions[i];
     }
 
-    light1.enabled = false;
+    light4.enabled = false;
 
     ///////////////
     // MATERIALS //
