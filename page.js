@@ -42,4 +42,4 @@ function adjustAboutDialogVisibility() {
     }
 }
 
-window.addEventListener('load', run); let
+window.addEventListener('load', run);
