@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+
+<head>
+    <title>WebGL</title>
+
+    <link rel="stylesheet" href="css/styles.css">
+
+    <!-- Third Party -->
+    <script src="third-party/gl-matrix-min.js"></script>
+    <script src="third-party/perlin.js"></script>
+
+    <!-- Perlin -->
+    <script src="libnoise-js/noise-util.js"></script>
+    <script src="libnoise-js/perlin.js"></script>
+
+    <!-- Engine -->
+    <script src="engine/engine.js"></script>
+    <script src="engine/utility.js"></script>
+    <script src="engine/rendering.js"></script>
+    <script src="engine/input.js"></script>
+    <script src="engine/editor.js"></script>
+    <script src="engine/voxel.js"></script>
+    <script src="engine/textureAtlas.js"></script>
+
+    <!-- Assets -->
+    <script src="shaders/_shaders.js"></script>
+    <script src="models/_models.js"></script>
+
+    <!-- Scripts -->
+    <script src="scripts/camera_controller.js"></script>
+
+    <!-- Game -->
+    <!-- <script src="gl.js"></script> -->
+    <!-- <script src="game.js"></script> -->
+    <script src="voxel-game.js"></script>
+    <!-- <script src="model-viewer.js"></script> -->
+</head>
+
+<body>
+
+    <div>
+        <canvas id="glCanvas" tabindex="1" width="1280" height="720"></canvas>
+        <canvas id="textureCanvas" width="200" height="200"></canvas>
+    </div>
+    <div id="editor">
+
+    </div>
+
+    <div id="controls">
+        <input type="range" min="0" max="1" value="0.2" step="0.01" class="slider" id="ambientIntensitySlider">
+        <input type="color" id="ambientColorPicker">
+    </div>
+
+    <div id="texturesDebug">
+
+        <img src="textures/bedrock.png" name="Bedrock" class="voxelTexture">
+        <img src="textures/stone.png" name="Stone" class="voxelTexture">
+        <img src="textures/obsidian.png" name="Obsidian" class="voxelTexture">
+        <img src="textures/tnt.png" name="TNT" class="voxelTexture">
+        <img src="textures/sand.png" name="Sand" class="voxelTexture">
+        <img src="textures/glass.png" name="Glass" class="voxelTexture">
+        <img src="textures/gold.png" name="Gold" class="voxelTexture">
+        <img src="textures/grass.png" name="Grass" class="voxelTexture">
+
+    </div>
+
+    <div id="textures" style="display:none;">
+        <!-- <div id="textures"> -->
+        <img src="textures/monster.png" id="monsterTexture">
+        <img src="textures/monster_normal.png" id="monsterNormalTexture">
+        <img src="textures/box_diffuse.png" id="boxDiffuseTexture">
+        <img src="textures/box_specular.png" id="boxSpecularTexture">
+        <!-- Paving Stones -->
+        <img src="textures/paving_stones/paving_stones_diffuse.png" id="pavingStonesDiffuse">
+        <img src="textures/paving_stones/paving_stones_normal.png" id="pavingStonesNormal">
+        <img src="textures/paving_stones/paving_stones_specular.png" id="pavingStonesSpecular">
+    </div>
+
+</body>
