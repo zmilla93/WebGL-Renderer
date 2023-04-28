@@ -8,7 +8,7 @@ html {
     padding: 0;
     margin: 0;
     /* --main-color: #78db73; */
-    --main-color: #7fcc4b;
+    --main-color: #69c52c;
     --main-bg-color: #2b2b2b;
     --text-color: #d1d5da;
     /* b6f542 */
@@ -47,7 +47,6 @@ canvas {
     margin: 0;
     height: 100%;
     text-align: center;
-    /* align-content: center; */
     justify-content: center;
     flex-direction: column;
 }
@@ -109,7 +108,7 @@ canvas {
 
 /* Loading Dialog */
 
-#loadingDialog{
+#loadingDialog {
     display: flex;
     height: 100%;
     text-align: center;
@@ -146,10 +145,10 @@ canvas {
     color: var(--main-color);
 }
 
-/* Controls */
 
 #canvasContainer,
-#aboutDialog {
+#aboutDialog,
+#loadingDialog {
     position: fixed;
     top: 50px;
     bottom: 0px;
@@ -162,6 +161,7 @@ canvas {
     padding: 0px;
 }
 
+/* Controls */
 
 #controlContainer {
     width: 20%;
@@ -239,7 +239,7 @@ canvas {
     filter: invert(100%);
 }
 
-.colorIcon{
+.colorIcon {
     /* Generated with https://codepen.io/sosuke/pen/Pjoqqp */
     filter: invert(65%) sepia(45%) saturate(552%) hue-rotate(52deg) brightness(102%) contrast(90%);
 }

@@ -48,7 +48,7 @@
         <li class="title navleft">
             <h1>WebGL Model Viewer</h1>
         </li>
-        <li class="navright"><a href="http://www.github.com" target="_blank">Github</a></li>
+        <li class="navright"><a href="http://www.github.com" target="_blank">GitHub</a></li>
         <li id="aboutButton" class="navright"><a href="#">About</a></li>
     </ul>
 
@@ -82,10 +82,10 @@
 
     <!-- Canvas -->
     <div id="canvasContainer" class="contentBorder">
-        <div id="loadingDialog">
+        <canvas id="glCanvas" tabindex="1" width="100" height="100"></canvas>
+        <div id="loadingDialog" class="contentBorder">
             <h1>Loading...</h1>
         </div>
-        <canvas id="glCanvas" tabindex="1" width="100" height="100"></canvas>
     </div>
 
     <!-- Controls -->
