@@ -491,7 +491,6 @@ class Mesh {
         Mesh.cube = objToMesh(cubeModel);
         Mesh.cubeWire = objToMesh(cubeModel, true);
         Mesh.monster = objToMesh(monsterModel);
-        Mesh.monster2 = objToMesh(monsterSmoothModel);
         Mesh.monkey = objToMesh(monkeyModel);
         Mesh.cone = objToMesh(coneTModel);
         Mesh.quad = objToMesh(quadTModel);

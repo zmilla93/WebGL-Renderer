@@ -377,14 +377,9 @@ class GameObject {
         // Create Translation Matrix
         const translationMatrix = mat4.create();
         mat4.translate(translationMatrix, translationMatrix, [this.position[0], this.position[1], this.position[2]]);
-        // Create Rotation Matrix
-        // let rotationMatrix = this.getRotationMatrix();
         // Create a transform matrix that holds all matrices combined.
         let transformMatrix = mat4.create();
         mat4.mul(transformMatrix, Camera.main.getProjectionMatrix(), Camera.main.getWorldtoViewMatrix());
-        // mat4.mul(transformMatrix, transformMatrix, translationMatrix);
-        // mat4.mul(transformMatrix, transformMatrix, rotationMatrix);
-        // mat4.scale(transformMatrix, transformMatrix, this.scale);
         let translateRotateScaleMatrix = mat4.create();
         mat4.fromRotationTranslationScale(translateRotateScaleMatrix, this._rotationQuaternion, this.position, this.scale);
         mat4.mul(transformMatrix, transformMatrix, translateRotateScaleMatrix);

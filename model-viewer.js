@@ -70,12 +70,6 @@ function run() {
     const michelleMaterial = new Material(Shader.phongShader);
     michelleMaterial.texture = michelleTexture;
 
-    // Monster Material
-    const monsterImage = document.getElementById("monsterTexture");
-    const monsterTexture = new Texture(monsterImage);
-    const monsterMaterial = new Material(Shader.phongShader);
-    monsterMaterial.texture = monsterTexture;
-
     // Vampire Material
     const vampireDiffuse = document.getElementById("vampire-diffuse");
     const vampireSpecular = document.getElementById("vampire-specular");
@@ -91,10 +85,23 @@ function run() {
     const elyMaterial = new Material(Shader.phongShader);
     elyMaterial.texture = elyTexture;
 
-    let textures = [ninjaTexture, michelleTexture, monsterTexture, vampireTexture, elyTexture];
+    // Mousey Material
+    const mouseyDiffuse = document.getElementById("mousey-diffuse");
+    const mouseySpecular = document.getElementById("mousey-specular");
+    const mouseyTexture = new Texture(mouseyDiffuse, null, mouseySpecular);
+    const mouseyMaterial = new Material(Shader.phongShader);
+    mouseyMaterial.texture = mouseyTexture;
+
+    // Demon Material
+    const demonDiffuse = document.getElementById("demon-diffuse");
+    const demonSpecular = document.getElementById("demon-specular");
+    const demonTexture = new Texture(demonDiffuse, null, demonSpecular);
+    const demonMaterial = new Material(Shader.phongShader);
+    demonMaterial.texture = demonTexture;
+
 
     // Assign lights to all materials
-    let materials = [ninjaMaterial, michelleMaterial, monsterMaterial, vampireMaterial, elyMaterial, mat];
+    let materials = [ninjaMaterial, michelleMaterial, vampireMaterial, elyMaterial, mouseyMaterial, demonMaterial, mat];
     for (material of materials) {
         material.setDirectionalLight(directionalLight);
         for (let i = 0; i < pointLightCount; i++) {
@@ -105,10 +112,6 @@ function run() {
     /////////////
     // OBJECTS //
     /////////////
-
-    // Monster Object
-    let monster = new GameObject();
-    monster.add(new MeshRenderer(Mesh.monster, monsterMaterial));
 
     const michelleMesh = objToMesh(michelleTriModel);
     let michelle = new GameObject();
@@ -126,7 +129,15 @@ function run() {
     let ely = new GameObject();
     ely.add(new MeshRenderer(elyMesh, elyMaterial));
 
-    let gameObjects = [ninja, michelle, monster, vampire, ely];
+    const mouseyMesh = objToMesh(mouseyModel);
+    let mousey = new GameObject();
+    mousey.add(new MeshRenderer(mouseyMesh, mouseyMaterial));
+
+    const demonMesh = objToMesh(demonModel);
+    let demon = new GameObject();
+    demon.add(new MeshRenderer(demonMesh, demonMaterial));
+
+    let gameObjects = [ninja, michelle, vampire, ely, mousey, demon];
     for (gameObject of gameObjects) {
         gameObject.enabled = false;
     }
