@@ -15,10 +15,6 @@ function run() {
     let mat = new Material(Shader.phongShader);
 
     ////////////
-    // MESHES //
-    ////////////
-
-    ////////////
     // LIGHTS //
     ////////////
 

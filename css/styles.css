@@ -2,14 +2,14 @@
 
 body,
 html {
-    background-color: #834a4a;
+    background-color: #000000;
     font-family: 'Hind', sans-serif;
     height: 100%;
     padding: 0;
     margin: 0;
-    /* --main-color: #78db73; */
-    --main-color: #69c52c;
+    --main-color: #8fe656;
     --main-bg-color: #2b2b2b;
+    --main-bg-color-hover: #333333;
     --text-color: #d1d5da;
     /* b6f542 */
 }
@@ -78,6 +78,10 @@ canvas {
     width: fit-content;
 }
 
+#aboutBackButton:hover{
+    background-color: var(--main-bg-color-hover);
+}
+
 #aboutCloseButton {
     width: 30px;
     height: 30px;
@@ -88,7 +92,9 @@ canvas {
     transform: translate(-10px, 10px);
 }
 
-#navbar a:hover {}
+#navbar a:hover {
+    background-color: var(--main-bg-color-hover);
+}
 
 .navleft {
     float: left;
@@ -174,14 +180,12 @@ canvas {
     margin: 0;
     padding: 0;
     overflow-y: auto;
-    /* display: none; */
     border-left: var(--main-color);
     border-left-style: solid;
     border-left-width: 1px;
 }
 
 .control {
-    /* color: var(--main-color); */
     color: var(--text-color);
     background-color: var(--main-bg-color);
     width: 85%;
@@ -193,9 +197,8 @@ canvas {
     margin: 10px;
 }
 
-.control-header {
-    color: white;
-    /* background-color: rgb(124, 124, 124); */
+.controlHeader {
+    color: black;
     background-color: var(--main-color);
     border-radius: 5px;
     padding-left: 10px;
@@ -236,10 +239,10 @@ canvas {
     width: 16px;
     height: 16px;
     transform: translate(0, 2.5px);
-    filter: invert(100%);
+    /* filter: invert(100%); */
 }
 
 .colorIcon {
     /* Generated with https://codepen.io/sosuke/pen/Pjoqqp */
-    filter: invert(65%) sepia(45%) saturate(552%) hue-rotate(52deg) brightness(102%) contrast(90%);
+    filter: invert(79%) sepia(78%) saturate(375%) hue-rotate(39deg) brightness(94%) contrast(92%);
 }

@@ -24,8 +24,6 @@ function run() {
     let aboutCloseButton = document.getElementById("aboutCloseButton");
     aboutBackButton.onclick = hideAboutDialog;
     aboutCloseButton.onclick = hideAboutDialog;
-
-    adjustAboutDialogVisibility();
 }
 
 function hideAboutDialog(){
