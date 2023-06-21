@@ -64,18 +64,18 @@ function run() {
     ninjaMaterial.texture = ninjaTexture;
 
     // Michelle Material
-    const michelleDiffuse = document.getElementById("michelleDiffuse");
-    const michelleSpecular = document.getElementById("michelleSpecular");
-    const michelleTexture = new Texture(michelleDiffuse, null, michelleSpecular);
-    const michelleMaterial = new Material(Shader.phongShader);
-    michelleMaterial.texture = michelleTexture;
+    // const michelleDiffuse = document.getElementById("michelleDiffuse");
+    // const michelleSpecular = document.getElementById("michelleSpecular");
+    // const michelleTexture = new Texture(michelleDiffuse, null, michelleSpecular);
+    // const michelleMaterial = new Material(Shader.phongShader);
+    // michelleMaterial.texture = michelleTexture;
 
     // Vampire Material
-    const vampireDiffuse = document.getElementById("vampire-diffuse");
-    const vampireSpecular = document.getElementById("vampire-specular");
-    const vampireTexture = new Texture(vampireDiffuse, null, vampireSpecular);
-    const vampireMaterial = new Material(Shader.phongShader);
-    vampireMaterial.texture = vampireTexture;
+    // const vampireDiffuse = document.getElementById("vampire-diffuse");
+    // const vampireSpecular = document.getElementById("vampire-specular");
+    // const vampireTexture = new Texture(vampireDiffuse, null, vampireSpecular);
+    // const vampireMaterial = new Material(Shader.phongShader);
+    // vampireMaterial.texture = vampireTexture;
 
     // Ely Material
     const elyDiffuse = document.getElementById("ely-diffuse");
@@ -86,22 +86,22 @@ function run() {
     elyMaterial.texture = elyTexture;
 
     // Mousey Material
-    const mouseyDiffuse = document.getElementById("mousey-diffuse");
-    const mouseySpecular = document.getElementById("mousey-specular");
-    const mouseyTexture = new Texture(mouseyDiffuse, null, mouseySpecular);
-    const mouseyMaterial = new Material(Shader.phongShader);
-    mouseyMaterial.texture = mouseyTexture;
+    // const mouseyDiffuse = document.getElementById("mousey-diffuse");
+    // const mouseySpecular = document.getElementById("mousey-specular");
+    // const mouseyTexture = new Texture(mouseyDiffuse, null, mouseySpecular);
+    // const mouseyMaterial = new Material(Shader.phongShader);
+    // mouseyMaterial.texture = mouseyTexture;
 
     // Demon Material
-    const demonDiffuse = document.getElementById("demon-diffuse");
-    const demonSpecular = document.getElementById("demon-specular");
-    const demonTexture = new Texture(demonDiffuse, null, demonSpecular);
-    const demonMaterial = new Material(Shader.phongShader);
-    demonMaterial.texture = demonTexture;
+    // const demonDiffuse = document.getElementById("demon-diffuse");
+    // const demonSpecular = document.getElementById("demon-specular");
+    // const demonTexture = new Texture(demonDiffuse, null, demonSpecular);
+    // const demonMaterial = new Material(Shader.phongShader);
+    // demonMaterial.texture = demonTexture;
 
 
     // Assign lights to all materials
-    let materials = [ninjaMaterial, michelleMaterial, vampireMaterial, elyMaterial, mouseyMaterial, demonMaterial, mat];
+    let materials = [ninjaMaterial, elyMaterial, mat];
     for (material of materials) {
         material.setDirectionalLight(directionalLight);
         for (let i = 0; i < pointLightCount; i++) {
@@ -113,31 +113,31 @@ function run() {
     // OBJECTS //
     /////////////
 
-    const michelleMesh = objToMesh(michelleTriModel);
-    let michelle = new GameObject();
-    michelle.add(new MeshRenderer(michelleMesh, michelleMaterial));
-
     const ninjaMesh = objToMesh(ninjaModel);
     let ninja = new GameObject();
     ninja.add(new MeshRenderer(ninjaMesh, ninjaMaterial));
 
-    const vampireMesh = objToMesh(vampireModel);
-    let vampire = new GameObject();
-    vampire.add(new MeshRenderer(vampireMesh, vampireMaterial));
+    // const michelleMesh = objToMesh(michelleTriModel);
+    // let michelle = new GameObject();
+    // michelle.add(new MeshRenderer(michelleMesh, michelleMaterial));
+
+    // const vampireMesh = objToMesh(vampireModel);
+    // let vampire = new GameObject();
+    // vampire.add(new MeshRenderer(vampireMesh, vampireMaterial));
 
     const elyMesh = objToMesh(elyModel);
     let ely = new GameObject();
     ely.add(new MeshRenderer(elyMesh, elyMaterial));
 
-    const mouseyMesh = objToMesh(mouseyModel);
-    let mousey = new GameObject();
-    mousey.add(new MeshRenderer(mouseyMesh, mouseyMaterial));
+    // const mouseyMesh = objToMesh(mouseyModel);
+    // let mousey = new GameObject();
+    // mousey.add(new MeshRenderer(mouseyMesh, mouseyMaterial));
 
-    const demonMesh = objToMesh(demonModel);
-    let demon = new GameObject();
-    demon.add(new MeshRenderer(demonMesh, demonMaterial));
+    // const demonMesh = objToMesh(demonModel);
+    // let demon = new GameObject();
+    // demon.add(new MeshRenderer(demonMesh, demonMaterial));
 
-    let gameObjects = [ninja, michelle, vampire, ely, mousey, demon];
+    let gameObjects = [ninja, ely];
     for (gameObject of gameObjects) {
         gameObject.enabled = false;
     }
